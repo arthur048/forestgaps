@@ -1,0 +1,96 @@
+Prompt de Contexte Global: ForestGaps-DL Package Refactorisation
+Vue d'ensemble du projet
+Ce projet consiste à refactoriser deux scripts monolithiques (forestgaps_dl_data_preparation.py et forestgaps_dl_u_net_training.py) en un package Python modulaire pour la détection de trouées forestières par deep learning. Le code utilise PyTorch et des techniques de traitement d'images géospatiales pour détecter les trouées forestières à partir de modèles numériques de surface (DSM) et de hauteur de canopée (CHM).
+Objectifs principaux de la refactorisation
+
+Transformer le code en package Python modulaire suivant les principes SOLID
+Créer une configuration externalisée avec validation
+Optimiser les pipelines de données et d'entraînement
+Maintenir la compatibilité avec Google Colab
+Assurer l'extensibilité pour de nouvelles architectures et fonctionnalités
+
+ARCHITECTURE DU PACKAGE:
+forestgaps_dl/
+├── config/                 # ✅ Système de configuration avec validation
+├── environment/            # ✅ Abstractions pour différents environnements (Colab, local)
+├── data/
+│   ├── preprocessing/      # ✅ Prétraitement des rasters (alignement, analyse, conversion)
+│   ├── datasets/           # ✅ Classes Dataset PyTorch et gestion des transformations
+│   ├── normalization/      # ✅ Stratégies de normalisation adaptatives
+│   └── loaders/            # ✅ Optimisation des DataLoaders (à implémenter)
+├── models/                 # 🔄 Architectures U-Net et leurs variantes (à implémenter)
+│   ├── blocks/             # Blocs architecturaux réutilisables
+│   ├── attention/          # Mécanismes d'attention (CBAM, etc.)
+│   ├── film/               # Feature-wise Linear Modulation
+│   └── unet/               # Implémentations U-Net
+├── training/               # 🔄 Boucles d'entraînement et évaluation (à implémenter)
+│   ├── callbacks/          # Système de callbacks modulaire
+│   ├── loss/               # Fonctions de perte personnalisées
+│   ├── metrics/            # Métriques d'évaluation
+│   └── scheduler/          # Stratégies d'ajustement du learning rate
+├── utils/                  # 🔄 Utilitaires génériques (à implémenter)
+└── cli/                    # 🔄 Interface en ligne de commande (à implémenter)
+
+État d'avancement
+
+✅ Terminé: config/, environment/, data/preprocessing/, data/datasets/, data/normalization/
+🔄 En cours: data/loaders/
+⏳ À faire: models/, training/, utils/, cli/
+
+Dépendances entre modules
+
+config/: Base indépendante utilisée par tous les autres modules
+environment/: Utilisé par tous les modules nécessitant une adaptation à Colab
+data/preprocessing/: Dépend de config/ et environment/
+data/datasets/: Dépend de preprocessing/ et config/
+data/normalization/: Dépend de preprocessing/ et config/
+data/loaders/: Dépendra de datasets/ et normalization/
+models/: Dépendra de config/ et normalization/
+training/: Dépendra de models/, data/loaders/ et config/
+
+Principes de développement à respecter
+
+SOLID:
+
+Responsabilité unique pour chaque classe/module
+Ouvert à l'extension, fermé à la modification
+Substitution de Liskov pour les interfaces
+Ségrégation des interfaces
+Inversion des dépendances
+
+
+Modularité et Extensibilité:
+
+Interfaces claires entre modules
+Factory patterns pour la création d'objets
+Registres pour les composants extensibles
+
+
+Compatibilité Colab:
+
+Gestion de l'environnement via abstraction
+Installation efficace des dépendances
+Considération des limites de mémoire et processeurs
+
+
+Documentation:
+
+Docstrings complets pour toutes les classes/fonctions
+Fichiers README pour chaque module
+Exemples d'utilisation
+Résumés de module dans /summary_tmp/
+
+Fichiers de référence
+
+Code legacy: archive/data_preparation/forestgaps_dl_data_preparation.py et archive/unet_training/forestgaps_dl_u_net_training.py
+Objectifs: archive/Objectif de migration.txt
+Résumés des modules: Consultez summary_tmp/ pour les modules déjà implémentés
+
+Gestion de session
+À la fin de chaque session majeure:
+
+Générer un fichier achievements.md décrivant les fonctionnalités implémentées
+Mettre à jour ce prompt de contexte avec les nouveaux modules terminés
+Documenter les API importantes dans module_interfaces.md
+
+Tâche actuelle : Architectures U-Net et leurs variantes (à implémenter)

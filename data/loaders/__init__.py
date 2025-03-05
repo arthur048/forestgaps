@@ -16,7 +16,21 @@ from data.loaders.optimization import (
     optimize_batch_size,
     optimize_num_workers,
     benchmark_dataloader,
-    prefetch_data
+    prefetch_data,
+    optimize_dataloader
+)
+
+from data.loaders.calibration import (
+    DataLoaderCalibrator,
+    create_calibrated_dataloader,
+    create_calibrated_train_val_dataloaders
+)
+
+from data.loaders.archive import (
+    TarArchiveDataset,
+    IterableTarArchiveDataset,
+    create_tar_archive,
+    convert_dataset_to_tar
 )
 
 __all__ = [
@@ -29,5 +43,17 @@ __all__ = [
     'optimize_batch_size',
     'optimize_num_workers',
     'benchmark_dataloader',
-    'prefetch_data'
+    'prefetch_data',
+    'optimize_dataloader',
+    
+    # Fonctions de calibration
+    'DataLoaderCalibrator',
+    'create_calibrated_dataloader',
+    'create_calibrated_train_val_dataloaders',
+    
+    # Classes et fonctions d'archive
+    'TarArchiveDataset',
+    'IterableTarArchiveDataset',
+    'create_tar_archive',
+    'convert_dataset_to_tar'
 ]
