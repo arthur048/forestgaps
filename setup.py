@@ -12,7 +12,7 @@ setup(
         "rasterio>=1.2.0",
     ],
     author="Arthur",
-    author_email="votre@email.com",
+    author_email="arthurvdl048@email.com",
     description="Bibliothèque PyTorch pour la détection et l'analyse des trouées forestières avec le deep learning.",
     url="https://github.com/arthur048/forestgaps-dl",
 )
