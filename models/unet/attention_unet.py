@@ -1,8 +1,8 @@
 """
-Implémentation de l'architecture U-Net originale pour la segmentation d'images forestières.
+Implémentation de l'architecture Attention U-Net pour la segmentation d'images forestières.
 
-Ce module fournit une implémentation de l'architecture U-Net originale
-telle que décrite dans le papier de Ronneberger et al. (2015), adaptée
+Ce module fournit une implémentation de l'architecture Attention U-Net
+telle que décrite dans le papier de Oktay et al. (2018), adaptée
 pour la détection des trouées forestières.
 """
 
@@ -16,16 +16,17 @@ from ..registry import model_registry
 from ..blocks.conv import DoubleConvBlock
 from ..blocks.downsampling import MaxPoolDownsample
 from ..blocks.upsampling import BilinearUpsampling
+from ..blocks.attention import AttentionGate
 
 
-@model_registry.register("unet")
-class UNet(UNetBaseModel):
+@model_registry.register("attention_unet")
+class AttentionUNet(UNetBaseModel):
     """
-    Implémentation de l'architecture U-Net originale.
+    Implémentation de l'architecture Attention U-Net.
     
-    Cette classe implémente l'architecture U-Net telle que décrite dans
-    le papier "U-Net: Convolutional Networks for Biomedical Image Segmentation"
-    par Ronneberger et al. (2015), adaptée pour la détection des trouées forestières.
+    Cette classe implémente l'architecture Attention U-Net telle que décrite dans
+    le papier "Attention U-Net: Learning Where to Look for the Pancreas"
+    par Oktay et al. (2018), adaptée pour la détection des trouées forestières.
     """
     
     def __init__(
@@ -40,7 +41,7 @@ class UNet(UNetBaseModel):
         activation: Type[nn.Module] = nn.ReLU
     ):
         """
-        Initialise le modèle U-Net.
+        Initialise le modèle Attention U-Net.
         
         Args:
             in_channels: Nombre de canaux d'entrée
@@ -68,10 +69,11 @@ class UNet(UNetBaseModel):
         self.decoder_blocks = nn.ModuleList()
         self.downsample_blocks = nn.ModuleList()
         self.upsample_blocks = nn.ModuleList()
+        self.attention_gates = nn.ModuleList()
         
         # Construire l'encodeur
         features = init_features
-        encoder_features = [features]
+        encoder_features_channels = [features]
         
         # Premier bloc d'encodeur (pas de downsampling)
         self.encoder_blocks.append(
@@ -108,7 +110,7 @@ class UNet(UNetBaseModel):
                 )
             )
             
-            encoder_features.append(features)
+            encoder_features_channels.append(features)
         
         # Goulot d'étranglement (bottleneck)
         self.bottleneck = DoubleConvBlock(
@@ -126,7 +128,17 @@ class UNet(UNetBaseModel):
         # Blocs de décodeur
         for i in range(depth):
             in_features = features
-            out_features = encoder_features[-(i+1)]
+            out_features = encoder_features_channels[-(i+1)]
+            
+            # Porte d'attention
+            self.attention_gates.append(
+                AttentionGate(
+                    g_channels=in_features,  # Signal de guidage du niveau supérieur
+                    x_channels=out_features,  # Caractéristiques de l'encodeur
+                    inter_channels=out_features // 2,  # Canaux intermédiaires
+                    activation=activation
+                )
+            )
             
             # Bloc de sur-échantillonnage
             self.upsample_blocks.append(
@@ -164,7 +176,7 @@ class UNet(UNetBaseModel):
         
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
-        Passage avant du modèle U-Net.
+        Passage avant du modèle Attention U-Net.
         
         Args:
             x: Tenseur d'entrée [B, in_channels, H, W]
@@ -187,8 +199,18 @@ class UNet(UNetBaseModel):
         
         # Passage à travers le décodeur
         for i in range(len(self.decoder_blocks)):
+            # Récupérer les caractéristiques de l'encodeur
             skip = encoder_features[-(i+1)]
-            x = self.upsample_blocks[i](x, skip)
+            
+            # Appliquer l'attention sur les caractéristiques de l'encodeur
+            # en utilisant les caractéristiques du décodeur comme signal de guidage
+            skip_attention = self.attention_gates[i](g=x, x=skip)
+            
+            # Sur-échantillonnage et concaténation
+            x = self.upsample_blocks[i](x)
+            x = torch.cat([x, skip_attention], dim=1)
+            
+            # Convolution du décodeur
             x = self.decoder_blocks[i](x)
         
         # Convolution finale
@@ -212,6 +234,7 @@ class UNet(UNetBaseModel):
         complexity.update({
             "encoder_blocks": len(self.encoder_blocks),
             "decoder_blocks": len(self.decoder_blocks),
+            "attention_gates": len(self.attention_gates),
             "bottleneck_features": self.bottleneck.conv2.conv.out_channels
         })
         return complexity 

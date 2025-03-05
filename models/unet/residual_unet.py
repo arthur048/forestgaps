@@ -1,9 +1,9 @@
 """
-Implémentation de l'architecture U-Net originale pour la segmentation d'images forestières.
+Implémentation de l'architecture ResUNet pour la segmentation d'images forestières.
 
-Ce module fournit une implémentation de l'architecture U-Net originale
-telle que décrite dans le papier de Ronneberger et al. (2015), adaptée
-pour la détection des trouées forestières.
+Ce module fournit une implémentation de l'architecture ResUNet qui intègre
+des blocs résiduels dans l'architecture U-Net pour améliorer l'apprentissage
+des caractéristiques et la performance de segmentation.
 """
 
 import torch
@@ -13,19 +13,19 @@ from typing import Dict, Any, List, Tuple, Optional, Type, Union
 
 from ..base import UNetBaseModel
 from ..registry import model_registry
-from ..blocks.conv import DoubleConvBlock
-from ..blocks.downsampling import MaxPoolDownsample
+from ..blocks.conv import ResidualBlock
+from ..blocks.downsampling import StridedConvDownsample
 from ..blocks.upsampling import BilinearUpsampling
 
 
-@model_registry.register("unet")
-class UNet(UNetBaseModel):
+@model_registry.register("resunet")
+class ResUNet(UNetBaseModel):
     """
-    Implémentation de l'architecture U-Net originale.
+    Implémentation de l'architecture ResUNet.
     
-    Cette classe implémente l'architecture U-Net telle que décrite dans
-    le papier "U-Net: Convolutional Networks for Biomedical Image Segmentation"
-    par Ronneberger et al. (2015), adaptée pour la détection des trouées forestières.
+    Cette classe implémente l'architecture ResUNet qui intègre des blocs
+    résiduels dans l'architecture U-Net pour améliorer l'apprentissage
+    des caractéristiques et la performance de segmentation.
     """
     
     def __init__(
@@ -40,7 +40,7 @@ class UNet(UNetBaseModel):
         activation: Type[nn.Module] = nn.ReLU
     ):
         """
-        Initialise le modèle U-Net.
+        Initialise le modèle ResUNet.
         
         Args:
             in_channels: Nombre de canaux d'entrée
@@ -71,11 +71,11 @@ class UNet(UNetBaseModel):
         
         # Construire l'encodeur
         features = init_features
-        encoder_features = [features]
+        encoder_features_channels = [features]
         
         # Premier bloc d'encodeur (pas de downsampling)
         self.encoder_blocks.append(
-            DoubleConvBlock(
+            ResidualBlock(
                 in_channels=in_channels,
                 out_channels=features,
                 norm_layer=norm_layer,
@@ -88,30 +88,22 @@ class UNet(UNetBaseModel):
             in_features = features
             features *= 2  # Doubler le nombre de caractéristiques à chaque niveau
             
-            # Bloc de sous-échantillonnage
-            self.downsample_blocks.append(
-                MaxPoolDownsample(
-                    in_channels=in_features,
-                    out_channels=in_features,
-                    scale_factor=2
-                )
-            )
-            
-            # Bloc de convolution après sous-échantillonnage
+            # Bloc résiduel avec downsampling
             self.encoder_blocks.append(
-                DoubleConvBlock(
+                ResidualBlock(
                     in_channels=in_features,
                     out_channels=features,
                     norm_layer=norm_layer,
                     activation=activation,
-                    dropout_rate=dropout_rate if i == depth - 2 else 0.0
+                    dropout_rate=dropout_rate if i == depth - 2 else 0.0,
+                    downsample=True  # Activer le downsampling dans le bloc résiduel
                 )
             )
             
-            encoder_features.append(features)
+            encoder_features_channels.append(features)
         
         # Goulot d'étranglement (bottleneck)
-        self.bottleneck = DoubleConvBlock(
+        self.bottleneck = ResidualBlock(
             in_channels=features,
             out_channels=features * 2,
             norm_layer=norm_layer,
@@ -126,7 +118,7 @@ class UNet(UNetBaseModel):
         # Blocs de décodeur
         for i in range(depth):
             in_features = features
-            out_features = encoder_features[-(i+1)]
+            out_features = encoder_features_channels[-(i+1)]
             
             # Bloc de sur-échantillonnage
             self.upsample_blocks.append(
@@ -139,9 +131,9 @@ class UNet(UNetBaseModel):
                 )
             )
             
-            # Bloc de convolution après sur-échantillonnage et concaténation
+            # Bloc résiduel après sur-échantillonnage et concaténation
             self.decoder_blocks.append(
-                DoubleConvBlock(
+                ResidualBlock(
                     in_channels=out_features * 2,  # Concaténation avec skip
                     out_channels=out_features,
                     norm_layer=norm_layer,
@@ -164,7 +156,7 @@ class UNet(UNetBaseModel):
         
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
-        Passage avant du modèle U-Net.
+        Passage avant du modèle ResUNet.
         
         Args:
             x: Tenseur d'entrée [B, in_channels, H, W]
@@ -175,11 +167,13 @@ class UNet(UNetBaseModel):
         # Stocker les caractéristiques d'encodeur pour les connexions de saut
         encoder_features = []
         
-        # Passage à travers l'encodeur
-        for i, encoder_block in enumerate(self.encoder_blocks):
-            if i > 0:
-                x = self.downsample_blocks[i-1](x)
-            x = encoder_block(x)
+        # Premier bloc d'encodeur
+        x = self.encoder_blocks[0](x)
+        encoder_features.append(x)
+        
+        # Blocs d'encodeur restants avec downsampling intégré
+        for i in range(1, len(self.encoder_blocks)):
+            x = self.encoder_blocks[i](x)
             encoder_features.append(x)
         
         # Passage à travers le goulot d'étranglement
@@ -187,8 +181,13 @@ class UNet(UNetBaseModel):
         
         # Passage à travers le décodeur
         for i in range(len(self.decoder_blocks)):
+            # Récupérer les caractéristiques de l'encodeur
             skip = encoder_features[-(i+1)]
+            
+            # Sur-échantillonnage et concaténation
             x = self.upsample_blocks[i](x, skip)
+            
+            # Bloc résiduel du décodeur
             x = self.decoder_blocks[i](x)
         
         # Convolution finale
@@ -212,6 +211,7 @@ class UNet(UNetBaseModel):
         complexity.update({
             "encoder_blocks": len(self.encoder_blocks),
             "decoder_blocks": len(self.decoder_blocks),
-            "bottleneck_features": self.bottleneck.conv2.conv.out_channels
+            "bottleneck_features": self.bottleneck.conv2.conv.out_channels,
+            "model_type": "ResUNet"
         })
         return complexity 

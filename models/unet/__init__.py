@@ -1,21 +1,20 @@
 """
-Implémentations de l'architecture U-Net pour la détection de trouées forestières.
+Implémentations de l'architecture U-Net pour la détection des trouées forestières.
 
-Ce module contient différentes variantes de l'architecture U-Net adaptées
-spécifiquement pour la segmentation d'images de télédétection forestière
-et la détection des trouées.
+Ce module fournit différentes variantes de l'architecture U-Net adaptées
+à la segmentation d'images pour la détection des trouées forestières.
 """
 
-from models.unet.basic import UNet
-from models.unet.residual import ResUNet
-from models.unet.attention import AttentionUNet
-from models.unet.film import FiLMUNet
-from models.unet.advanced import UNet3Plus
+from .basic import UNet
+from .attention_unet import AttentionUNet
+from .residual_unet import ResUNet
+from .film_unet import FiLMUNet
+from .all_features import UNetWithAllFeatures
 
 __all__ = [
-    'UNet',
-    'ResUNet',
-    'AttentionUNet',
-    'FiLMUNet',
-    'UNet3Plus'
+    "UNet",
+    "AttentionUNet",
+    "ResUNet",
+    "FiLMUNet",
+    "UNetWithAllFeatures"
 ] 

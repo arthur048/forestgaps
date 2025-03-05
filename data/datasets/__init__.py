@@ -24,6 +24,13 @@ from data.datasets.transforms import (
     elastic_transform
 )
 
+from data.datasets.regression_dataset import (
+    ForestRegressionDataset,
+    create_regression_dataset,
+    create_regression_dataloader,
+    split_regression_dataset
+)
+
 __all__ = [
     # Classes et fonctions de datasets
     'ForestGapDataset',
@@ -39,5 +46,11 @@ __all__ = [
     # Classes et fonctions de transformation
     'ForestGapTransforms',
     'create_transform_pipeline',
-    'elastic_transform'
+    'elastic_transform',
+    
+    # Classes et fonctions de dataset de régression
+    'ForestRegressionDataset',
+    'create_regression_dataset',
+    'create_regression_dataloader',
+    'split_regression_dataset'
 ]

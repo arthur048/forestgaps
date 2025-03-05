@@ -1,57 +1,91 @@
 """
-Module de modèles pour la détection des trouées forestières.
+Module pour les modèles de détection des trouées forestières.
 
-Ce module fournit différentes architectures de réseaux de neurones
-pour la segmentation d'images de télédétection forestière.
+Ce module fournit des implémentations de divers modèles de segmentation
+pour la détection des trouées forestières à partir d'images de hauteur
+de canopée ou de modèles numériques de surface.
 """
 
-# Importer les architectures U-Net
-from models.unet.basic import UNet
-from models.unet.residual import ResUNet
-from models.unet.attention import AttentionUNet
-from models.unet.film import FiLMUNet
-from models.unet.advanced import UNet3Plus
+import logging
+from typing import Dict, Any, Type, Optional
 
-# Importer les blocs de base
-from models.blocks.convolution import ConvBlock, DoubleConvBlock
-from models.blocks.pooling import DownsampleBlock, UpsampleBlock
-from models.blocks.residual import ResidualBlock, BottleneckBlock
+from .registry import ModelRegistry, get_model_from_config
+from .base import (
+    ForestGapModel,
+    ThresholdConditionedModel,
+    UNetBaseModel,
+    ThresholdConditionedUNet
+)
 
-# Importer les mécanismes d'attention
-from models.attention.cbam import CBAM, ChannelAttention, SpatialAttention
-from models.attention.self_attention import SelfAttention
+# Configuration du logging
+logger = logging.getLogger(__name__)
 
-# Importer les couches FiLM
-from models.film.layers import FiLMLayer, FiLMGenerator, AdaptiveFiLM
-from models.film.blocks import FiLMBlock, FiLMResidualBlock, ConditionedBlock
+# Créer une instance globale du registre de modèles
+model_registry = ModelRegistry()
 
+# Exposer les fonctions principales
 __all__ = [
-    # Architectures U-Net
-    'UNet',
-    'ResUNet',
-    'AttentionUNet',
-    'FiLMUNet',
-    'UNet3Plus',
+    # Classes de base
+    "ForestGapModel",
+    "ThresholdConditionedModel",
+    "UNetBaseModel",
+    "ThresholdConditionedUNet",
     
-    # Blocs de base
-    'ConvBlock',
-    'DoubleConvBlock',
-    'DownsampleBlock',
-    'UpsampleBlock',
-    'ResidualBlock',
-    'BottleneckBlock',
+    # Registre de modèles
+    "ModelRegistry",
+    "model_registry",
+    "get_model_from_config",
     
-    # Mécanismes d'attention
-    'CBAM',
-    'ChannelAttention',
-    'SpatialAttention',
-    'SelfAttention',
-    
-    # Couches FiLM
-    'FiLMLayer',
-    'FiLMGenerator',
-    'AdaptiveFiLM',
-    'FiLMBlock',
-    'FiLMResidualBlock',
-    'ConditionedBlock'
+    # Fonctions utilitaires
+    "create_model",
+    "list_available_models",
 ]
+
+
+def create_model(model_name: str, **kwargs) -> ForestGapModel:
+    """
+    Crée une instance d'un modèle à partir de son nom.
+    
+    Args:
+        model_name: Nom du modèle à créer
+        **kwargs: Arguments spécifiques au modèle
+        
+    Returns:
+        Instance du modèle
+        
+    Raises:
+        ValueError: Si le modèle n'est pas trouvé dans le registre
+    """
+    logger.info(f"Création d'un modèle de type '{model_name}'")
+    return model_registry.create(model_name, **kwargs)
+
+
+def list_available_models() -> Dict[str, Type[ForestGapModel]]:
+    """
+    Liste tous les modèles disponibles dans le registre.
+    
+    Returns:
+        Dictionnaire des noms de modèles et leurs classes
+    """
+    return model_registry.list_models()
+
+
+# Import des implémentations spécifiques
+# Ces imports doivent être à la fin pour éviter les imports circulaires
+# et permettre l'enregistrement des modèles dans le registre
+
+# Importer et enregistrer automatiquement les modèles des sous-modules
+try:
+    from . import unet
+except ImportError:
+    logger.warning("Module unet non trouvé. Les modèles U-Net ne seront pas disponibles.")
+    
+try:
+    from . import deeplabv3
+except ImportError:
+    logger.warning("Module deeplabv3 non trouvé. Les modèles DeepLabV3+ ne seront pas disponibles.")
+
+try:
+    from . import unet_regression
+except ImportError:
+    logger.warning("Module unet_regression non trouvé. Les modèles U-Net de régression ne seront pas disponibles.") 

@@ -10,32 +10,104 @@ Maintenir la compatibilité avec Google Colab
 Assurer l'extensibilité pour de nouvelles architectures et fonctionnalités
 
 ARCHITECTURE DU PACKAGE:
-forestgaps_dl/
-├── config/                 # ✅ Système de configuration avec validation
-├── environment/            # ✅ Abstractions pour différents environnements (Colab, local)
-├── data/
-│   ├── preprocessing/      # ✅ Prétraitement des rasters (alignement, analyse, conversion)
-│   ├── datasets/           # ✅ Classes Dataset PyTorch et gestion des transformations
-│   ├── normalization/      # ✅ Stratégies de normalisation adaptatives
-│   └── loaders/            # ✅ Optimisation des DataLoaders (à implémenter)
-├── models/                 # 🔄 Architectures U-Net et leurs variantes (à implémenter)
-│   ├── blocks/             # Blocs architecturaux réutilisables
-│   ├── attention/          # Mécanismes d'attention (CBAM, etc.)
-│   ├── film/               # Feature-wise Linear Modulation
-│   └── unet/               # Implémentations U-Net
-├── training/               # 🔄 Boucles d'entraînement et évaluation (à implémenter)
-│   ├── callbacks/          # Système de callbacks modulaire
-│   ├── loss/               # Fonctions de perte personnalisées
-│   ├── metrics/            # Métriques d'évaluation
-│   └── scheduler/          # Stratégies d'ajustement du learning rate
-├── utils/                  # 🔄 Utilitaires génériques (à implémenter)
-└── cli/                    # 🔄 Interface en ligne de commande (à implémenter)
+1. Refactorisation du module data/
+Nous devons extraire toutes les fonctionnalités de traitement des données de forestgaps_dl_data_preparation.py :
+text
+Apply to Objectif de ...
+data/
+├── init.py               # Point d'entrée unifié
+├── preprocessing/            # Préparation des rasters
+│   ├── init.py
+│   ├── alignment.py          # Alignement des rasters (DSM/CHM)
+│   ├── analysis.py           # Analyse des rasters
+│   └── conversion.py         # Conversion et traitement des formats
+├── datasets/                 # Datasets PyTorch
+│   ├── init.py
+│   ├── gap_dataset.py        # Implémentation de GapDataset
+│   ├── transforms.py         # Transformations pour l'augmentation
+│   └── samplers.py           # Stratégies d'échantillonnage équilibré
+├── generation/               # Génération des tuiles
+│   ├── init.py
+│   ├── tiling.py             # Découpage en tuiles
+│   └── masks.py              # Création des masques de trouées
+└── loaders/                  # DataLoaders optimisés
+    ├── init.py
+    ├── factory.py            # Création des DataLoaders
+    └── optimization.py       # Optimisation dynamique des paramètres
+2. Refactorisation du module models/
+Extraire les architectures des modèles de forestgaps_dl_u_net_training.py :
+text
+Apply to Objectif de ...
+models/
+├── init.py               # Point d'entrée avec registre de modèles
+├── registry.py               # Implémentation du registre avec décorateurs
+├── base.py                   # Classes abstraites pour les modèles
+├── unet/                     # Implémentations de U-Net
+│   ├── init.py
+│   ├── basic.py              # U-Net de base
+│   ├── film.py               # U-Net avec FiLM
+│   ├── cbam.py               # U-Net avec CBAM
+│   └── advanced.py           # Implémentations avancées (FilmCBAM, etc.)
+├── blocks/                   # Blocs d'architecture réutilisables
+│   ├── init.py
+│   ├── attention.py          # Mécanismes d'attention (CBAM, etc.)
+│   ├── normalization.py      # Normalisations adaptatives
+│   └── residual.py           # Blocs résiduels
+└── export/                   # Fonctionnalités d'export
+    ├── init.py
+    └── conversion.py         # Conversion vers formats de déploiement
+3. Refactorisation du module training/
+Extraire la logique d'entraînement de forestgaps_dl_u_net_training.py :
+text
+Apply to Objectif de ...
+training/
+├── init.py               # Point d'entrée unifié
+├── trainer.py                # Classe principale d'entraînement
+├── metrics/                  # Métriques et évaluation
+│   ├── init.py
+│   ├── segmentation.py       # Métriques de segmentation
+│   └── classification.py     # Métriques par seuil
+├── loss/                     # Fonctions de perte
+│   ├── init.py
+│   ├── combined.py           # Pertes combinées (Focal+Dice)
+│   └── factory.py            # Création de fonctions de perte
+├── callbacks/                # Système de callbacks
+│   ├── init.py
+│   ├── base.py               # Classe de base des callbacks
+│   ├── logging.py            # Callbacks de journalisation
+│   ├── checkpointing.py      # Sauvegarde des points de contrôle
+│   └── visualization.py      # Visualisation pendant l'entraînement
+└── optimization/             # Optimisation de l'entraînement
+    ├── init.py
+    ├── lr_schedulers.py      # Schedulers de learning rate
+    └── regularization.py     # Techniques de régularisation
+4. Refactorisation du module utils/
+Extraire les fonctions utilitaires des deux scripts :
+text
+Apply to Objectif de ...
+utils/
+├── init.py               # Point d'entrée unifié
+├── visualization/            # Visualisations
+│   ├── init.py
+│   ├── plots.py              # Création de graphiques
+│   ├── maps.py               # Visualisation des cartes
+│   └── tensorboard.py        # Intégration TensorBoard
+├── io/                       # Entrées/sorties
+│   ├── init.py
+│   ├── raster.py             # Opérations sur les rasters
+│   └── serialization.py      # Sérialisation/désérialisation
+└── profiling/                # Profilage des performances
+    ├── init.py
+    └── benchmarks.py         # Outils de benchmarking
+5. Module CLI pour les commandes en ligne
+text
+Apply to Objectif de ...
+cli/
+├── init.py
+├── preprocessing_cli.py      # Interface CLI pour le prétraitement
+└── training_cli.py           # Interface CLI pour l'entraînement
 
 État d'avancement
-
-✅ Terminé: config/, environment/, data/preprocessing/, data/datasets/, data/normalization/
-🔄 En cours: data/loaders/
-⏳ À faire: models/, training/, utils/, cli/
 
 Dépendances entre modules
 
@@ -92,5 +164,3 @@ Gestion de session
 Générer un fichier achievements.md décrivant les fonctionnalités implémentées
 Mettre à jour ce prompt de contexte avec les nouveaux modules terminés
 Documenter les API importantes dans module_interfaces.md
-
-Tâche actuelle : Architectures U-Net et leurs variantes (à implémenter)

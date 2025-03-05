@@ -1,1 +1,0 @@
-# Modules de normalisation adaptative

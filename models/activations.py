@@ -1,1 +1,0 @@
-# Activations modernes (Swish, Mish)
