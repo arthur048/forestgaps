@@ -1,0 +1,1 @@
+# Mécanismes d'attention (CBAM, etc.)

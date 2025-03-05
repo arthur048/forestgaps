@@ -1,0 +1,1 @@
+# Classe Config de base

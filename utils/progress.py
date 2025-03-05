@@ -1,0 +1,1 @@
+# Barres de progression optimisées

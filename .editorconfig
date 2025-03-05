@@ -1,0 +1,17 @@
+# EditorConfig pour forestgaps-dl
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{py,md,yaml,yml}]
+indent_style = space
+indent_size = 4
+
+[*.md]
+# Ne pas supprimer les espaces en fin de ligne dans les fichiers markdown
+# car ils sont utilisés pour forcer les sauts de ligne
+trim_trailing_whitespace = false
