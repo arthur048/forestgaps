@@ -2,15 +2,15 @@
 # Ce fichier contient les paramètres par défaut pour l'entraînement des modèles
 
 # Paramètres de base pour l'entraînement
-BATCH_SIZE: 64  # Taille des batchs pour l'entraînement
+BATCH_SIZE: 32  # Taille des batchs pour l'entraînement
 EPOCHS: 50  # Nombre maximal d'époques
 LEARNING_RATE: 0.001  # Taux d'apprentissage initial
 WEIGHT_DECAY: 0.0001  # Régularisation L2
 
 # Paramètres pour l'optimisation de l'entraînement
-NUM_WORKERS: 8  # Nombre de workers pour le DataLoader
+NUM_WORKERS: 6  # Nombre de workers pour le DataLoader
 PIN_MEMORY: true  # Utiliser pin_memory pour accélérer le transfert vers GPU
-PREFETCH_FACTOR: 50  # Facteur de préchargement pour le DataLoader
+PREFETCH_FACTOR: 20  # Facteur de préchargement pour le DataLoader
 USE_AMP: true  # Utiliser la précision mixte automatique
 USE_GRADIENT_CHECKPOINTING: false  # Économiser de la mémoire GPU
 

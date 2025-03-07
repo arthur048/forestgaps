@@ -256,3 +256,30 @@
 - Optimisation supplémentaire des performances
 - Support pour d'autres formats de données et de modèles
 - Intégration avec des outils de visualisation et de suivi d'expériences externes 
+
+## Conteneurisation Docker
+
+### Infrastructure Docker
+- [x] Analyse automatique des dépendances du projet
+- [x] Création de Dockerfile pour environnement GPU/CUDA
+- [x] Création de Dockerfile.cpu pour environnement CPU
+- [x] Configuration docker-compose avec services spécialisés
+- [x] Scripts auxiliaires (build, run, test, cleanup)
+- [x] Documentation détaillée en français
+
+### Analyse des dépendances
+- [x] Script d'analyse des imports Python du projet
+- [x] Détection des versions installées
+- [x] Génération de requirements.txt optimisé
+
+### Optimisations Docker
+- [x] Double image pour GPU/CPU
+- [x] Isolation des dépendances
+- [x] Volumes pour données, modèles et configurations
+- [x] Configuration CUDA optimisée pour deep learning
+- [x] Construction multi-étapes optimisée
+
+### Facilité d'utilisation
+- [x] Scripts de construction automatisés
+- [x] Scripts d'exécution avec auto-détection GPU
+- [x] Tests automatisés des conteneurs

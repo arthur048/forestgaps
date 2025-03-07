@@ -1,43 +1,41 @@
-# Environnement Google Colab
+# Environnement local
 import os
 import sys
 import subprocess
 import pkg_resources
 import platform
 from typing import Dict, Any, List, Optional
+from pathlib import Path
 
 from forestgaps_dl.environment.base import Environment
 
 
-class ColabEnvironment(Environment):
+class LocalEnvironment(Environment):
     """
-    Classe pour gérer l'environnement Google Colab.
+    Classe pour gérer l'environnement local.
     """
     
     def __init__(self):
-        """Initialise l'environnement Colab."""
-        self.drive_mounted = False
+        """Initialise l'environnement local."""
         self.base_dir = None
         self.gpu_available = False
     
     def setup(self):
         """
-        Configure l'environnement Google Colab.
-        - Monte Google Drive
-        - Installe les dépendances
+        Configure l'environnement local.
+        - Vérifie les dépendances
         - Configure le GPU si disponible
         """
-        print("Configuration de l'environnement Google Colab...")
+        print("Configuration de l'environnement local...")
         
-        # Monter Google Drive
-        drive_mounted = self.mount_drive()
-        if not drive_mounted:
-            print("⚠️ Impossible de monter Google Drive. Le stockage persistant ne sera pas disponible.")
+        # Obtenir le répertoire de base
+        base_dir = self.get_base_dir()
+        print(f"📁 Répertoire de base: {base_dir}")
         
         # Installer les dépendances
         dependencies_installed = self.install_dependencies()
         if not dependencies_installed:
-            print("⚠️ Certaines dépendances n'ont pas pu être installées.")
+            print("⚠️ Certaines dépendances n'ont pas pu être vérifiées ou installées.")
         
         # Configurer le GPU
         gpu_available = self.setup_gpu()
@@ -46,12 +44,11 @@ class ColabEnvironment(Environment):
         else:
             print("⚠️ Aucun GPU disponible. L'exécution sera plus lente.")
         
-        print("✅ Configuration de l'environnement Colab terminée.")
+        print("✅ Configuration de l'environnement local terminée.")
     
     def get_base_dir(self) -> str:
         """
-        Renvoie le répertoire de base pour l'environnement Colab.
-        Si Google Drive est monté, retourne le chemin dans Drive, sinon retourne /content.
+        Renvoie le répertoire de base pour l'environnement local.
         
         Returns:
             Chemin du répertoire de base.
@@ -59,48 +56,39 @@ class ColabEnvironment(Environment):
         if self.base_dir:
             return self.base_dir
         
-        if self.drive_mounted:
-            # Utiliser un chemin standard dans Google Drive
-            self.base_dir = '/content/drive/MyDrive/ForestGaps_DeepLearning'
-            os.makedirs(self.base_dir, exist_ok=True)
+        # Utiliser le répertoire de travail actuel ou le répertoire du script
+        if getattr(sys, 'frozen', False):
+            # Si l'application est compilée (par exemple avec PyInstaller)
+            script_dir = os.path.dirname(sys.executable)
         else:
-            # Utiliser un chemin temporaire
-            self.base_dir = '/content/forestgaps-dl'
-            os.makedirs(self.base_dir, exist_ok=True)
+            # Sinon, utiliser le répertoire du script
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Remonter au répertoire racine du projet (parent du dossier environment)
+        self.base_dir = os.path.abspath(os.path.join(script_dir, os.pardir))
         
         return self.base_dir
     
     def mount_drive(self) -> bool:
         """
-        Monte Google Drive dans Colab.
+        Méthode factice pour la compatibilité avec l'interface.
+        Dans l'environnement local, aucun montage n'est nécessaire.
         
         Returns:
-            True si le montage a réussi, False sinon.
+            True car aucun montage n'est nécessaire.
         """
-        if self.drive_mounted:
-            return True
-        
-        try:
-            from google.colab import drive
-            drive.mount('/content/drive')
-            self.drive_mounted = True
-            print("✅ Google Drive monté avec succès.")
-            return True
-        except Exception as e:
-            print(f"❌ Erreur lors du montage de Google Drive: {str(e)}")
-            self.drive_mounted = False
-            return False
+        return True
     
     def install_dependencies(self, packages: List[str] = None) -> bool:
         """
-        Vérifie que les dépendances nécessaires sont disponibles sans réinstaller.
-        Dans Colab, la plupart des packages sont déjà disponibles par défaut.
+        Vérifie les dépendances nécessaires.
+        Dans l'environnement local, on ne force pas l'installation mais on vérifie seulement.
         
         Args:
             packages: Liste des packages à vérifier. Si None, vérifie les dépendances par défaut.
             
         Returns:
-            True si toutes les dépendances sont disponibles, False sinon.
+            True si toutes les dépendances sont présentes, False sinon.
         """
         if packages is None:
             packages = [
@@ -118,37 +106,25 @@ class ColabEnvironment(Environment):
         
         missing_packages = []
         for package in packages:
-            # Extraire le nom de base du package sans version
-            base_package = package.split('==')[0].split('>=')[0].split('<=')[0]
-            
+            package_name = package.split('==')[0].split('>=')[0]
             try:
                 # Vérifier si le package est déjà installé
-                pkg_resources.get_distribution(base_package)
-                print(f"✅ {base_package} est déjà installé.")
+                pkg_resources.get_distribution(package_name)
             except pkg_resources.DistributionNotFound:
-                # Ajouter à la liste des packages manquants
                 missing_packages.append(package)
-                print(f"⚠️ {base_package} n'est pas installé.")
         
-        # Installer uniquement les packages manquants
         if missing_packages:
-            print(f"📦 Installation des packages manquants: {', '.join(missing_packages)}")
-            try:
-                # Installation silencieuse des packages manquants
-                cmd = [sys.executable, "-m", "pip", "install", "-q"] + missing_packages
-                subprocess.check_call(cmd)
-                print("✅ Tous les packages manquants ont été installés.")
-                return True
-            except subprocess.CalledProcessError as e:
-                print(f"❌ Échec de l'installation des packages: {str(e)}")
-                return False
+            print("⚠️ Packages manquants: " + ", ".join(missing_packages))
+            print("Vous pouvez les installer avec la commande:")
+            print(f"pip install {' '.join(missing_packages)}")
+            return False
         else:
-            print("✅ Toutes les dépendances sont déjà installées.")
+            print("✅ Toutes les dépendances sont installées.")
             return True
     
     def setup_gpu(self) -> bool:
         """
-        Configure le GPU dans Colab si disponible.
+        Configure le GPU si disponible.
         
         Returns:
             True si un GPU est disponible et a été configuré, False sinon.
@@ -166,14 +142,17 @@ class ColabEnvironment(Environment):
                 
                 # Définir les paramètres pour optimiser l'utilisation du GPU
                 torch.backends.cudnn.benchmark = True
-                torch.backends.cudnn.deterministic = False
                 
                 self.gpu_available = True
                 return True
             else:
-                print("❌ Aucun GPU détecté dans cet environnement Colab.")
+                print("ℹ️ Aucun GPU détecté. Utilisation du CPU uniquement.")
                 self.gpu_available = False
                 return False
+        except ImportError:
+            print("❌ PyTorch n'est pas installé ou ne prend pas en charge CUDA.")
+            self.gpu_available = False
+            return False
         except Exception as e:
             print(f"❌ Erreur lors de la configuration du GPU: {str(e)}")
             self.gpu_available = False
@@ -187,10 +166,11 @@ class ColabEnvironment(Environment):
             Dictionnaire contenant des informations sur l'environnement.
         """
         info = {
-            "environment_type": "Google Colab",
+            "environment_type": "Local",
             "python_version": platform.python_version(),
             "system": platform.system(),
-            "drive_mounted": self.drive_mounted,
+            "os_version": platform.version(),
+            "processor": platform.processor(),
             "base_dir": self.get_base_dir(),
             "gpu_available": self.gpu_available
         }
