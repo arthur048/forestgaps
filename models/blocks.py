@@ -1,1 +1,0 @@
-# Blocs réutilisables (ResidualBlock, etc.)

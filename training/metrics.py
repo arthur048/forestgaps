@@ -1,1 +1,0 @@
-# Classes de métriques d'évaluation

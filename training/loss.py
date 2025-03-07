@@ -1,1 +1,0 @@
-# Fonctions de perte personnalisées

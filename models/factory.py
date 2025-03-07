@@ -1,1 +1,0 @@
-# Factory pattern avancé avec registre

@@ -1,1 +1,0 @@
-# Fonctions d'I/O

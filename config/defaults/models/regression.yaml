@@ -1,0 +1,42 @@
+# Configuration par défaut pour les modèles U-Net de régression
+
+# Configuration pour U-Net de régression de base
+regression_unet:
+  model_type: "regression_unet"
+  model_params:
+    in_channels: 1
+    out_channels: 1
+    init_features: 64
+    bilinear: true
+    dropout_rate: 0.2
+
+# Configuration pour U-Net de régression avec conditionnement par seuil
+regression_unet_threshold:
+  model_type: "regression_unet_threshold"
+  model_params:
+    in_channels: 1
+    out_channels: 1
+    init_features: 64
+    condition_dim: 64
+    bilinear: true
+    dropout_rate: 0.2
+
+# Configuration pour U-Net de régression avec plus de features
+regression_unet_large:
+  model_type: "regression_unet"
+  model_params:
+    in_channels: 1
+    out_channels: 1
+    init_features: 128
+    bilinear: true
+    dropout_rate: 0.3
+
+# Configuration pour U-Net de régression avec moins de dropout
+regression_unet_low_dropout:
+  model_type: "regression_unet"
+  model_params:
+    in_channels: 1
+    out_channels: 1
+    init_features: 64
+    bilinear: true
+    dropout_rate: 0.1 

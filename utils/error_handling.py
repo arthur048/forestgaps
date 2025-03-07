@@ -1,1 +1,0 @@
-# Gestion standardisée des erreurs
