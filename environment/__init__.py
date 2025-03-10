@@ -1,14 +1,14 @@
 """
-Module de gestion d'environnement pour le projet forestgaps-dl.
+Module de gestion d'environnement pour le projet forestgaps.
 
 Ce module fournit des classes pour détecter et configurer automatiquement
 l'environnement d'exécution (Colab ou local).
 """
 
 import sys
-from forestgaps_dl.environment.base import Environment
-from forestgaps_dl.environment.local import LocalEnvironment
-from forestgaps_dl.environment.colab import ColabEnvironment
+from .base import Environment
+from .local import LocalEnvironment
+from .colab import ColabEnvironment
 
 
 def detect_environment():

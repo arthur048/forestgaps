@@ -4,7 +4,7 @@ include COLAB_README.md
 include __version__.py
 include colab_install.py
 
-recursive-include forestgaps_dl *.py
+recursive-include forestgaps *.py
 recursive-include config *.yaml *.yml *.json
 recursive-include examples *.py *.ipynb
 

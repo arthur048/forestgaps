@@ -16,10 +16,10 @@ import rasterio
 from tqdm import tqdm
 from pathlib import Path
 
-from forestgaps_dl.environment import setup_environment
-from forestgaps_dl.config import ConfigurationManager, load_default_config
-from forestgaps_dl.utils.io.serialization import load_model as load_model_checkpoint
-from forestgaps_dl.models.registry import ModelRegistry
+from forestgaps.environment import setup_environment
+from forestgaps.config import ConfigurationManager, load_default_config
+from forestgaps.utils.io.serialization import load_model as load_model_checkpoint
+from forestgaps.models.registry import ModelRegistry
 
 from .utils.geospatial import load_raster, save_raster, preserve_metadata
 from .utils.processing import preprocess_dsm, postprocess_prediction, batch_predict

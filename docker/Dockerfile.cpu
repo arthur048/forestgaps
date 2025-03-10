@@ -1,9 +1,9 @@
-# Dockerfile CPU pour ForestGaps-DL
+# Dockerfile CPU pour ForestGaps
 # Image de base Python sans CUDA
 FROM python:3.9-slim
 
 LABEL maintainer="Arthur <arthurvdl048@email.com>"
-LABEL description="ForestGaps-DL: Version CPU - Bibliothèque pour la détection et l'analyse des trouées forestières"
+LABEL description="ForestGaps: Version CPU - Bibliothèque pour la détection et l'analyse des trouées forestières"
 
 # Définition des arguments et variables d'environnement
 ARG DEBIAN_FRONTEND=noninteractive
@@ -42,5 +42,5 @@ RUN pip install -e .
 VOLUME ["/app/data", "/app/models"]
 
 # Point d'entrée par défaut
-ENTRYPOINT ["python", "-m", "forestgaps_dl"]
+ENTRYPOINT ["python", "-m", "forestgaps"]
 CMD ["--help"] 

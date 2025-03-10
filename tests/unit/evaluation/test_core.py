@@ -9,7 +9,7 @@ import pandas as pd
 import torch
 from unittest.mock import patch, MagicMock
 
-from forestgaps_dl.evaluation.core import EvaluationConfig, EvaluationResult, ExternalEvaluator
+from forestgaps.evaluation.core import EvaluationConfig, EvaluationResult, ExternalEvaluator
 
 
 class TestEvaluationConfig:
@@ -136,7 +136,7 @@ class TestEvaluationResult:
         assert "iou" in df.columns
         assert len(df) == 4  # 3 thresholds + overall
         
-    @patch("forestgaps_dl.evaluation.core.save_metrics_to_csv")
+    @patch("forestgaps.evaluation.core.save_metrics_to_csv")
     def test_save_metrics(self, mock_save_metrics, sample_result):
         """Vérifier que la méthode save_metrics fonctionne correctement."""
         output_path = "test/output/metrics.csv"
@@ -147,7 +147,7 @@ class TestEvaluationResult:
         assert args[0] == sample_result.get_metrics_dataframe()
         assert args[1] == output_path
         
-    @patch("forestgaps_dl.evaluation.core.visualize_metrics")
+    @patch("forestgaps.evaluation.core.visualize_metrics")
     def test_visualize(self, mock_visualize, sample_result):
         """Vérifier que la méthode visualize fonctionne correctement."""
         sample_result.visualize()
@@ -157,7 +157,7 @@ class TestEvaluationResult:
         assert args[0] == sample_result.predictions
         assert args[1] == sample_result.ground_truth
         
-    @patch("forestgaps_dl.evaluation.core.generate_evaluation_report")
+    @patch("forestgaps.evaluation.core.generate_evaluation_report")
     def test_generate_report(self, mock_generate_report, sample_result):
         """Vérifier que la méthode generate_report fonctionne correctement."""
         output_dir = "test/output"
@@ -190,7 +190,7 @@ class TestExternalEvaluator:
     @pytest.fixture
     def external_evaluator(self, mock_model):
         """Créer un évaluateur externe pour les tests."""
-        with patch("forestgaps_dl.evaluation.core.torch.load", return_value=mock_model):
+        with patch("forestgaps.evaluation.core.torch.load", return_value=mock_model):
             evaluator = ExternalEvaluator(
                 model_path="test/model.pt",
                 config=EvaluationConfig(),
@@ -205,8 +205,8 @@ class TestExternalEvaluator:
         assert isinstance(external_evaluator.config, EvaluationConfig)
         assert external_evaluator.model is not None
         
-    @patch("forestgaps_dl.evaluation.core.load_raster")
-    @patch("forestgaps_dl.evaluation.core.calculate_metrics")
+    @patch("forestgaps.evaluation.core.load_raster")
+    @patch("forestgaps.evaluation.core.calculate_metrics")
     def test_create_ground_truth(self, mock_calculate_metrics, mock_load_raster, external_evaluator):
         """Vérifier que la méthode _create_ground_truth fonctionne correctement."""
         # Configurer les mocks
@@ -228,9 +228,9 @@ class TestExternalEvaluator:
         # Vérifier que les mocks ont été appelés
         mock_load_raster.assert_called_once_with("test/chm.tif")
         
-    @patch("forestgaps_dl.evaluation.core.ExternalEvaluator._create_ground_truth")
-    @patch("forestgaps_dl.evaluation.core.InferenceManager")
-    @patch("forestgaps_dl.evaluation.core.calculate_metrics")
+    @patch("forestgaps.evaluation.core.ExternalEvaluator._create_ground_truth")
+    @patch("forestgaps.evaluation.core.InferenceManager")
+    @patch("forestgaps.evaluation.core.calculate_metrics")
     def test_evaluate(self, mock_calculate_metrics, mock_inference_manager, 
                      mock_create_ground_truth, external_evaluator):
         """Vérifier que la méthode evaluate fonctionne correctement."""
@@ -269,8 +269,8 @@ class TestExternalEvaluator:
         mock_inference_manager_instance.predict.assert_called_once()
         assert mock_calculate_metrics.call_count >= 1
         
-    @patch("forestgaps_dl.evaluation.core.ExternalEvaluator.evaluate")
-    @patch("forestgaps_dl.evaluation.core.glob.glob")
+    @patch("forestgaps.evaluation.core.ExternalEvaluator.evaluate")
+    @patch("forestgaps.evaluation.core.glob.glob")
     def test_evaluate_site(self, mock_glob, mock_evaluate, external_evaluator):
         """Vérifier que la méthode evaluate_site fonctionne correctement."""
         # Configurer les mocks

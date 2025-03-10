@@ -19,25 +19,25 @@ class Environment(ABC):
         try:
             # Méthode principale: Vérifier si le module 'google.colab' est disponible
             if 'google.colab' in sys.modules or os.environ.get('COLAB_GPU', '') == '1':
-                from forestgaps_dl.environment.colab import ColabEnvironment
+                from forestgaps.environment.colab import ColabEnvironment
                 print("✅ Environnement Google Colab détecté.")
                 return ColabEnvironment()
             
             # Méthode alternative: Vérifier le path système pour identifier Colab
             if '/usr/local/lib/python3' in sys.path and '/content' in os.getcwd():
-                from forestgaps_dl.environment.colab import ColabEnvironment
+                from forestgaps.environment.colab import ColabEnvironment
                 print("✅ Environnement Google Colab détecté (via path système).")
                 return ColabEnvironment()
             
             # Par défaut, utiliser l'environnement local
-            from forestgaps_dl.environment.local import LocalEnvironment
+            from forestgaps.environment.local import LocalEnvironment
             print("✅ Environnement local détecté.")
             return LocalEnvironment()
         except Exception as e:
             # Si une erreur se produit pendant la détection, utiliser l'environnement local par défaut
             print(f"⚠️ Erreur lors de la détection de l'environnement: {str(e)}")
             print("⚠️ Utilisation de l'environnement local par défaut.")
-            from forestgaps_dl.environment.local import LocalEnvironment
+            from forestgaps.environment.local import LocalEnvironment
             return LocalEnvironment()
     
     @abstractmethod

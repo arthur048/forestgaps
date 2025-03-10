@@ -81,8 +81,8 @@ import sys
 import os
 
 try:
-    import forestgaps_dl
-    print('ForestGaps-DL importé avec succès!')
+    import forestgaps
+    print('ForestGaps importé avec succès!')
     sys.exit(0)
 except ImportError as e:
     print('Erreur d'importation:', str(e))

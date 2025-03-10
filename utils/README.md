@@ -1,130 +1,90 @@
-# Module `utils`
+# Module d'utilitaires pour ForestGaps
 
-## Vue d'ensemble
+Ce module fournit des fonctions et classes utilitaires utilisées à travers le package, organisées par domaine fonctionnel.
 
-Le module `utils` fournit des fonctionnalités communes utilisées dans l'ensemble du package ForestGaps-DL, notamment pour la visualisation, les entrées/sorties, le profilage et la gestion des erreurs.
+## Structure du module
 
-## Structure
+- **visualization/** : Visualisation des données et résultats
+- **io/** : Opérations d'entrée/sortie
+- **profiling/** : Outils de profilage
+- **errors.py** : Gestion hiérarchique des erreurs
 
-```
-utils/
-├── __init__.py               # Point d'entrée unifié
-├── errors.py                 # Système hiérarchique d'exceptions
-├── visualization/            # Visualisations
-│   ├── __init__.py
-│   ├── plots.py              # Création de graphiques
-│   ├── maps.py               # Visualisation des cartes
-│   └── tensorboard.py        # Intégration TensorBoard
-├── io/                       # Entrées/sorties
-│   ├── __init__.py
-│   ├── raster.py             # Opérations sur les rasters
-│   └── serialization.py      # Sérialisation/désérialisation
-└── profiling/                # Profilage des performances
-    ├── __init__.py
-    └── benchmarks.py         # Outils de benchmarking
-```
+## Sous-modules
 
-## Fonctionnalités principales
+### Module de visualisation (`visualization`)
 
-### Gestion des erreurs (`errors.py`)
-
-- Système hiérarchique d'exceptions personnalisées pour une gestion précise des erreurs
-- Classes d'erreurs spécifiques pour chaque module (données, modèles, entraînement, etc.)
-- Gestionnaire d'erreurs centralisé pour la journalisation et l'affichage des erreurs
-
-### Visualisation (`visualization/`)
-
-- **plots.py**: Fonctions pour créer des graphiques (évolution des métriques, métriques par seuil, matrices de confusion)
-- **maps.py**: Fonctions pour visualiser les données géospatiales (DSM avec trouées, prédictions, comparaisons)
-- **tensorboard.py**: Intégration avec TensorBoard pour le suivi des expériences, avec un système de monitoring centralisé
-
-### Entrées/sorties (`io/`)
-
-- **raster.py**: Fonctions pour manipuler les données raster (chargement, sauvegarde, normalisation, statistiques)
-- **serialization.py**: Fonctions pour sérialiser et désérialiser des objets (JSON, YAML, pickle, modèles PyTorch, etc.)
-
-### Profilage (`profiling/`)
-
-- **benchmarks.py**: Outils pour mesurer et analyser les performances (temps d'exécution, transferts CPU/GPU, optimisation des DataLoaders)
-
-## Utilisation
-
-### Gestion des erreurs
+Fonctions pour visualiser les données géospatiales, les prédictions et les résultats d'évaluation.
 
 ```python
-from utils.errors import DataProcessingError, ErrorHandler
+from forestgaps.utils.visualization import plots
 
-# Initialiser le gestionnaire d'erreurs
-error_handler = ErrorHandler(log_file="errors.log", verbose=True)
+# Visualiser un fichier raster
+plots.plot_raster("path/to/dsm.tif", title="Modèle numérique de surface")
 
-try:
-    # Code susceptible de générer une erreur
-    process_data()
-except Exception as e:
-    # Gérer l'erreur
-    error_handler.handle(e, context={'operation': 'process_data'})
+# Comparer prédiction et vérité terrain
+plots.plot_comparison(
+    prediction="path/to/prediction.tif",
+    ground_truth="path/to/ground_truth.tif",
+    title="Comparaison"
+)
 ```
 
-### Visualisation
+### Module d'entrée/sortie (`io`)
+
+Fonctions pour la lecture et l'écriture de fichiers, la gestion des chemins et les opérations de système de fichiers.
 
 ```python
-from utils.visualization.plots import visualize_metrics_by_threshold
-from utils.visualization.maps import visualize_dsm_with_gaps
-from utils.visualization.tensorboard import MonitoringSystem
+from forestgaps.utils.io import serialization, raster
 
-# Créer un système de monitoring
-monitoring = MonitoringSystem(log_dir="logs")
+# Charger un modèle
+model = serialization.load_model("path/to/model.pt")
 
-# Visualiser des métriques
-visualize_metrics_by_threshold(metrics, save_path="metrics.png")
+# Sauvegarder des résultats
+serialization.save_json(results, "path/to/results.json")
 
-# Visualiser un DSM avec des trouées
-visualize_dsm_with_gaps(dsm, gaps_mask, save_path="dsm_with_gaps.png")
+# Charger un raster
+data, metadata = raster.load_raster("path/to/dsm.tif")
 ```
 
-### Entrées/sorties
+### Module de profilage (`profiling`)
+
+Outils pour mesurer les performances et la consommation de ressources des différentes parties du code.
 
 ```python
-from utils.io.raster import load_raster, normalize_raster
-from utils.io.serialization import save_json, load_model
+from forestgaps.utils.profiling import benchmarks
 
-# Charger et normaliser un raster
-data, metadata = load_raster("dsm.tif")
-normalized_data = normalize_raster(data, method="minmax")
-
-# Sauvegarder des données au format JSON
-save_json(metrics, "metrics.json")
-
-# Charger un modèle PyTorch
-checkpoint = load_model("model.pt", model, optimizer, device)
-```
-
-### Profilage
-
-```python
-from utils.profiling.benchmarks import timeit, optimize_dataloader_params
-
-# Mesurer le temps d'exécution d'une fonction
-@timeit
-def process_data():
-    # Traitement des données
+# Mesurer le temps d'exécution
+with benchmarks.Timer("Prétraitement") as timer:
+    # Code à chronométrer
     pass
 
-# Optimiser les paramètres d'un DataLoader
-optimal_params = optimize_dataloader_params(dataset, batch_size=32)
+print(f"Temps écoulé: {timer.elapsed:.2f} secondes")
+
+# Comparer les performances de différentes implémentations
+results = benchmarks.compare_functions(
+    functions=[func1, func2, func3],
+    input_data=test_data,
+    num_runs=10
+)
 ```
 
-## Intégration avec les autres modules
+### Module de gestion d'erreurs (`errors`)
 
-- **config**: Utilise les configurations validées pour paramétrer les fonctionnalités
-- **environment**: S'adapte à l'environnement d'exécution (local ou Colab)
-- **data**: Fournit des fonctions pour manipuler les données raster et visualiser les résultats
-- **models**: Offre des fonctions pour sérialiser et désérialiser les modèles
-- **training**: Fournit des outils de visualisation et de monitoring pour l'entraînement
+Hiérarchie d'exceptions personnalisées pour une gestion d'erreurs plus précise et informative.
 
-## Améliorations futures
+```python
+from forestgaps.utils.errors import ForestGapsError, DataError, ModelError
 
-- Ajout de tests unitaires pour chaque fonction
-- Optimisation des performances des fonctions de visualisation pour de grands ensembles de données
-- Intégration avec d'autres outils de visualisation (Weights & Biases, MLflow, etc.)
-- Ajout de fonctionnalités de profilage plus avancées (mémoire, GPU, etc.) 
+# Lever une exception spécifique
+if not os.path.exists(config_path):
+    raise ConfigError(f"Le fichier de configuration '{config_path}' n'existe pas")
+
+try:
+    # Traitement...
+except Exception as e:
+    raise DataProcessingError(f"Erreur lors du traitement de l'image: {str(e)}")
+```
+
+## Utilisation avancée
+
+Pour des cas d'utilisation plus avancés et des exemples détaillés, consultez la documentation de chaque sous-module. 

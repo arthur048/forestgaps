@@ -6,7 +6,7 @@ with open('__version__.py') as f:
     exec(f.read())
 
 setup(
-    name="forestgaps-dl",
+    name="forestgaps",
     version=__version__,
     packages=find_packages(),
     package_data={
@@ -32,7 +32,7 @@ setup(
     author="Arthur",
     author_email="arthurvdl048@email.com",
     description="Bibliothèque PyTorch pour la détection et l'analyse des trouées forestières avec le deep learning.",
-    url="https://github.com/arthur048/forestgaps-dl",
+    url="https://github.com/arthur048/forestgaps",
     python_requires='>=3.8',
     classifiers=[
         'Development Status :: 4 - Beta',
