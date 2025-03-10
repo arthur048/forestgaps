@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-Le module d'inférence de ForestGaps-DL fournit une infrastructure complète pour appliquer des modèles entraînés à de nouvelles données DSM. Il permet d'effectuer des prédictions sur des données non vues pendant l'entraînement, de visualiser les résultats et de sauvegarder les prédictions dans différents formats.
+Le module d'inférence de ForestGaps fournit une infrastructure complète pour appliquer des modèles entraînés à de nouvelles données DSM. Il permet d'effectuer des prédictions sur des données non vues pendant l'entraînement, de visualiser les résultats et de sauvegarder les prédictions dans différents formats.
 
 ## Architecture
 
@@ -105,7 +105,7 @@ Le module d'inférence s'intègre avec :
 ## Exemples d'utilisation
 
 ```python
-from forestgaps_dl.inference import run_inference, run_batch_inference
+from forestgaps.inference import run_inference, run_batch_inference
 
 # Inférence simple
 result = run_inference(

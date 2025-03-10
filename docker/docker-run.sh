@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script d'exécution des conteneurs Docker pour ForestGaps-DL
+# Script d'exécution des conteneurs Docker pour ForestGaps
 
 # Définition des couleurs pour une meilleure lisibilité
 BLUE='\033[0;34m'
@@ -10,7 +10,7 @@ NC='\033[0m' # No Color
 
 # Afficher l'aide
 show_help() {
-    echo -e "${BLUE}ForestGaps-DL Docker Runner${NC}"
+    echo -e "${BLUE}ForestGaps Docker Runner${NC}"
     echo -e "Usage: $0 [OPTIONS] COMMAND [ARGS...]"
     echo
     echo -e "Options:"
@@ -97,11 +97,11 @@ fi
 if [ "$USE_GPU" = "yes" ]; then
     echo -e "${GREEN}Utilisation de l'image GPU...${NC}"
     DOCKER_CMD="docker run --rm --gpus all -it $VOLUMES"
-    DOCKER_IMG="forestgaps-dl:latest"
+    DOCKER_IMG="forestgaps:latest"
 else
     echo -e "${YELLOW}Utilisation de l'image CPU...${NC}"
     DOCKER_CMD="docker run --rm -it $VOLUMES"
-    DOCKER_IMG="forestgaps-dl:cpu"
+    DOCKER_IMG="forestgaps:cpu"
 fi
 
 # Monter les volumes par défaut

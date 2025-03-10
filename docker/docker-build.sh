@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script de construction des images Docker pour ForestGaps-DL
+# Script de construction des images Docker pour ForestGaps
 
 # Définition des couleurs pour une meilleure lisibilité
 BLUE='\033[0;34m'
@@ -35,18 +35,18 @@ fi
 
 # Construction de l'image GPU
 echo -e "${BLUE}Construction de l'image Docker avec support GPU...${NC}"
-docker build -t forestgaps-dl:latest -f Dockerfile .
+docker build -t forestgaps:latest -f Dockerfile .
 
 # Construction de l'image CPU
 echo -e "${BLUE}Construction de l'image Docker CPU...${NC}"
-docker build -t forestgaps-dl:cpu -f Dockerfile.cpu .
+docker build -t forestgaps:cpu -f Dockerfile.cpu .
 
 # Vérification des images construites
 echo -e "${GREEN}Images Docker construites avec succès!${NC}"
-echo -e "${BLUE}Liste des images ForestGaps-DL:${NC}"
-docker images | grep forestgaps-dl
+echo -e "${BLUE}Liste des images ForestGaps:${NC}"
+docker images | grep forestgaps
 
 echo -e "\n${GREEN}Construction terminée. Vous pouvez maintenant utiliser:${NC}"
-echo -e "  - ${YELLOW}docker run --gpus all forestgaps-dl:latest${NC} (avec GPU)"
-echo -e "  - ${YELLOW}docker run forestgaps-dl:cpu${NC} (sans GPU)"
+echo -e "  - ${YELLOW}docker run --gpus all forestgaps:latest${NC} (avec GPU)"
+echo -e "  - ${YELLOW}docker run forestgaps:cpu${NC} (sans GPU)"
 echo -e "  - ${YELLOW}docker-compose up <service>${NC} (avec docker-compose)" 

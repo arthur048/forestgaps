@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-Le module d'évaluation de ForestGaps-DL fournit une infrastructure complète pour évaluer les performances des modèles entraînés sur des paires DSM/CHM indépendantes. Il permet de calculer des métriques détaillées, de générer des rapports d'évaluation complets et de comparer différents modèles.
+Le module d'évaluation de ForestGaps fournit une infrastructure complète pour évaluer les performances des modèles entraînés sur des paires DSM/CHM indépendantes. Il permet de calculer des métriques détaillées, de générer des rapports d'évaluation complets et de comparer différents modèles.
 
 ## Architecture
 
@@ -129,7 +129,7 @@ Le module d'évaluation s'intègre avec :
 ## Exemples d'utilisation
 
 ```python
-from forestgaps_dl.evaluation import evaluate_model, evaluate_site, compare_models
+from forestgaps.evaluation import evaluate_model, evaluate_site, compare_models
 
 # Évaluation simple
 result = evaluate_model(

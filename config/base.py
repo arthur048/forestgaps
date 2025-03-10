@@ -8,7 +8,7 @@ from typing import Dict, Any, Optional, List, Union
 
 class Config:
     """
-    Classe de configuration de base pour le projet forestgaps-dl.
+    Classe de configuration de base pour le projet forestgaps.
     
     Cette classe fournit les fonctionnalités de base pour charger et sauvegarder
     des configurations à partir de fichiers YAML ou JSON.

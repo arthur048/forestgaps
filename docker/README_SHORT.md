@@ -1,6 +1,6 @@
-# Docker pour ForestGaps-DL
+# Docker pour ForestGaps
 
-ForestGaps-DL est désormais disponible en tant que conteneur Docker, facilitant son déploiement et son utilisation sur différentes plateformes.
+ForestGaps est désormais disponible en tant que conteneur Docker, facilitant son déploiement et son utilisation sur différentes plateformes.
 
 ## Fonctionnalités principales
 

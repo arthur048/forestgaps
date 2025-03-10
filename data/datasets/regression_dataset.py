@@ -15,9 +15,9 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
 
-from forestgaps_dl.data.normalization import normalize_data
-from forestgaps_dl.data.datasets.transforms import create_transform_pipeline
-from forestgaps_dl.utils.errors import DataError
+from forestgaps.data.normalization import normalize_data
+from forestgaps.data.datasets.transforms import create_transform_pipeline
+from forestgaps.utils.errors import DataError
 
 logger = logging.getLogger(__name__)
 

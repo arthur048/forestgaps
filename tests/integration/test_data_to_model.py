@@ -12,11 +12,11 @@ import torch
 import numpy as np
 from unittest.mock import patch, MagicMock
 
-from forestgaps_dl.config import ConfigurationManager
-from forestgaps_dl.data.datasets import GapDataset
-from forestgaps_dl.data.loaders import create_data_loaders
-from forestgaps_dl.models import create_model, ModelRegistry
-from forestgaps_dl.models.unet import UNet
+from forestgaps.config import ConfigurationManager
+from forestgaps.data.datasets import GapDataset
+from forestgaps.data.loaders import create_data_loaders
+from forestgaps.models import create_model, ModelRegistry
+from forestgaps.models.unet import UNet
 
 # ===================================================================================================
 # Fixtures pour les tests d'intégration
@@ -132,7 +132,7 @@ class TestDataToModel:
         dataset = mock_dataset_factory()
         
         # Patcher la méthode GapDataset pour retourner notre dataset simulé
-        with patch('forestgaps_dl.data.loaders.GapDataset', return_value=dataset):
+        with patch('forestgaps.data.loaders.GapDataset', return_value=dataset):
             # Créer les dataloaders
             dataloaders = create_data_loaders(
                 config=mock_config,
@@ -145,7 +145,7 @@ class TestDataToModel:
             assert "val" in dataloaders
             assert "test" in dataloaders
     
-    @patch('forestgaps_dl.data.datasets.GapDataset.__getitem__')
+    @patch('forestgaps.data.datasets.GapDataset.__getitem__')
     def test_model_forward_pass(self, mock_getitem, mock_config):
         """Tester l'intégration du modèle avec les données du Dataset."""
         # Enregistrer un modèle UNet de test

@@ -1,4 +1,4 @@
-# Module d'évaluation pour ForestGaps-DL
+# Module d'évaluation pour ForestGaps
 
 Ce module fournit les fonctionnalités nécessaires pour évaluer les modèles entraînés sur des paires DSM/CHM indépendantes. Il permet de calculer des métriques détaillées de performance, de générer des rapports d'évaluation complets et de comparer différents modèles.
 
@@ -63,7 +63,7 @@ Gère le processus d'évaluation complet :
 ### Évaluation sur une paire DSM/CHM
 
 ```python
-from forestgaps_dl.evaluation import evaluate_model
+from forestgaps.evaluation import evaluate_model
 
 # Évaluer un modèle sur une paire DSM/CHM
 result = evaluate_model(
@@ -88,7 +88,7 @@ result.visualize()
 ### Évaluation sur un site complet
 
 ```python
-from forestgaps_dl.evaluation import evaluate_site
+from forestgaps.evaluation import evaluate_site
 
 # Évaluer un modèle sur un site complet
 result = evaluate_site(
@@ -112,7 +112,7 @@ result.generate_report("path/to/site_report")
 ### Évaluation sur plusieurs sites
 
 ```python
-from forestgaps_dl.evaluation import evaluate_model_on_sites
+from forestgaps.evaluation import evaluate_model_on_sites
 
 # Configuration des sites
 sites_config = {
@@ -151,7 +151,7 @@ if "aggregated" in results:
 ### Comparaison de modèles
 
 ```python
-from forestgaps_dl.evaluation import compare_models
+from forestgaps.evaluation import compare_models
 
 # Modèles à comparer
 model_paths = {
@@ -178,7 +178,7 @@ for model_name, result in results.items():
 ## Configuration avancée
 
 ```python
-from forestgaps_dl.evaluation import ExternalEvaluator, EvaluationConfig
+from forestgaps.evaluation import ExternalEvaluator, EvaluationConfig
 
 # Configuration personnalisée
 config = EvaluationConfig(
@@ -211,7 +211,7 @@ result = evaluator.evaluate(
 
 ## Intégration avec d'autres modules
 
-Le module d'évaluation s'intègre avec d'autres modules de ForestGaps-DL :
+Le module d'évaluation s'intègre avec d'autres modules de ForestGaps :
 
 - **models** : Utilise les modèles entraînés pour l'évaluation
 - **inference** : Utilise les fonctionnalités d'inférence pour générer des prédictions

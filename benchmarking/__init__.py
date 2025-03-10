@@ -1,5 +1,5 @@
 """
-Module de benchmarking pour la comparaison des modèles ForestGaps-DL.
+Module de benchmarking pour la comparaison des modèles ForestGaps.
 
 Ce module fournit des outils pour comparer systématiquement différentes 
 architectures de modèles et configurations d'entraînement pour la 

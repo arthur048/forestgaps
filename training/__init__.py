@@ -1,5 +1,5 @@
 """
-Module d'entraînement pour le projet forestgaps-dl.
+Module d'entraînement pour le projet forestgaps.
 
 Ce module fournit des classes et des fonctions pour l'entraînement des modèles de segmentation
 pour la détection des trouées forestières.

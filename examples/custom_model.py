@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Exemple de création d'un modèle personnalisé pour ForestGaps-DL.
+Exemple de création d'un modèle personnalisé pour ForestGaps.
 
 Ce script montre comment créer, enregistrer et utiliser un modèle
 personnalisé en exploitant le système de registre des modèles.
@@ -20,9 +20,9 @@ import logging
 # Assurer que le package est dans le PATH
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from forestgaps_dl.models.registry import ModelRegistry, register_model
-from forestgaps_dl.models.blocks import ResidualBlock
-from forestgaps_dl.environment import setup_environment
+from forestgaps.models.registry import ModelRegistry, register_model
+from forestgaps.models.blocks import ResidualBlock
+from forestgaps.environment import setup_environment
 
 # ===================================================================================================
 # CRÉATION D'UN MODÈLE PERSONNALISÉ

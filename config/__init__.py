@@ -1,5 +1,5 @@
 """
-Module de configuration pour le projet forestgaps-dl.
+Module de configuration pour le projet forestgaps.
 
 Ce module fournit des classes et des fonctions pour gérer les configurations
 du projet, notamment pour le traitement des données, les modèles et l'entraînement.

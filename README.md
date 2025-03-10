@@ -1,16 +1,16 @@
-# ForestGaps-DL
+# ForestGaps
 
 ![Version](https://img.shields.io/badge/version-0.1.1-blue)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-**ForestGaps-DL** est une bibliothèque Python pour la détection et l'analyse automatique des trouées forestières en utilisant le deep learning.
+**ForestGaps** est une bibliothèque Python pour la détection et l'analyse automatique des trouées forestières en utilisant le deep learning.
 
 [English version](#english-version)
 
 ## Présentation
 
-ForestGaps-DL permet d'analyser des modèles numériques de surface (DSM) et de hauteur de canopée (CHM) pour :
+ForestGaps permet d'analyser des modèles numériques de surface (DSM) et de hauteur de canopée (CHM) pour :
 - **Identifier** précisément les trouées dans la canopée forestière
 - **Évaluer** leurs caractéristiques géométriques
 - **Comparer** les performances de différentes approches d'apprentissage profond
@@ -39,11 +39,11 @@ La bibliothèque est compatible à la fois avec un environnement local et Google
 
 ```bash
 # Installation depuis GitHub
-pip install git+https://github.com/arthur048/forestgaps-dl.git
+pip install git+https://github.com/arthur048/forestgaps.git
 
 # Installation en mode développement (après clone)
-git clone https://github.com/arthur048/forestgaps-dl.git
-cd forestgaps-dl
+git clone https://github.com/arthur048/forestgaps.git
+cd forestgaps
 pip install -e .
 ```
 
@@ -51,7 +51,7 @@ pip install -e .
 
 ```python
 # Méthode recommandée : script d'installation optimisé
-!wget -O colab_install.py https://raw.githubusercontent.com/arthur048/forestgaps-dl/main/colab_install.py
+!wget -O colab_install.py https://raw.githubusercontent.com/arthur048/forestgaps/main/colab_install.py
 %run colab_install.py
 
 # Redémarrer le runtime puis :
@@ -171,7 +171,7 @@ results = compare_models(
 
 ## Utilisation Docker
 
-ForestGaps-DL peut être utilisé via Docker pour garantir un environnement cohérent et portable :
+ForestGaps peut être utilisé via Docker pour garantir un environnement cohérent et portable :
 
 ```bash
 # Construire les images Docker
@@ -192,15 +192,6 @@ Pour une documentation complète de chaque module :
 - [Module Inference](inference/README.md) - Inférence avec modèles entraînés
 
 Une documentation technique complète pour les LLM est disponible dans [context_llm.md](context_llm.md).
-
-## Projet d'extension
-
-ForestGaps-DL est en développement actif. Voici nos principaux axes de développement :
-
-- Support pour d'autres types de données géospatiales (Sentinel-2, LiDAR, etc.)
-- Ajout de nouvelles architectures de modèles plus performantes
-- Outils d'analyse spatiale pour les trouées détectées
-- Interface graphique pour faciliter l'utilisation
 
 ## Contribution
 
@@ -223,11 +214,11 @@ Ce projet est sous licence [MIT](LICENSE).
 
 # English version
 
-**ForestGaps-DL** is a Python library for automatic detection and analysis of forest gaps using deep learning.
+**ForestGaps** is a Python library for automatic detection and analysis of forest gaps using deep learning.
 
 ## Overview
 
-ForestGaps-DL analyzes Digital Surface Models (DSM) and Canopy Height Models (CHM) to:
+ForestGaps analyzes Digital Surface Models (DSM) to:
 - **Identify** forest canopy gaps with precision
 - **Evaluate** their geometric characteristics
 - **Compare** different deep learning approaches
@@ -256,11 +247,11 @@ The library is compatible with both local environments and Google Colab, offerin
 
 ```bash
 # Installation from GitHub
-pip install git+https://github.com/arthur048/forestgaps-dl.git
+pip install git+https://github.com/arthur048/forestgaps.git
 
 # Development installation (after cloning)
-git clone https://github.com/arthur048/forestgaps-dl.git
-cd forestgaps-dl
+git clone https://github.com/arthur048/forestgaps.git
+cd forestgaps
 pip install -e .
 ```
 
@@ -268,7 +259,7 @@ pip install -e .
 
 ```python
 # Recommended method: optimized installation script
-!wget -O colab_install.py https://raw.githubusercontent.com/arthur048/forestgaps-dl/main/colab_install.py
+!wget -O colab_install.py https://raw.githubusercontent.com/arthur048/forestgaps/main/colab_install.py
 %run colab_install.py
 
 # Restart the runtime then:

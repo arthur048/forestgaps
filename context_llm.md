@@ -1,10 +1,10 @@
-# Documentation technique complète de ForestGaps-DL
+# Documentation technique complète de ForestGaps
 
 ## 1. Introduction générale
 
 ### Contexte
 
-ForestGaps-DL est une bibliothèque Python modulaire conçue pour la détection et l'analyse des trouées forestières à partir d'images de télédétection, en utilisant des techniques de deep learning. Les trouées forestières sont des ouvertures dans la canopée forestière résultant de la mort d'arbres, qui jouent un rôle crucial dans la dynamique forestière et la régénération des écosystèmes.
+ForestGaps est une bibliothèque Python modulaire conçue pour la détection et l'analyse des trouées forestières à partir d'images de télédétection, en utilisant des techniques de deep learning. Les trouées forestières sont des ouvertures dans la canopée forestière résultant de la mort d'arbres, qui jouent un rôle crucial dans la dynamique forestière et la régénération des écosystèmes.
 
 La bibliothèque utilise des modèles numériques de surface (DSM) et des modèles de hauteur de canopée (CHM) pour la segmentation des trouées et la régression de hauteur. Ces données sont typiquement obtenues par LiDAR aéroporté ou par photogrammétrie à partir d'images aériennes ou satellites.
 
@@ -65,10 +65,10 @@ La bibliothèque utilise des modèles numériques de surface (DSM) et des modèl
 
 ### Structure détaillée du package
 
-Le package ForestGaps-DL est organisé de manière modulaire avec une structure hiérarchique claire :
+Le package ForestGaps est organisé de manière modulaire avec une structure hiérarchique claire :
 
 ```
-forestgaps-dl/
+forestgaps/
 ├── __init__.py           # Point d'entrée principal
 ├── __version__.py        # Définition de la version
 ├── environment/          # Gestion de l'environnement d'exécution
@@ -87,7 +87,7 @@ forestgaps-dl/
 
 ### Flux de données et de contrôle
 
-Le flux de traitement typique dans ForestGaps-DL suit ces étapes :
+Le flux de traitement typique dans ForestGaps suit ces étapes :
 
 1. **Configuration** : Chargement et validation des paramètres de configuration
 2. **Détection d'environnement** : Identification et configuration de l'environnement (Colab/local)
@@ -736,7 +736,7 @@ sequenceDiagram
 
 ### Points clés du README principal
 
-- ForestGaps-DL est un package modulaire pour la détection et l'analyse des trouées forestières
+- ForestGaps est un package modulaire pour la détection et l'analyse des trouées forestières
 - Utilise des techniques de deep learning sur des modèles numériques de surface (DSM) et de hauteur de canopée (CHM)
 - Implémente plusieurs architectures (U-Net, DeepLabV3+, etc.)
 - Structure modulaire suivant les principes SOLID

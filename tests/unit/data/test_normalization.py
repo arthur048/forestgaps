@@ -12,7 +12,7 @@ import torch
 import numpy as np
 from unittest.mock import patch, MagicMock, mock_open
 
-from forestgaps_dl.data.normalization import (
+from forestgaps.data.normalization import (
     compute_normalization_stats,
     NormalizationLayer,
     apply_normalization

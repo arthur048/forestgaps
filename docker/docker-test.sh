@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script de test des conteneurs Docker pour ForestGaps-DL
+# Script de test des conteneurs Docker pour ForestGaps
 
 # Définition des couleurs pour une meilleure lisibilité
 BLUE='\033[0;34m'
@@ -16,13 +16,13 @@ fi
 
 # Vérifier si les images existent
 check_images() {
-    if ! docker image inspect forestgaps-dl:latest &> /dev/null; then
-        echo -e "${RED}Image forestgaps-dl:latest non trouvée. Veuillez exécuter scripts/docker-build.sh d'abord.${NC}"
+    if ! docker image inspect forestgaps:latest &> /dev/null; then
+        echo -e "${RED}Image forestgaps:latest non trouvée. Veuillez exécuter scripts/docker-build.sh d'abord.${NC}"
         return 1
     fi
     
-    if ! docker image inspect forestgaps-dl:cpu &> /dev/null; then
-        echo -e "${RED}Image forestgaps-dl:cpu non trouvée. Veuillez exécuter scripts/docker-build.sh d'abord.${NC}"
+    if ! docker image inspect forestgaps:cpu &> /dev/null; then
+        echo -e "${RED}Image forestgaps:cpu non trouvée. Veuillez exécuter scripts/docker-build.sh d'abord.${NC}"
         return 1
     fi
     
@@ -114,13 +114,13 @@ run_tests() {
         echo -e "${BLUE}Tests sur l'image GPU (CUDA)${NC}"
         echo -e "${BLUE}================================${NC}"
         
-        if test_imports "forestgaps-dl:latest" "--gpus all"; then
+        if test_imports "forestgaps:latest" "--gpus all"; then
             ((success++))
         else
             ((failed++))
         fi
         
-        if test_package "forestgaps-dl:latest" "--gpus all"; then
+        if test_package "forestgaps:latest" "--gpus all"; then
             ((success++))
         else
             ((failed++))
@@ -134,13 +134,13 @@ run_tests() {
     echo -e "${BLUE}Tests sur l'image CPU${NC}"
     echo -e "${BLUE}================================${NC}"
     
-    if test_imports "forestgaps-dl:cpu" ""; then
+    if test_imports "forestgaps:cpu" ""; then
         ((success++))
     else
         ((failed++))
     fi
     
-    if test_package "forestgaps-dl:cpu" ""; then
+    if test_package "forestgaps:cpu" ""; then
         ((success++))
     else
         ((failed++))

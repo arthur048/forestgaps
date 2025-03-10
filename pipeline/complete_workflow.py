@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script de workflow complet pour ForestGaps-DL.
+Script de workflow complet pour ForestGaps.
 
 Ce script implémente le workflow de bout en bout pour la détection de trouées forestières,
 incluant la préparation des données, l'entraînement d'un modèle et l'évaluation des résultats.
@@ -26,11 +26,11 @@ from datetime import datetime
 # Assurer que le package est dans le PATH
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from forestgaps_dl.config import ConfigurationManager, load_default_config
-from forestgaps_dl.environment import setup_environment, is_colab_environment
-from forestgaps_dl.utils.errors import ForestGapsError
-from forestgaps_dl.utils.profiling import Profiler
-from forestgaps_dl.utils.logging import setup_logging
+from forestgaps.config import ConfigurationManager, load_default_config
+from forestgaps.environment import setup_environment, is_colab_environment
+from forestgaps.utils.errors import ForestGapsError
+from forestgaps.utils.profiling import Profiler
+from forestgaps.utils.logging import setup_logging
 
 # ===================================================================================================
 # CONFIGURATION ET INITIALISATION
@@ -44,7 +44,7 @@ def parse_arguments():
         argparse.Namespace: Les arguments analysés.
     """
     parser = argparse.ArgumentParser(
-        description='Script de workflow complet pour ForestGaps-DL'
+        description='Script de workflow complet pour ForestGaps'
     )
     parser.add_argument(
         '--config',
@@ -161,9 +161,9 @@ def prepare_data(config, env, logger):
     """
     logger.info("Début de la préparation des données...")
     
-    from forestgaps_dl.data.preprocessing import preprocess_rasters
-    from forestgaps_dl.data.generation import generate_tiles
-    from forestgaps_dl.data.normalization import compute_normalization_stats
+    from forestgaps.data.preprocessing import preprocess_rasters
+    from forestgaps.data.generation import generate_tiles
+    from forestgaps.data.normalization import compute_normalization_stats
     
     # Étape 1: Prétraitement des rasters
     logger.info("Prétraitement des rasters...")
@@ -221,10 +221,10 @@ def train_model(config, env, logger, profiler=None):
     """
     logger.info("Début de l'entraînement du modèle...")
     
-    from forestgaps_dl.data.loaders import create_data_loaders
-    from forestgaps_dl.models import create_model
-    from forestgaps_dl.training import Trainer
-    from forestgaps_dl.training.callbacks import (
+    from forestgaps.data.loaders import create_data_loaders
+    from forestgaps.models import create_model
+    from forestgaps.training import Trainer
+    from forestgaps.training.callbacks import (
         TensorBoardCallback,
         ModelCheckpointCallback,
         EarlyStoppingCallback,
@@ -329,10 +329,10 @@ def evaluate_model(config, train_results, env, logger):
     """
     logger.info("Début de l'évaluation du modèle...")
     
-    from forestgaps_dl.models import load_model
-    from forestgaps_dl.data.loaders import create_data_loaders
-    from forestgaps_dl.training.metrics import SegmentationMetrics
-    from forestgaps_dl.utils.visualization import (
+    from forestgaps.models import load_model
+    from forestgaps.data.loaders import create_data_loaders
+    from forestgaps.training.metrics import SegmentationMetrics
+    from forestgaps.utils.visualization import (
         visualize_predictions,
         visualize_metrics_by_threshold,
         create_metrics_tables,
@@ -435,7 +435,7 @@ def optimize_resources(env, config, logger):
     """
     logger.info(f"Optimisation des ressources pour l'environnement: {env.name}")
     
-    from forestgaps_dl.utils.optimization import (
+    from forestgaps.utils.optimization import (
         optimize_cuda_operations,
         optimize_dataloader_params,
         benchmark_transfers

@@ -1,6 +1,6 @@
-# Gestion d'Environnement pour ForestGaps-DL
+# Gestion d'Environnement pour ForestGaps
 
-Ce module fournit un système flexible pour détecter et configurer automatiquement l'environnement d'exécution (Google Colab ou local) pour le projet ForestGaps-DL.
+Ce module fournit un système flexible pour détecter et configurer automatiquement l'environnement d'exécution (Google Colab ou local) pour le projet ForestGaps.
 
 ## Structure
 
@@ -25,7 +25,7 @@ Le système de gestion d'environnement offre les fonctionnalités suivantes :
 ### Détection et configuration automatique
 
 ```python
-from forestgaps_dl.environment import setup_environment
+from forestgaps.environment import setup_environment
 
 # Détecte et configure automatiquement l'environnement
 env = setup_environment()
@@ -37,7 +37,7 @@ base_dir = env.get_base_dir()
 ### Détection uniquement
 
 ```python
-from forestgaps_dl.environment import detect_environment
+from forestgaps.environment import detect_environment
 
 # Détecte l'environnement sans le configurer
 env = detect_environment()
@@ -46,7 +46,7 @@ env = detect_environment()
 ### Obtenir le dispositif à utiliser pour les calculs
 
 ```python
-from forestgaps_dl.environment import get_device
+from forestgaps.environment import get_device
 
 # Détecte si un GPU est disponible et renvoie 'cuda' ou 'cpu'
 device = get_device()
@@ -93,8 +93,8 @@ Voir le fichier `examples/environment_usage.py` pour un exemple complet d'utilis
 Ce système de gestion d'environnement peut être utilisé en combinaison avec le module de configuration pour charger des configurations spécifiques à l'environnement :
 
 ```python
-from forestgaps_dl.environment import setup_environment
-from forestgaps_dl.config import load_config_from_file
+from forestgaps.environment import setup_environment
+from forestgaps.config import load_config_from_file
 
 # Configurer l'environnement
 env = setup_environment()

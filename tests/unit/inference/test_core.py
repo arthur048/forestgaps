@@ -142,7 +142,7 @@ class TestInferenceManager:
     @pytest.fixture
     def inference_manager(self, mock_model):
         """Créer un gestionnaire d'inférence pour les tests."""
-        with patch("forestgaps_dl.inference.core.torch.load", return_value=mock_model):
+        with patch("forestgaps.inference.core.torch.load", return_value=mock_model):
             manager = InferenceManager(
                 model_path="test/model.pt",
                 config=InferenceConfig(),

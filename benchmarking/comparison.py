@@ -1,5 +1,5 @@
 """
-Module de comparaison de modèles pour ForestGaps-DL.
+Module de comparaison de modèles pour ForestGaps.
 
 Ce module fournit la classe principale pour gérer la comparaison
 systématique de différents modèles et configurations.
@@ -17,13 +17,13 @@ import torch
 import numpy as np
 from torch.utils.data import DataLoader
 
-from forestgaps_dl.config import Config
-from forestgaps_dl.models import ModelRegistry
-from forestgaps_dl.training import Trainer
-from forestgaps_dl.training.metrics import SegmentationMetrics
-from forestgaps_dl.environment import get_device
-from forestgaps_dl.utils.io.serialization import save_json, load_json
-from forestgaps_dl.utils.errors import BenchmarkingError
+from forestgaps.config import Config
+from forestgaps.models import ModelRegistry
+from forestgaps.training import Trainer
+from forestgaps.training.metrics import SegmentationMetrics
+from forestgaps.environment import get_device
+from forestgaps.utils.io.serialization import save_json, load_json
+from forestgaps.utils.errors import BenchmarkingError
 
 from benchmarking.metrics import AggregatedMetrics, MetricsTracker
 from benchmarking.visualization import BenchmarkVisualizer
@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 class ModelComparison:
     """
-    Classe principale pour la comparaison de modèles ForestGaps-DL.
+    Classe principale pour la comparaison de modèles ForestGaps.
     
     Cette classe permet de comparer systématiquement différentes architectures
     de modèles et configurations d'entraînement sur les mêmes données,
@@ -121,7 +121,7 @@ class ModelComparison:
         Prépare les data loaders s'ils n'ont pas été fournis.
         """
         if self.train_loader is None or self.val_loader is None:
-            from forestgaps_dl.data.loaders import create_data_loaders
+            from forestgaps.data.loaders import create_data_loaders
             
             logger.info("Création des data loaders à partir de la configuration")
             loaders = create_data_loaders(self.base_config)

@@ -47,7 +47,7 @@ Le sous-module `preprocessing` contient les fonctionnalités pour analyser, alig
 - **Conversion** : Conversion entre formats (GeoTIFF, NumPy, etc.)
 
 ```python
-from forestgaps_dl.data.preprocessing import analyze_raster_pair, align_rasters
+from forestgaps.data.preprocessing import analyze_raster_pair, align_rasters
 
 # Analyser une paire de rasters DSM/CHM
 analysis = analyze_raster_pair("path/to/dsm.tif", "path/to/chm.tif", "site1")
@@ -69,7 +69,7 @@ Le sous-module `generation` permet de créer des tuiles et des masques à partir
 - **Création de masques** : Génération de masques binaires pour les trouées à différents seuils de hauteur
 
 ```python
-from forestgaps_dl.data.generation import generate_tiles, generate_gap_masks
+from forestgaps.data.generation import generate_tiles, generate_gap_masks
 
 # Générer des tuiles à partir d'un raster
 tiles = generate_tiles(
@@ -98,7 +98,7 @@ Le sous-module `datasets` fournit des implémentations de datasets PyTorch pour 
 - **Échantillonnage** : Stratégies d'échantillonnage pour gérer le déséquilibre des classes
 
 ```python
-from forestgaps_dl.data.datasets import create_gap_dataset, create_regression_dataset
+from forestgaps.data.datasets import create_gap_dataset, create_regression_dataset
 
 # Créer un dataset de segmentation
 gap_dataset = create_gap_dataset(
@@ -123,7 +123,7 @@ Le sous-module `normalization` gère la normalisation et la standardisation des 
 - **Statistiques** : Calcul et stockage des statistiques pour une normalisation cohérente
 
 ```python
-from forestgaps_dl.data.normalization import normalize_data, compute_statistics
+from forestgaps.data.normalization import normalize_data, compute_statistics
 
 # Calculer les statistiques sur un ensemble de données
 stats = compute_statistics(dsm_files)
@@ -140,7 +140,7 @@ Le sous-module `loaders` permet de créer et d'optimiser des DataLoaders PyTorch
 - **Optimisation** : Calibration dynamique des paramètres pour maximiser les performances
 
 ```python
-from forestgaps_dl.data.loaders import create_data_loaders, optimize_dataloader_params
+from forestgaps.data.loaders import create_data_loaders, optimize_dataloader_params
 
 # Créer des DataLoaders à partir de la configuration
 data_loaders = create_data_loaders(config)
@@ -161,7 +161,7 @@ Le sous-module `storage` gère le stockage et la persistance des données :
 - **Compression** : Techniques de compression pour réduire l'espace de stockage
 
 ```python
-from forestgaps_dl.data.storage import save_compressed_dataset, load_compressed_dataset
+from forestgaps.data.storage import save_compressed_dataset, load_compressed_dataset
 
 # Sauvegarder un dataset compressé
 save_compressed_dataset(dataset, "path/to/compressed_dataset.npz")
@@ -182,9 +182,9 @@ Le module `data` dépend des modules suivants :
 Le module est conçu pour fonctionner de manière transparente dans Google Colab :
 
 ```python
-from forestgaps_dl.environment import setup_environment
-from forestgaps_dl.config import load_default_config
-from forestgaps_dl.data.loaders import create_data_loaders
+from forestgaps.environment import setup_environment
+from forestgaps.config import load_default_config
+from forestgaps.data.loaders import create_data_loaders
 
 # Configurer l'environnement Colab
 env = setup_environment()

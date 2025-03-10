@@ -40,7 +40,7 @@ models/
 Ce module implémente un système de registre qui permet d'enregistrer et d'instancier des modèles dynamiquement. Cela facilite l'ajout de nouveaux modèles sans modifier le code existant.
 
 ```python
-from forestgaps_dl.models import model_registry, ForestGapModel
+from forestgaps.models import model_registry, ForestGapModel
 
 @model_registry.register("mon_nouveau_modele")
 class MonNouveauModele(ForestGapModel):
@@ -91,7 +91,7 @@ Les classes abstraites dans `base.py` fournissent les interfaces communes pour t
 ### Créer un modèle
 
 ```python
-from forestgaps_dl.models import create_model
+from forestgaps.models import create_model
 
 # Créer un modèle U-Net standard
 model = create_model("unet", in_channels=3, out_channels=1)
@@ -106,7 +106,7 @@ regressor = create_model("unet_regressor", in_channels=3, out_channels=1)
 ### Lister les modèles disponibles
 
 ```python
-from forestgaps_dl.models import list_available_models
+from forestgaps.models import list_available_models
 
 # Obtenir la liste des modèles disponibles
 models = list_available_models()
@@ -116,8 +116,8 @@ print(models)
 ### Créer un modèle à partir d'une configuration
 
 ```python
-from forestgaps_dl.config import load_default_config
-from forestgaps_dl.models import get_model_from_config
+from forestgaps.config import load_default_config
+from forestgaps.models import get_model_from_config
 
 # Charger la configuration
 config = load_default_config()

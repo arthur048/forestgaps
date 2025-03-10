@@ -13,10 +13,10 @@ import argparse
 import logging
 from pathlib import Path
 
-from forestgaps_dl.config import load_config_from_file, load_default_config
-from forestgaps_dl.environment import setup_environment
-from forestgaps_dl.data.loaders import create_data_loaders
-from forestgaps_dl.benchmarking import ModelComparison
+from forestgaps.config import load_config_from_file, load_default_config
+from forestgaps.environment import setup_environment
+from forestgaps.data.loaders import create_data_loaders
+from forestgaps.benchmarking import ModelComparison
 
 
 # Configuration du logging
@@ -27,7 +27,7 @@ logger = logging.getLogger("benchmark_example")
 
 def parse_args():
     """Parse les arguments de la ligne de commande."""
-    parser = argparse.ArgumentParser(description="Benchmarking des modèles ForestGaps-DL")
+    parser = argparse.ArgumentParser(description="Benchmarking des modèles ForestGaps")
     
     parser.add_argument("--config", type=str, default=None,
                         help="Chemin vers le fichier de configuration.")

@@ -1,8 +1,8 @@
 # Entraînement U-Net
 
-Ce dossier contient le code original d'entraînement du modèle U-Net qui sera progressivement migré vers la nouvelle structure du package forestgaps-dl.
+Ce dossier contient le code original d'entraînement du modèle U-Net qui sera progressivement migré vers la nouvelle structure du package forestgaps.
 
-Fichier principal: `forestgaps_dl_u_net_training.py`
+Fichier principal: `forestgaps_u_net_training.py`
 
 ## État de la migration
 
