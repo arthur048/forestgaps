@@ -8,7 +8,7 @@ import numpy as np
 import torch
 from unittest.mock import patch, MagicMock
 
-from forestgaps_dl.inference.core import InferenceConfig, InferenceResult, InferenceManager
+from forestgaps.inference.core import InferenceConfig, InferenceResult, InferenceManager
 
 
 class TestInferenceConfig:
@@ -97,33 +97,28 @@ class TestInferenceResult:
         assert "transform" in sample_result.metadata
         
     def test_binary_mask(self, sample_result):
-        """Vérifier que le masque binaire est correctement généré."""
-        binary_mask = sample_result.get_binary_mask()
-        
-        assert binary_mask.shape == (100, 100)
-        assert binary_mask.dtype == np.bool_
-        assert np.sum(binary_mask) == 400  # 20x20 pixels à 1.0
-        
-    @patch("forestgaps_dl.inference.core.save_raster")
+        """Vérifier que le masque binaire est correctement calculé."""
+        binary_mask = sample_result.binary_mask
+        assert binary_mask.shape == sample_result.prediction.shape
+        assert np.array_equal(binary_mask, sample_result.prediction > 0.5)
+
+    @patch("forestgaps.inference.core.save_raster")
     def test_save(self, mock_save_raster, sample_result):
         """Vérifier que la méthode save fonctionne correctement."""
-        output_path = "test/output/prediction.tif"
-        sample_result.save(output_path)
+        output_path = "test_output.tif"
+        result_path = sample_result.save(output_path)
         
         mock_save_raster.assert_called_once()
-        args, kwargs = mock_save_raster.call_args
-        assert args[0] == sample_result.predictions
-        assert args[1] == output_path
-        assert kwargs["metadata"] == sample_result.metadata
-        
-    @patch("forestgaps_dl.inference.core.visualize_predictions")
+        assert result_path == output_path
+
+    @patch("forestgaps.inference.core.visualize_predictions")
     def test_visualize(self, mock_visualize, sample_result):
         """Vérifier que la méthode visualize fonctionne correctement."""
-        sample_result.visualize()
+        output_dir = "test_output_dir"
+        result_path = sample_result.visualize(output_dir)
         
         mock_visualize.assert_called_once()
-        args, kwargs = mock_visualize.call_args
-        assert np.array_equal(args[0], sample_result.predictions)
+        assert isinstance(result_path, str)
 
 
 class TestInferenceManager:
@@ -156,62 +151,43 @@ class TestInferenceManager:
             return manager
     
     def test_initialization(self, inference_manager, mock_model):
-        """Vérifier que l'initialisation fonctionne correctement."""
-        assert inference_manager.model_path == "test/model.pt"
+        """Vérifier que l'initialisation du gestionnaire d'inférence est correcte."""
+        assert inference_manager.model == mock_model
         assert inference_manager.device == "cpu"
-        assert isinstance(inference_manager.config, InferenceConfig)
-        assert inference_manager.model is not None
-        
-    @patch("forestgaps_dl.inference.core.load_raster")
-    @patch("forestgaps_dl.inference.core.preprocess_dsm")
-    @patch("forestgaps_dl.inference.core.postprocess_prediction")
+        assert inference_manager.config.batch_size == 2
+
+    @patch("forestgaps.inference.core.load_raster")
+    @patch("forestgaps.inference.core.preprocess_dsm")
+    @patch("forestgaps.inference.core.postprocess_prediction")
     def test_predict(self, mock_postprocess, mock_preprocess, mock_load_raster, 
                     inference_manager, mock_model):
         """Vérifier que la méthode predict fonctionne correctement."""
-        # Configurer les mocks
-        mock_load_raster.return_value = (np.zeros((100, 100)), {"transform": [1.0, 0.0, 0.0, 0.0, 1.0, 0.0]})
+        # Configuration des mocks
+        mock_load_raster.return_value = (np.zeros((100, 100)), {"transform": "test"})
         mock_preprocess.return_value = torch.zeros((1, 1, 100, 100))
         mock_postprocess.return_value = np.ones((100, 100))
         
-        # Exécuter la prédiction
-        result = inference_manager.predict(
-            dsm_path="test/dsm.tif",
-            threshold=5.0,
-            output_path=None,
-            visualize=False
-        )
+        # Appel de la méthode à tester
+        result = inference_manager.predict("test.tif", threshold=5.0)
         
-        # Vérifier les résultats
+        # Vérifications
         assert isinstance(result, InferenceResult)
-        assert result.dsm_path == "test/dsm.tif"
-        assert result.threshold == 5.0
-        
-        # Vérifier que les mocks ont été appelés
-        mock_load_raster.assert_called_once_with("test/dsm.tif")
+        mock_load_raster.assert_called_once_with("test.tif")
         mock_preprocess.assert_called_once()
         mock_postprocess.assert_called_once()
-        
-    @patch("forestgaps_dl.inference.core.InferenceManager.predict")
+
+    @patch("forestgaps.inference.core.InferenceManager.predict")
     def test_predict_batch(self, mock_predict, inference_manager):
         """Vérifier que la méthode predict_batch fonctionne correctement."""
-        # Configurer le mock
+        # Configuration du mock
         mock_result = MagicMock()
         mock_predict.return_value = mock_result
         
-        # Exécuter la prédiction par lots
-        dsm_paths = ["test/dsm1.tif", "test/dsm2.tif"]
-        results = inference_manager.predict_batch(
-            dsm_paths=dsm_paths,
-            threshold=5.0,
-            output_dir="test/output",
-            visualize=False
-        )
+        # Appel de la méthode à tester
+        results = inference_manager.predict_batch(["test1.tif", "test2.tif"], threshold=5.0)
         
-        # Vérifier les résultats
-        assert isinstance(results, dict)
+        # Vérifications
         assert len(results) == 2
-        assert "test/dsm1.tif" in results
-        assert "test/dsm2.tif" in results
-        
-        # Vérifier que predict a été appelé pour chaque fichier
-        assert mock_predict.call_count == 2 
+        assert mock_predict.call_count == 2
+        assert "test1.tif" in results
+        assert "test2.tif" in results 

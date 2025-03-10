@@ -76,7 +76,7 @@ services:
               count: 1
               capabilities: [gpu]
     # Exemple de commande d'inférence
-    command: ["-m", "forestgaps_dl.inference", "predict", "--model", "/app/models/model.pth", "--input", "/app/data/input.tif", "--output", "/app/outputs/prediction.tif"]
+    command: ["-m", "forestgaps.inference", "predict", "--model", "/app/models/model.pth", "--input", "/app/data/input.tif", "--output", "/app/outputs/prediction.tif"]
     restart: "no"
 
   # Service de prétraitement de données (CPU suffisant)
@@ -107,5 +107,5 @@ services:
               count: 1
               capabilities: [gpu]
     # Exemple de commande d'évaluation
-    command: ["-m", "forestgaps_dl.evaluation", "evaluate", "--model", "/app/models/model.pth", "--data", "/app/data/validation", "--output", "/app/reports/evaluation.json"]
+    command: ["-m", "forestgaps.evaluation", "evaluate", "--model", "/app/models/model.pth", "--data", "/app/data/validation", "--output", "/app/reports/evaluation.json"]
     restart: "no" 

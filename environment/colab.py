@@ -6,7 +6,7 @@ import pkg_resources
 import platform
 from typing import Dict, Any, List, Optional
 
-from forestgaps_dl.environment.base import Environment
+from forestgaps.environment.base import Environment
 
 
 class ColabEnvironment(Environment):

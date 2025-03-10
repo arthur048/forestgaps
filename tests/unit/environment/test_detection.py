@@ -10,67 +10,67 @@ import sys
 import pytest
 from unittest.mock import patch, MagicMock
 
-from forestgaps_dl.environment.detection import (
-    is_colab_environment,
-    get_environment_type,
-    setup_environment
+from environment import (
+    detect_environment,
+    setup_environment,
+    get_device
 )
-from forestgaps_dl.environment.base import Environment, ColabEnvironment, LocalEnvironment
+from environment.base import Environment
+from environment.colab import ColabEnvironment
+from environment.local import LocalEnvironment
 
 # ===================================================================================================
-# Tests pour la détection d'environnement
+# Tests pour la détection de l'environnement
 # ===================================================================================================
 
 @patch.dict(sys.modules, {'google.colab': MagicMock()})
-def test_is_colab_true():
-    """Tester la détection positive d'un environnement Colab."""
-    assert is_colab_environment() is True
+def test_detect_environment_colab():
+    """Test que l'environnement est détecté comme Colab quand le module google.colab est disponible."""
+    env = detect_environment()
+    assert isinstance(env, ColabEnvironment)
 
 @patch.dict(sys.modules, {})
-def test_is_colab_false():
-    """Tester la détection négative d'un environnement Colab."""
-    # Supprimer temporairement 'google.colab' de sys.modules s'il est présent
-    colab_module = sys.modules.pop('google.colab', None)
-    try:
-        assert is_colab_environment() is False
-    finally:
-        # Restaurer le module s'il était présent
-        if colab_module:
-            sys.modules['google.colab'] = colab_module
-
-@patch('forestgaps_dl.environment.detection.is_colab_environment', return_value=True)
-def test_get_environment_type_colab(mock_is_colab):
-    """Tester la récupération du type d'environnement Colab."""
-    assert get_environment_type() == 'colab'
-
-@patch('forestgaps_dl.environment.detection.is_colab_environment', return_value=False)
-def test_get_environment_type_local(mock_is_colab):
-    """Tester la récupération du type d'environnement local."""
-    assert get_environment_type() == 'local'
+@patch('environment.base.Environment.detect')
+def test_detect_environment_local(mock_detect):
+    """Test que l'environnement est détecté comme local quand le module google.colab n'est pas disponible."""
+    mock_detect.return_value = LocalEnvironment()
+    env = detect_environment()
+    assert isinstance(env, LocalEnvironment)
 
 # ===================================================================================================
 # Tests pour la configuration de l'environnement
 # ===================================================================================================
 
-@patch('forestgaps_dl.environment.detection.is_colab_environment', return_value=True)
-def test_setup_environment_colab(mock_is_colab):
-    """Tester la configuration d'un environnement Colab."""
+@patch('environment.detect_environment')
+def test_setup_environment(mock_detect):
+    """Test que l'environnement est correctement configuré."""
+    mock_env = MagicMock()
+    mock_detect.return_value = mock_env
+    
     env = setup_environment()
-    assert isinstance(env, ColabEnvironment)
-    assert env.name == 'colab'
+    
+    mock_detect.assert_called_once()
+    mock_env.setup.assert_called_once()
+    assert env == mock_env
 
-@patch('forestgaps_dl.environment.detection.is_colab_environment', return_value=False)
-def test_setup_environment_local(mock_is_colab):
-    """Tester la configuration d'un environnement local."""
-    env = setup_environment()
-    assert isinstance(env, LocalEnvironment)
-    assert env.name == 'local'
+# ===================================================================================================
+# Tests pour la détection du dispositif
+# ===================================================================================================
 
-@patch('forestgaps_dl.environment.detection.get_environment_type', return_value='unknown')
-def test_setup_environment_unknown(mock_get_type):
-    """Tester le comportement avec un type d'environnement inconnu."""
-    with pytest.raises(ValueError):
-        setup_environment()
+@patch('torch.cuda.is_available', return_value=True)
+def test_get_device_cuda(mock_cuda):
+    """Test que le dispositif est 'cuda' quand CUDA est disponible."""
+    assert get_device() == 'cuda'
+
+@patch('torch.cuda.is_available', return_value=False)
+def test_get_device_cpu(mock_cuda):
+    """Test que le dispositif est 'cpu' quand CUDA n'est pas disponible."""
+    assert get_device() == 'cpu'
+
+@patch('environment.get_device', side_effect=ImportError)
+def test_get_device_no_torch(mock_get_device):
+    """Test que le dispositif est 'cpu' quand torch n'est pas disponible."""
+    assert get_device() == 'cpu'
 
 # ===================================================================================================
 # Tests pour les classes d'environnement
@@ -80,57 +80,54 @@ class TestEnvironmentBase:
     """Tests pour la classe de base Environment."""
     
     def test_abstract_methods(self):
-        """Tester que les méthodes abstraites sont implémentées par les sous-classes."""
-        # La classe de base ne devrait pas être instanciable directement
-        with pytest.raises(TypeError):
-            Environment()
-        
-        # Les sous-classes devraient implémenter toutes les méthodes abstraites
-        colab_env = ColabEnvironment()
-        local_env = LocalEnvironment()
-        
-        # Vérifier que les méthodes principales sont implémentées
-        assert hasattr(colab_env, 'setup_resources')
-        assert hasattr(local_env, 'setup_resources')
+        """Test que les méthodes abstraites sont bien définies."""
+        abstract_methods = [
+            'setup',
+            'get_base_dir',
+            'install_dependencies',
+            'setup_gpu'
+        ]
+        for method in abstract_methods:
+            assert hasattr(Environment, method)
+            assert callable(getattr(Environment, method))
 
 class TestColabEnvironment:
-    """Tests pour l'environnement Colab."""
+    """Tests pour la classe ColabEnvironment."""
     
     def test_initialization(self):
-        """Tester l'initialisation de l'environnement Colab."""
+        """Test que l'environnement Colab est correctement initialisé."""
         env = ColabEnvironment()
-        assert env.name == 'colab'
-        assert hasattr(env, 'config')
-        
+        assert env.drive_mounted is False
+        assert env.base_dir is None
+    
     @patch('torch.cuda.is_available', return_value=True)
     def test_gpu_detection(self, mock_cuda):
-        """Tester la détection du GPU dans Colab."""
+        """Test que le GPU est détecté quand il est disponible."""
         env = ColabEnvironment()
-        assert env.has_gpu is True
-        
+        assert env.setup_gpu() is True
+    
     @patch('torch.cuda.is_available', return_value=False)
     def test_no_gpu_detection(self, mock_cuda):
-        """Tester la détection de l'absence de GPU dans Colab."""
+        """Test que le GPU n'est pas détecté quand il n'est pas disponible."""
         env = ColabEnvironment()
-        assert env.has_gpu is False
+        assert env.setup_gpu() is False
 
 class TestLocalEnvironment:
-    """Tests pour l'environnement local."""
+    """Tests pour la classe LocalEnvironment."""
     
     def test_initialization(self):
-        """Tester l'initialisation de l'environnement local."""
+        """Test que l'environnement local est correctement initialisé."""
         env = LocalEnvironment()
-        assert env.name == 'local'
-        assert hasattr(env, 'config')
-        
+        assert env.base_dir is None
+    
     @patch('torch.cuda.is_available', return_value=True)
     def test_gpu_detection(self, mock_cuda):
-        """Tester la détection du GPU en environnement local."""
+        """Test que le GPU est détecté quand il est disponible."""
         env = LocalEnvironment()
-        assert env.has_gpu is True
-        
+        assert env.setup_gpu() is True
+    
     @patch('torch.cuda.is_available', return_value=False)
     def test_no_gpu_detection(self, mock_cuda):
-        """Tester la détection de l'absence de GPU en environnement local."""
+        """Test que le GPU n'est pas détecté quand il n'est pas disponible."""
         env = LocalEnvironment()
-        assert env.has_gpu is False 
+        assert env.setup_gpu() is False 

@@ -1,9 +1,9 @@
-# Dockerfile pour ForestGaps-DL
+# Dockerfile pour ForestGaps
 # Image de base avec PyTorch et dépendances CUDA
 FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-runtime
 
 LABEL maintainer="Arthur <arthurvdl048@email.com>"
-LABEL description="ForestGaps-DL: Bibliothèque PyTorch pour la détection et l'analyse des trouées forestières"
+LABEL description="ForestGaps: Bibliothèque PyTorch pour la détection et l'analyse des trouées forestières"
 
 # Définition des arguments et variables d'environnement
 ARG DEBIAN_FRONTEND=noninteractive
@@ -45,5 +45,5 @@ ENV NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
 # Point d'entrée par défaut
-ENTRYPOINT ["python", "-m", "forestgaps_dl"]
+ENTRYPOINT ["python", "-m", "forestgaps"]
 CMD ["--help"] 

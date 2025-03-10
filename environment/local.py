@@ -7,7 +7,7 @@ import platform
 from typing import Dict, Any, List, Optional
 from pathlib import Path
 
-from forestgaps_dl.environment.base import Environment
+from forestgaps.environment.base import Environment
 
 
 class LocalEnvironment(Environment):

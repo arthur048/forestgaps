@@ -1,5 +1,5 @@
 """
-Module d'évaluation externe pour ForestGaps-DL.
+Module d'évaluation externe pour ForestGaps.
 
 Ce module fournit les fonctionnalités nécessaires pour évaluer les modèles entraînés
 sur des paires DSM/CHM indépendantes. Il permet de calculer des métriques détaillées

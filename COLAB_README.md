@@ -20,7 +20,7 @@ La méthode recommandée utilise notre script d'installation spécial pour Colab
 # Cliquez sur "Runtime" > "Restart runtime" une fois l'installation terminée
 
 # Après redémarrage, importez et configurez le module:
-from forestgaps_dl.environment import setup_environment
+from forestgaps.environment import setup_environment
 env = setup_environment()  # Détecte et configure automatiquement l'environnement Colab
 ```
 
@@ -36,7 +36,7 @@ Si vous rencontrez des problèmes avec la méthode recommandée, vous pouvez uti
 # Cliquez sur "Runtime" > "Restart runtime" une fois l'installation terminée
 
 # Après redémarrage, importez et configurez le module:
-from forestgaps_dl.environment import setup_environment
+from forestgaps.environment import setup_environment
 env = setup_environment()
 ```
 
@@ -44,7 +44,7 @@ env = setup_environment()
 
 ### Module not found
 
-Si vous obtenez l'erreur `ModuleNotFoundError: No module named 'forestgaps_dl'`:
+Si vous obtenez l'erreur `ModuleNotFoundError: No module named 'forestgaps'`:
 
 1. Vérifiez que vous avez bien redémarré le runtime après l'installation
 2. Essayez d'installer le package avec l'option `--force-reinstall`:
@@ -73,16 +73,16 @@ Pour vérifier que tout fonctionne correctement:
 
 ```python
 # Vérifier la version du package
-import forestgaps_dl
-print(forestgaps_dl.__version__)
+import forestgaps
+print(forestgaps.__version__)
 
 # Vérifier la détection de l'environnement
-from forestgaps_dl.environment import detect_environment
+from forestgaps.environment import detect_environment
 env = detect_environment()
 print(f"Environnement détecté: {type(env).__name__}")
 
 # Vérifier la disponibilité du GPU
-from forestgaps_dl.environment import get_device
+from forestgaps.environment import get_device
 device = get_device()
 print(f"Dispositif disponible: {device}")
 ``` 

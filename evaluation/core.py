@@ -18,14 +18,14 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from forestgaps_dl.environment import setup_environment
-from forestgaps_dl.config import ConfigurationManager, load_default_config
-from forestgaps_dl.utils.io.serialization import load_model as load_model_checkpoint
-from forestgaps_dl.models.registry import ModelRegistry
+from forestgaps.environment import setup_environment
+from forestgaps.config import ConfigurationManager, load_default_config
+from forestgaps.utils.io.serialization import load_model as load_model_checkpoint
+from forestgaps.models.registry import ModelRegistry
 
-from forestgaps_dl.inference.utils.geospatial import load_raster, save_raster
-from forestgaps_dl.inference.utils.processing import preprocess_dsm
-from forestgaps_dl.inference.core import InferenceManager, InferenceResult
+from forestgaps.inference.utils.geospatial import load_raster, save_raster
+from forestgaps.inference.utils.processing import preprocess_dsm
+from forestgaps.inference.core import InferenceManager, InferenceResult
 
 from .utils.metrics import calculate_metrics, calculate_threshold_metrics, calculate_confusion_matrix
 from .utils.visualization import visualize_metrics, visualize_comparison, create_metrics_table

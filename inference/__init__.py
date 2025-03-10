@@ -1,5 +1,5 @@
 """
-Module d'inférence pour ForestGaps-DL.
+Module d'inférence pour ForestGaps.
 
 Ce module fournit les fonctionnalités nécessaires pour appliquer les modèles entraînés
 à de nouvelles données DSM. Il comprend des outils pour le prétraitement des données,

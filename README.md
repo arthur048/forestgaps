@@ -1,313 +1,111 @@
 # ForestGaps-DL
 
-Bibliothèque PyTorch pour la détection et l'analyse des trouées forestières par deep learning.
+![Version](https://img.shields.io/badge/version-0.1.1-blue)
+![Python](https://img.shields.io/badge/python-3.8%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-## Description
+**ForestGaps-DL** est une bibliothèque Python pour la détection et l'analyse automatique des trouées forestières en utilisant le deep learning.
 
-ForestGaps-DL est un package Python modulaire conçu pour détecter et analyser les trouées forestières à partir d'images de télédétection, en utilisant des techniques de deep learning. Ce package implémente plusieurs architectures de réseaux de neurones (U-Net, DeepLabV3+, etc.) pour la segmentation et la régression sur des modèles numériques de surface (DSM) et de hauteur de canopée (CHM).
+[English version](#english-version)
 
-## Architecture du package
+## Présentation
 
-L'architecture du package est modulaire, suivant les principes SOLID, pour faciliter l'extension et la maintenance du code. Voici un aperçu détaillé des relations entre les modules :
+ForestGaps-DL permet d'analyser des modèles numériques de surface (DSM) et de hauteur de canopée (CHM) pour :
+- **Identifier** précisément les trouées dans la canopée forestière
+- **Évaluer** leurs caractéristiques géométriques
+- **Comparer** les performances de différentes approches d'apprentissage profond
 
-```mermaid
-graph TD
-    %% Modules principaux
-    CONFIG[config]
-    ENV[environment]
-    DATA[data]
-    MODELS[models]
-    TRAIN[training]
-    UTILS[utils]
-    CLI[cli]
-    BENCH[benchmarking]
-    
-    %% Sous-modules data
-    DATA_PRE[data/preprocessing]
-    DATA_GEN[data/generation]
-    DATA_DS[data/datasets]
-    DATA_LOAD[data/loaders]
-    DATA_NORM[data/normalization]
-    DATA_STOR[data/storage]
-    
-    %% Sous-modules models
-    MODELS_UNET[models/unet]
-    MODELS_DEEP[models/deeplabv3]
-    MODELS_REG[models/unet_regression]
-    MODELS_BLOCKS[models/blocks]
-    MODELS_EXP[models/export]
-    
-    %% Sous-modules training
-    TRAIN_METR[training/metrics]
-    TRAIN_LOSS[training/loss]
-    TRAIN_OPT[training/optimization]
-    TRAIN_CALL[training/callbacks]
-    
-    %% Sous-modules utils
-    UTILS_VIZ[utils/visualization]
-    UTILS_IO[utils/io]
-    UTILS_PROF[utils/profiling]
-    UTILS_ERR[utils/errors]
-    
-    %% Sous-modules CLI
-    CLI_PRE[cli/preprocessing_cli]
-    CLI_TRAIN[cli/training_cli]
-    
-    %% Sous-modules benchmarking
-    BENCH_COMP[benchmarking/comparison]
-    BENCH_METR[benchmarking/metrics]
-    BENCH_VIZ[benchmarking/visualization]
-    BENCH_REP[benchmarking/reporting]
-    
-    %% Dépendances principales entre modules
-    CONFIG --> ENV
-    CONFIG --> DATA
-    CONFIG --> MODELS
-    CONFIG --> TRAIN
-    CONFIG --> CLI
-    CONFIG --> BENCH
-    
-    ENV --> DATA
-    ENV --> MODELS
-    ENV --> TRAIN
-    ENV --> CLI
-    
-    DATA --> MODELS
-    DATA --> TRAIN
-    DATA --> CLI
-    DATA --> BENCH
-    
-    MODELS --> TRAIN
-    MODELS --> CLI
-    MODELS --> BENCH
-    
-    TRAIN --> CLI
-    TRAIN --> BENCH
-    
-    UTILS --> CONFIG
-    UTILS --> ENV
-    UTILS --> DATA
-    UTILS --> MODELS
-    UTILS --> TRAIN
-    UTILS --> CLI
-    UTILS --> BENCH
-    
-    BENCH --> CLI
-    
-    %% Dépendances internes data
-    DATA --> DATA_PRE
-    DATA --> DATA_GEN
-    DATA --> DATA_DS
-    DATA --> DATA_LOAD
-    DATA --> DATA_NORM
-    DATA --> DATA_STOR
-    
-    DATA_PRE --> DATA_GEN
-    DATA_GEN --> DATA_DS
-    DATA_DS --> DATA_LOAD
-    DATA_NORM --> DATA_DS
-    DATA_STOR --> DATA_DS
-    DATA_STOR --> DATA_LOAD
-    
-    %% Dépendances internes models
-    MODELS --> MODELS_UNET
-    MODELS --> MODELS_DEEP
-    MODELS --> MODELS_REG
-    MODELS --> MODELS_BLOCKS
-    MODELS --> MODELS_EXP
-    
-    MODELS_BLOCKS --> MODELS_UNET
-    MODELS_BLOCKS --> MODELS_DEEP
-    MODELS_BLOCKS --> MODELS_REG
-    
-    %% Dépendances internes training
-    TRAIN --> TRAIN_METR
-    TRAIN --> TRAIN_LOSS
-    TRAIN --> TRAIN_OPT
-    TRAIN --> TRAIN_CALL
-    
-    %% Dépendances internes utils
-    UTILS --> UTILS_VIZ
-    UTILS --> UTILS_IO
-    UTILS --> UTILS_PROF
-    UTILS --> UTILS_ERR
-    
-    %% Dépendances internes CLI
-    CLI --> CLI_PRE
-    CLI --> CLI_TRAIN
-    
-    %% Dépendances internes benchmarking
-    BENCH --> BENCH_COMP
-    BENCH --> BENCH_METR
-    BENCH --> BENCH_VIZ
-    BENCH --> BENCH_REP
-    
-    %% Style des nœuds
-    classDef config fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef environ fill:#bbf,stroke:#333,stroke-width:2px;
-    classDef data fill:#bfb,stroke:#333,stroke-width:2px;
-    classDef models fill:#fbf,stroke:#333,stroke-width:2px;
-    classDef training fill:#fbb,stroke:#333,stroke-width:2px;
-    classDef utils fill:#bff,stroke:#333,stroke-width:2px;
-    classDef cli fill:#ffb,stroke:#333,stroke-width:2px;
-    classDef bench fill:#fdb,stroke:#333,stroke-width:2px;
-    
-    class CONFIG config;
-    class ENV environ;
-    class DATA,DATA_PRE,DATA_GEN,DATA_DS,DATA_LOAD,DATA_NORM,DATA_STOR data;
-    class MODELS,MODELS_UNET,MODELS_DEEP,MODELS_REG,MODELS_BLOCKS,MODELS_EXP models;
-    class TRAIN,TRAIN_METR,TRAIN_LOSS,TRAIN_OPT,TRAIN_CALL training;
-    class UTILS,UTILS_VIZ,UTILS_IO,UTILS_PROF,UTILS_ERR utils;
-    class CLI,CLI_PRE,CLI_TRAIN cli;
-    class BENCH,BENCH_COMP,BENCH_METR,BENCH_VIZ,BENCH_REP bench;
-```
+La bibliothèque est compatible à la fois avec un environnement local et Google Colab, offrant une flexibilité maximale selon vos besoins.
 
-### Dépendances entre modules
+## Fonctionnalités principales
 
-Le tableau ci-dessous présente une analyse détaillée des dépendances entre les modules principaux et leurs relations dans l'architecture.
+- 🔍 **Segmentation** des trouées forestières avec différents modèles (U-Net, DeepLabV3+, etc.)
+- 📏 **Estimation** des hauteurs de canopée par régression 
+- 🔄 **Prétraitement** des données géospatiales optimisé
+- 📈 **Évaluation** exhaustive des modèles avec métriques adaptées
+- 🔮 **Inférence** sur de nouvelles zones forestières
+- 📊 **Benchmarking** des différentes architectures
 
-| Module         | Dépend de                                      | Est utilisé par                             | Responsabilité principale                                |
-|----------------|------------------------------------------------|--------------------------------------------|---------------------------------------------------------|
-| `config`       | -                                              | Tous les autres modules                    | Gestion centralisée de la configuration du projet        |
-| `environment`  | `config`, `utils`                              | `data`, `models`, `training`, `cli`        | Détection et configuration de l'environnement d'exécution|
-| `data`         | `config`, `environment`, `utils`               | `models`, `training`, `cli`, `benchmarking`| Préparation, transformation et chargement des données   |
-| `models`       | `config`, `utils`                              | `training`, `cli`, `benchmarking`          | Implémentation des différentes architectures de réseaux  |
-| `training`     | `config`, `data`, `models`, `utils`            | `cli`, `benchmarking`                      | Entraînement, évaluation et monitoring des modèles      |
-| `utils`        | -                                              | Tous les autres modules                    | Fonctionnalités communes et transversales               |
-| `cli`          | `config`, `environment`, `data`, `models`, `training`, `benchmarking` | -                  | Interface utilisateur en ligne de commande              |
-| `benchmarking` | `config`, `models`, `training`, `utils`        | `cli`                                      | Comparaison systématique des performances des modèles    |
+## Prérequis
 
-## Architecture et flux de données
-
-Le package ForestGaps-DL implémente un flux de traitement complet pour la détection des trouées forestières :
-
-1. **Configuration** (`config`) : Point de départ de toute exécution, définit les paramètres du workflow
-2. **Environnement** (`environment`) : Configure l'environnement d'exécution (Colab ou local)
-3. **Données** (`data`) : Prétraite les rasters, génère des tuiles et des masques, construit des datasets
-4. **Modèles** (`models`) : Définit les architectures de réseaux à utiliser
-5. **Entraînement** (`training`) : Gère l'entraînement, l'évaluation et le suivi des modèles
-6. **Benchmarking** (`benchmarking`) : Compare systématiquement les performances des différents modèles
-7. **Interface CLI** (`cli`) : Fournit des points d'entrée en ligne de commande pour les utilisateurs
-
-Les utilitaires (`utils`) fournissent des fonctionnalités communes à tous les modules.
-
-## Structure détaillée du package
-
-- **config/**: Gestion de la configuration
-  - Validation des configurations avec schémas
-  - Chargement/sauvegarde des configurations depuis YAML
-  - Configurations par défaut pour tous les modules
-
-- **environment/**: Gestion de l'environnement d'exécution
-  - Détection automatique de l'environnement (Colab ou local)
-  - Configuration des ressources selon l'environnement
-  - Adapation transparente entre Colab et environnement local
-
-- **data/**: Traitement et gestion des données
-  - **preprocessing/**: Prétraitement des données raster (DSM, CHM)
-  - **generation/**: Génération de tuiles et masques
-  - **datasets/**: Datasets PyTorch pour segmentation et régression
-  - **normalization/**: Normalisation des données
-  - **loaders/**: DataLoaders optimisés
-  - **storage/**: Stockage et gestion persistante des données
-
-- **models/**: Architectures de réseaux de neurones
-  - **base.py**: Classes abstraites et de base
-  - **registry.py**: Registre des modèles avec décorateurs
-  - **unet/**: Implémentations de U-Net (base, FiLM, CBAM)
-  - **deeplabv3/**: Implémentations de DeepLabV3+
-  - **unet_regression/**: U-Net pour les tâches de régression
-  - **blocks/**: Blocs d'architecture réutilisables
-  - **export/**: Fonctionnalités d'export de modèles
-
-- **training/**: Logique d'entraînement
-  - **trainer.py**: Classe principale d'entraînement
-  - **metrics/**: Métriques d'évaluation (segmentation, régression)
-  - **loss/**: Fonctions de perte personnalisées
-  - **callbacks/**: Système de callbacks
-  - **optimization/**: Techniques d'optimisation
-
-- **utils/**: Fonctions utilitaires
-  - **visualization/**: Visualisation des données et résultats
-  - **io/**: Opérations d'entrée/sortie
-  - **profiling/**: Outils de profilage
-  - **errors.py**: Gestion hiérarchique des erreurs
-
-- **cli/**: Interface en ligne de commande
-  - **preprocessing_cli.py**: CLI pour le prétraitement
-  - **training_cli.py**: CLI pour l'entraînement
-
-- **benchmarking/**: Comparaison de modèles
-  - **comparison.py**: Comparaison systématique des modèles
-  - **metrics.py**: Suivi et agrégation des métriques
-  - **visualization.py**: Visualisations comparatives
-  - **reporting.py**: Génération de rapports
-
-- **examples/**: Exemples d'utilisation
-  - Scripts d'exemple pour diverses tâches
-  - Démonstration des fonctionnalités
-
-## Principes de conception
-
-ForestGaps-DL est conçu selon les principes SOLID :
-
-1. **Principe de responsabilité unique (S)** : Chaque module et classe a une responsabilité unique et bien définie.
-2. **Principe ouvert/fermé (O)** : L'architecture permet d'étendre les fonctionnalités sans modifier le code existant (via les registres et les classes abstraites).
-3. **Principe de substitution de Liskov (L)** : Les classes dérivées peuvent remplacer leurs classes de base sans altérer le comportement.
-4. **Principe de ségrégation d'interface (I)** : Des interfaces spécifiques sont préférées aux interfaces générales.
-5. **Principe d'inversion de dépendance (D)** : Les modules dépendent d'abstractions, pas d'implémentations concrètes.
+- Python 3.8+
+- PyTorch 1.8.0+
+- Système d'exploitation : Windows, macOS ou Linux
+- GPU compatible CUDA (recommandé mais facultatif)
 
 ## Installation
 
 ### Installation locale
 
 ```bash
-# Cloner le dépôt
+# Installation depuis GitHub
+pip install git+https://github.com/arthur048/forestgaps-dl.git
+
+# Installation en mode développement (après clone)
 git clone https://github.com/arthur048/forestgaps-dl.git
 cd forestgaps-dl
-
-# Installation en mode développement
 pip install -e .
 ```
 
-### Utilisation dans Google Colab
+### Installation sur Google Colab
 
 ```python
-# Installation du package depuis GitHub
-!pip install git+https://github.com/arthur048/forestgaps-dl.git
+# Méthode recommandée : script d'installation optimisé
+!wget -O colab_install.py https://raw.githubusercontent.com/arthur048/forestgaps-dl/main/colab_install.py
+%run colab_install.py
 
-# Import et configuration de l'environnement
-from forestgaps_dl.environment import setup_environment
-env = setup_environment()  # Détecte et configure automatiquement l'environnement Colab
+# Redémarrer le runtime puis :
+from forestgaps.environment import setup_environment
+env = setup_environment()
 ```
 
-## Utilisation rapide
+## Guide de démarrage rapide
 
-### Prétraitement des données
+### 1. Configuration de l'environnement
 
 ```python
-from forestgaps_dl.config import load_default_config
-from forestgaps_dl.data.preprocessing import process_raster_pair_robustly
-from forestgaps_dl.data.generation import create_gap_masks
+# Détection et configuration automatiques de l'environnement
+from forestgaps.environment import setup_environment
 
-# Charger la configuration par défaut
+# Configure l'environnement (Colab ou local)
+env = setup_environment()
+```
+
+### 2. Prétraitement des données
+
+```python
+from forestgaps.config import load_default_config
+from forestgaps.data.preprocessing import process_raster_pair_robustly
+from forestgaps.data.generation import create_gap_masks
+
+# Charger la configuration
 config = load_default_config()
 
-# Prétraiter une paire de rasters DSM/CHM
-result = process_raster_pair_robustly("path/to/dsm.tif", "path/to/chm.tif", "site1", config)
+# Prétraiter une paire DSM/CHM
+result = process_raster_pair_robustly(
+    dsm_path="path/to/dsm.tif", 
+    chm_path="path/to/chm.tif", 
+    site_name="site1", 
+    config=config
+)
 
 # Créer des masques de trouées à différents seuils
-thresholds = [2.0, 5.0, 10.0, 15.0]
-mask_paths = create_gap_masks(result["aligned_chm"], thresholds, config.PROCESSED_DIR, "site1")
+thresholds = [2.0, 5.0, 10.0]
+mask_paths = create_gap_masks(
+    chm_path=result["aligned_chm"], 
+    thresholds=thresholds,
+    output_dir=config.PROCESSED_DIR, 
+    site_name="site1"
+)
 ```
 
-### Entraînement d'un modèle
+### 3. Entraînement d'un modèle
 
 ```python
-from forestgaps_dl.config import load_default_config
-from forestgaps_dl.models import create_model
-from forestgaps_dl.data.loaders import create_data_loaders
-from forestgaps_dl.training import Trainer
+from forestgaps.config import load_default_config
+from forestgaps.models import create_model
+from forestgaps.data.loaders import create_data_loaders
+from forestgaps.training import Trainer
 
 # Charger la configuration
 config = load_default_config()
@@ -318,7 +116,7 @@ data_loaders = create_data_loaders(config)
 # Créer un modèle
 model = create_model("unet_film")
 
-# Créer et configurer le trainer
+# Configurer et lancer l'entraînement
 trainer = Trainer(
     model=model,
     config=config,
@@ -331,58 +129,151 @@ trainer = Trainer(
 results = trainer.train(epochs=50)
 ```
 
-### Comparaison de modèles
+### 4. Inférence avec un modèle entraîné
 
 ```python
-from forestgaps_dl.config import load_default_config
-from forestgaps_dl.benchmarking import ModelComparison
+from forestgaps.inference import run_inference
 
-# Définir les modèles à comparer
-model_configs = [
-    {"name": "unet", "display_name": "U-Net Base"},
-    {"name": "unet_film", "display_name": "U-Net FiLM"},
-    {"name": "deeplabv3_plus", "display_name": "DeepLabV3+"}
-]
-
-# Créer et exécuter la comparaison
-benchmark = ModelComparison(
-    model_configs=model_configs,
-    base_config=load_default_config(),
-    threshold_values=[2.0, 5.0, 10.0, 15.0]
+# Exécuter l'inférence sur un nouveau DSM
+result = run_inference(
+    model_path="path/to/model.pt",
+    dsm_path="path/to/new_dsm.tif",
+    output_path="path/to/prediction.tif",
+    threshold=5.0
 )
 
-# Exécuter la comparaison
-results = benchmark.run()
-
-# Visualiser les résultats
-benchmark.visualize_results()
+# Visualiser et sauvegarder les résultats
+result.visualize()
+result.save("path/to/outputs")
 ```
 
-## Documentation des modules
+### 5. Évaluation de modèles
 
-Pour une documentation détaillée de chaque module, consultez les fichiers README.md dans les répertoires correspondants :
+```python
+from forestgaps.evaluation import compare_models
 
-- [Configuration (config)](config/README.md)
-- [Environnement (environment)](environment/README.md)
-- [Données (data)](data/README.md)
-- [Modèles (models)](models/README.md)
-- [Entraînement (training)](training/README.md)
-- [Utilitaires (utils)](utils/README.md)
-- [Interface CLI (cli)](cli/README.md)
-- [Benchmarking (benchmarking)](benchmarking/README.md)
+# Comparer différents modèles
+models = {
+    "unet": "path/to/unet.pt",
+    "unet_film": "path/to/unet_film.pt",
+    "deeplabv3plus": "path/to/deeplabv3plus.pt"
+}
 
-## Compatibilité environnements
+# Évaluer sur une paire DSM/CHM
+results = compare_models(
+    model_paths=models,
+    dsm_path="path/to/dsm.tif",
+    chm_path="path/to/chm.tif",
+    output_dir="path/to/comparison",
+    thresholds=[2.0, 5.0, 10.0]
+)
+```
 
-Le package est conçu pour fonctionner de manière transparente dans différents environnements :
+## Utilisation Docker
 
-- **Google Colab**: Détection et configuration automatiques
-- **Environnement local**: Utilisation optimale des ressources locales
-- **CLI**: Exécution via ligne de commande pour les tâches batch
+ForestGaps-DL peut être utilisé via Docker pour garantir un environnement cohérent et portable :
+
+```bash
+# Construire les images Docker
+bash scripts/docker-build.sh
+
+# Exécuter un modèle en inférence
+bash scripts/docker-run.sh predict --model /app/models/model.pt --input /app/data/input.tif
+```
+
+Plus d'informations dans la [documentation Docker](docker/README.md).
+
+## Documentation détaillée
+
+Pour une documentation complète de chaque module :
+
+- [Module Environment](environment/README.md) - Configuration de l'environnement
+- [Module Evaluation](evaluation/README.md) - Évaluation des modèles
+- [Module Inference](inference/README.md) - Inférence avec modèles entraînés
+
+Une documentation technique complète pour les LLM est disponible dans [context_llm.md](context_llm.md).
+
+## Projet d'extension
+
+ForestGaps-DL est en développement actif. Voici nos principaux axes de développement :
+
+- Support pour d'autres types de données géospatiales (Sentinel-2, LiDAR, etc.)
+- Ajout de nouvelles architectures de modèles plus performantes
+- Outils d'analyse spatiale pour les trouées détectées
+- Interface graphique pour faciliter l'utilisation
+
+## Contribution
+
+Les contributions sont les bienvenues ! Pour contribuer :
+
+1. Forkez le dépôt
+2. Créez une branche pour votre fonctionnalité (`git checkout -b feature/ma-fonctionnalite`)
+3. Faites vos modifications en respectant les conventions de code
+4. Soumettez une pull request
+
+## Auteur
+
+- Arthur - [GitHub](https://github.com/arthur048)
 
 ## Licence
 
 Ce projet est sous licence [MIT](LICENSE).
 
-## Auteur
+---
 
-Arthur VDL
+# English version
+
+**ForestGaps-DL** is a Python library for automatic detection and analysis of forest gaps using deep learning.
+
+## Overview
+
+ForestGaps-DL analyzes Digital Surface Models (DSM) and Canopy Height Models (CHM) to:
+- **Identify** forest canopy gaps with precision
+- **Evaluate** their geometric characteristics
+- **Compare** different deep learning approaches
+
+The library is compatible with both local environments and Google Colab, offering maximum flexibility based on your needs.
+
+## Key Features
+
+- 🔍 **Segmentation** of forest gaps with various models (U-Net, DeepLabV3+, etc.)
+- 📏 **Estimation** of canopy heights through regression
+- 🔄 **Preprocessing** of optimized geospatial data
+- 📈 **Evaluation** with comprehensive metrics
+- 🔮 **Inference** on new forest areas
+- 📊 **Benchmarking** of different architectures
+
+## Requirements
+
+- Python 3.8+
+- PyTorch 1.8.0+
+- Operating System: Windows, macOS, or Linux
+- CUDA-compatible GPU (recommended but optional)
+
+## Installation
+
+### Local Installation
+
+```bash
+# Installation from GitHub
+pip install git+https://github.com/arthur048/forestgaps-dl.git
+
+# Development installation (after cloning)
+git clone https://github.com/arthur048/forestgaps-dl.git
+cd forestgaps-dl
+pip install -e .
+```
+
+### Google Colab Installation
+
+```python
+# Recommended method: optimized installation script
+!wget -O colab_install.py https://raw.githubusercontent.com/arthur048/forestgaps-dl/main/colab_install.py
+%run colab_install.py
+
+# Restart the runtime then:
+from forestgaps.environment import setup_environment
+env = setup_environment()
+```
+
+For detailed instructions and examples in English, see the documentation linked above. 

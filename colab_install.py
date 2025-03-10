@@ -52,8 +52,12 @@ def install_package():
         
         # Vérifier si le package est importable
         try:
-            import forestgaps_dl
-            print(f"✅ Module forestgaps_dl importé avec succès (version: {forestgaps_dl.__version__ if hasattr(forestgaps_dl, '__version__') else 'inconnue'}).")
+            import forestgaps
+            print(f"✅ Package forestgaps importé avec succès (version: {forestgaps.__version__ if hasattr(forestgaps, '__version__') else 'inconnue'}).")
+            
+            # Vérifier si les modules principaux sont importables
+            from forestgaps.environment import setup_environment
+            print("✅ Module environment importé avec succès.")
         except ImportError as e:
             print(f"❌ Échec de l'importation du module: {str(e)}")
             print("⚠️ Redémarrez le runtime Colab et essayez d'importer le module à nouveau.")
@@ -115,7 +119,7 @@ def main():
     if install_ok:
         print("\n✅ Installation terminée avec succès!")
         print("ℹ️ Pour utiliser ForestGaps-DL, redémarrez le runtime Colab, puis importez le module comme suit:")
-        print("\nfrom forestgaps_dl.environment import setup_environment")
+        print("\nfrom forestgaps.environment import setup_environment")
         print("env = setup_environment()\n")
     else:
         print("\n❌ Installation échouée.")
