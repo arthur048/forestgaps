@@ -107,7 +107,7 @@ from pathlib import Path
 import torch
 from torch import nn
 
-from data.normalization import (
+from forestgaps.data.normalization import (
     NormalizationStatistics, compute_normalization_statistics,
     NormalizationLayer, AdaptiveNormalization, create_normalization_layer,
     plot_stats_histogram, generate_stats_report

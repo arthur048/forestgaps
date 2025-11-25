@@ -326,7 +326,7 @@ model = MyModel().to(device)
 from forestgaps.config import load_default_config
 
 # Import plus avancé pour manipuler des configurations
-from forestgaps.config import Config, load_config_from_file, create_config_from_dict
+from forestgaps.config import forestgaps.config, load_config_from_file, create_config_from_dict
 ```
 
 #### Classes

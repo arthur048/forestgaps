@@ -93,8 +93,8 @@ Le module dépend des bibliothèques suivantes :
 
 ```python
 import torch
-from data.datasets import ForestGapDataset
-from data.loaders import create_calibrated_dataloader, TarArchiveDataset
+from forestgaps.data.datasets import ForestGapDataset
+from forestgaps.data.loaders import create_calibrated_dataloader, TarArchiveDataset
 
 # Exemple 1: Création d'un DataLoader calibré
 dataset = ForestGapDataset(input_paths, mask_paths)

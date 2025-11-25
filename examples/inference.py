@@ -25,7 +25,7 @@ from tqdm import tqdm
 # Assurer que le package est dans le PATH
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from forestgaps.config import ConfigurationManager
+from forestgaps.config import forestgaps.configurationManager
 from forestgaps.environment import setup_environment
 from forestgaps.models import load_model
 from forestgaps.data.normalization import apply_normalization

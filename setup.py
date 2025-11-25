@@ -30,7 +30,7 @@ setup(
         "scikit-image>=0.18.0",
     ],
     author="Arthur",
-    author_email="arthurvdl048@email.com",
+    author_email="vdlinden.arthur@gmail.com",
     description="Bibliothèque PyTorch pour la détection et l'analyse des trouées forestières avec le deep learning.",
     url="https://github.com/arthur048/forestgaps",
     python_requires='>=3.8',

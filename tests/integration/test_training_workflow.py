@@ -12,7 +12,7 @@ import torch
 import numpy as np
 from unittest.mock import patch, MagicMock, ANY
 
-from forestgaps.config import ConfigurationManager
+from forestgaps.config import forestgaps.configurationManager
 from forestgaps.data.datasets import GapDataset
 from forestgaps.data.loaders import create_data_loaders
 from forestgaps.models import create_model, ModelRegistry

@@ -10,14 +10,14 @@ import sys
 import pytest
 from unittest.mock import patch, MagicMock
 
-from environment import (
+from forestgaps.environment import (
     detect_environment,
     setup_environment,
     get_device
 )
-from environment.base import Environment
-from environment.colab import ColabEnvironment
-from environment.local import LocalEnvironment
+from forestgaps.environment.base import Environment
+from forestgaps.environment.colab import ColabEnvironment
+from forestgaps.environment.local import LocalEnvironment
 
 # ===================================================================================================
 # Tests pour la détection de l'environnement

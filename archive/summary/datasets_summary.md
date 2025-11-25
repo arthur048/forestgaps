@@ -75,7 +75,7 @@ Le module dépend des bibliothèques suivantes:
 import torch
 import logging
 from torch.utils.data import DataLoader
-from data.datasets import ForestGapDataset, BalancedGapSampler, ForestGapTransforms
+from forestgaps.data.datasets import ForestGapDataset, BalancedGapSampler, ForestGapTransforms
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)

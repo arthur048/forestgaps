@@ -66,7 +66,7 @@ Le module dépend des bibliothèques suivantes:
 
 ```python
 import logging
-from data.preprocessing import align_rasters, analyze_raster_pair, convert_to_numpy
+from forestgaps.data.preprocessing import align_rasters, analyze_raster_pair, convert_to_numpy
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO)

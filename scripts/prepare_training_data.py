@@ -38,9 +38,9 @@ from collections import defaultdict
 # Ajouter le package au path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from data.preprocessing.alignment import check_alignment, align_rasters
-from data.generation.masks import create_binary_mask
-from data.generation.tiling import create_tile_grid, extract_tile
+from forestgaps.data.preprocessing.alignment import check_alignment, align_rasters
+from forestgaps.data.generation.masks import create_binary_mask
+from forestgaps.data.generation.tiling import create_tile_grid, extract_tile
 
 
 # Configuration du logging

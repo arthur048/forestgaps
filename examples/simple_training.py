@@ -22,7 +22,7 @@ from pathlib import Path
 # Assurer que le package est dans le PATH
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from forestgaps.config import ConfigurationManager
+from forestgaps.config import forestgaps.configurationManager
 from forestgaps.environment import setup_environment
 from forestgaps.data.loaders import create_data_loaders
 from forestgaps.models import create_model

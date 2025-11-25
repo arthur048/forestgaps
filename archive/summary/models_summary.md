@@ -106,7 +106,7 @@ UNet3+ représente l'état de l'art en matière de segmentation d'images, avec u
 
 ```python
 import torch
-from models import UNet
+from forestgaps.models import UNet
 
 # Créer un modèle U-Net
 model = UNet(
@@ -129,7 +129,7 @@ with torch.no_grad():
 
 ```python
 import torch
-from models import FiLMUNet
+from forestgaps.models import FiLMUNet
 
 # Créer un modèle FiLM U-Net
 model = FiLMUNet(
