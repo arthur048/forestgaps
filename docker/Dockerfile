@@ -2,7 +2,7 @@
 # ForestGaps Docker Image
 # ============================================
 # Multi-stage Dockerfile for forest canopy gap detection
-# Combines PyTorch (CUDA 12.4) + GDAL 3.8.0 for geospatial deep learning
+# Combines PyTorch (CUDA 12.4) + GDAL 3.8.5 for geospatial deep learning
 #
 # Build: docker build -f docker/Dockerfile -t forestgaps:latest .
 # Run:   docker run --gpus all -v ./data:/app/data forestgaps:latest
@@ -11,8 +11,8 @@
 # ============================================
 # Stage 1: GDAL Builder
 # ============================================
-# Provides pre-compiled GDAL 3.8.0 with system libraries
-FROM osgeo/gdal:ubuntu-small-3.8.0 AS gdal-builder
+# Provides pre-compiled GDAL 3.8.5 with system libraries
+FROM ghcr.io/osgeo/gdal:ubuntu-small-3.8.5 AS gdal-builder
 
 LABEL stage=builder
 LABEL description="GDAL system libraries builder"
@@ -36,7 +36,7 @@ LABEL version="0.1.1"
 LABEL python.version="3.10"
 LABEL cuda.version="12.4"
 LABEL pytorch.version="2.4.0"
-LABEL gdal.version="3.8.0"
+LABEL gdal.version="3.8.5"
 
 # Prevent interactive prompts during build
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -58,19 +58,28 @@ COPY --from=gdal-builder /usr/bin/gdal* /usr/bin/
 COPY --from=gdal-builder /usr/bin/ogr* /usr/bin/
 COPY --from=gdal-builder /usr/bin/proj* /usr/bin/
 
+# Copy GDAL development headers (needed for pip install GDAL)
+COPY --from=gdal-builder /usr/include/gdal /usr/include/gdal/
+COPY --from=gdal-builder /usr/include/cpl_*.h /usr/include/
+COPY --from=gdal-builder /usr/include/ogr_*.h /usr/include/
+COPY --from=gdal-builder /usr/include/gdal*.h /usr/include/
+
 # Set GDAL environment variables (CRITICAL for rasterio)
 ENV GDAL_DATA=/usr/share/gdal \
     PROJ_LIB=/usr/share/proj \
     GDAL_CONFIG=/usr/bin/gdal-config \
     LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
-# Install essential system dependencies
+# Install essential system dependencies including build tools for GDAL Python bindings
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     libspatialindex-dev \
     git \
     curl \
     ca-certificates \
+    build-essential \
+    g++ \
+    gcc \
     && rm -rf /var/lib/apt/lists/*
 
 # ============================================
@@ -101,6 +110,7 @@ RUN GDAL_VERSION=$(gdal-config --version) && \
     pip install --no-cache-dir GDAL==$GDAL_VERSION
 
 # 2. Install geospatial stack (depends on GDAL)
+# Note: Using versions compatible with GDAL 3.8.5
 RUN pip install --no-cache-dir \
     rasterio==1.3.9 \
     shapely==2.0.2 \
