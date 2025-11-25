@@ -48,6 +48,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # Copy GDAL libraries and binaries from builder stage
 COPY --from=gdal-builder /usr/lib/x86_64-linux-gnu/libgdal* /usr/lib/x86_64-linux-gnu/
 COPY --from=gdal-builder /usr/lib/x86_64-linux-gnu/libproj* /usr/lib/x86_64-linux-gnu/
+# Copy PROJ 9.x from /usr/local/lib (used by GDAL)
+COPY --from=gdal-builder /usr/local/lib/libproj.so* /usr/local/lib/
+COPY --from=gdal-builder /usr/local/lib/libinternalproj.so* /usr/local/lib/
 COPY --from=gdal-builder /usr/lib/x86_64-linux-gnu/libgeos* /usr/lib/x86_64-linux-gnu/
 COPY --from=gdal-builder /usr/lib/x86_64-linux-gnu/libspatialite* /usr/lib/x86_64-linux-gnu/
 COPY --from=gdal-builder /usr/lib/x86_64-linux-gnu/libspatialindex* /usr/lib/x86_64-linux-gnu/
@@ -70,7 +73,7 @@ COPY --from=gdal-builder /usr/include/*dataset.h /usr/include/
 ENV GDAL_DATA=/usr/share/gdal \
     PROJ_LIB=/usr/share/proj \
     GDAL_CONFIG=/usr/bin/gdal-config \
-    LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+    LD_LIBRARY_PATH=/usr/local/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
 # Install essential system dependencies including build tools for GDAL Python bindings
 RUN apt-get update && apt-get install -y --no-install-recommends \
