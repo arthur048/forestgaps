@@ -49,7 +49,7 @@ residual_unet
 schema
 scipy
 segmentation
-setuptools==70.0.0
+setuptools==78.1.1
 shapely==2.0.2
 skimage
 sklearn
