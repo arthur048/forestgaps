@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-Exemple d'utilisation du système de configuration de ForestGaps-DL.
+Exemple d'utilisation du système de configuration de ForestGaps.
 
 Ce script montre comment charger, modifier et sauvegarder des configurations
-pour le projet ForestGaps-DL.
+pour le projet ForestGaps.
 """
 
 import os
@@ -16,7 +16,7 @@ from pathlib import Path
 # Ajouter le répertoire parent au chemin de recherche des modules
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from forestgaps_dl.config import (
+from forestgaps.config import (
     load_default_config,
     load_config_from_file,
     create_config_from_dict

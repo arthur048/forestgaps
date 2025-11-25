@@ -1,7 +1,7 @@
 # Résumé de la migration de la classe Config
 
 ## Objectif
-Migrer la classe Config des fichiers legacy (`forestgaps_dl_u_net_training.py` et `forestgaps_dl_data_preparation.py`) vers une structure plus moderne avec des schémas YAML.
+Migrer la classe Config des fichiers legacy (`forestgaps_u_net_training.py` et `forestgaps_data_preparation.py`) vers une structure plus moderne avec des schémas YAML.
 
 ## Fichiers créés ou modifiés
 
@@ -40,7 +40,7 @@ Migrer la classe Config des fichiers legacy (`forestgaps_dl_u_net_training.py` e
 
 ```python
 # Charger la configuration par défaut
-from forestgaps_dl.config import load_default_config
+from forestgaps.config import load_default_config
 config = load_default_config()
 
 # Accéder aux paramètres

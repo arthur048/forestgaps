@@ -1,6 +1,6 @@
 # Module d'entraînement (training)
 
-Ce module fournit des classes et des fonctions pour l'entraînement des modèles de segmentation dans le cadre du projet forestgaps-dl. Il implémente un système modulaire et extensible pour entrainer, évaluer et tester des modèles de détection de trouées forestières.
+Ce module fournit des classes et des fonctions pour l'entraînement des modèles de segmentation dans le cadre du projet forestgaps. Il implémente un système modulaire et extensible pour entrainer, évaluer et tester des modèles de détection de trouées forestières.
 
 ## Structure du module
 
@@ -35,7 +35,7 @@ training/
 La classe `Trainer` est le point central du module, encapsulant toute la logique d'entraînement, de validation et de test. Elle s'occupe également de la gestion des points de contrôle, des métriques et de l'optimisation.
 
 ```python
-from forestgaps_dl.training import Trainer
+from forestgaps.training import Trainer
 
 trainer = Trainer(
     model=model,
@@ -54,8 +54,8 @@ test_metrics = trainer.test()
 Le module inclut un système avancé de métriques pour évaluer les performances des modèles de segmentation, avec un support spécifique pour les métriques par seuil de hauteur.
 
 ```python
-from forestgaps_dl.training.metrics.segmentation import SegmentationMetrics
-from forestgaps_dl.training.metrics.classification import ThresholdMetrics
+from forestgaps.training.metrics.segmentation import SegmentationMetrics
+from forestgaps.training.metrics.classification import ThresholdMetrics
 
 # Métriques générales de segmentation
 metrics = SegmentationMetrics(device="cuda")
@@ -73,8 +73,8 @@ threshold_results = threshold_metrics.compute()
 Le module propose plusieurs fonctions de perte adaptées à la segmentation, notamment une perte combinée Focal+Dice avec pondération par seuil.
 
 ```python
-from forestgaps_dl.training.loss.combined import CombinedFocalDiceLoss
-from forestgaps_dl.training.loss.factory import create_loss_function
+from forestgaps.training.loss.combined import CombinedFocalDiceLoss
+from forestgaps.training.loss.factory import create_loss_function
 
 # Utilisation directe
 loss_fn = CombinedFocalDiceLoss(alpha=0.5, gamma=2.0)
@@ -88,8 +88,8 @@ loss_fn = create_loss_function(config)
 Un système de callbacks permet de personnaliser le comportement de l'entraînement, avec des callbacks prédéfinis pour le logging, les points de contrôle, la visualisation, etc.
 
 ```python
-from forestgaps_dl.training.callbacks.logging import LoggingCallback
-from forestgaps_dl.training.callbacks.checkpointing import CheckpointingCallback
+from forestgaps.training.callbacks.logging import LoggingCallback
+from forestgaps.training.callbacks.checkpointing import CheckpointingCallback
 
 callbacks = [
     LoggingCallback(log_dir="logs"),
@@ -104,8 +104,8 @@ trainer = Trainer(..., callbacks=callbacks)
 Le module inclut des techniques d'optimisation avancées comme le scheduler de learning rate adaptatif, le gradient clipping ou la régularisation composite.
 
 ```python
-from forestgaps_dl.training.optimization.regularization import CompositeRegularization
-from forestgaps_dl.training.optimization.lr_schedulers import create_scheduler
+from forestgaps.training.optimization.regularization import CompositeRegularization
+from forestgaps.training.optimization.lr_schedulers import create_scheduler
 
 # Régularisation avancée
 reg = CompositeRegularization(
@@ -124,7 +124,7 @@ scheduler = create_scheduler(optimizer, config, len(train_loader))
 ### Entraînement basique
 
 ```python
-from forestgaps_dl.training import train_model
+from forestgaps.training import train_model
 
 model, history = train_model(
     model=model,
@@ -138,7 +138,7 @@ model, history = train_model(
 ### Contrôle plus fin avec la classe Trainer
 
 ```python
-from forestgaps_dl.training import Trainer
+from forestgaps.training import Trainer
 
 # Initialisation
 trainer = Trainer(

@@ -8,8 +8,8 @@ import numpy as np
 import torch
 from unittest.mock import patch, MagicMock
 
-from forestgaps_dl.inference import InferenceManager, InferenceConfig, run_inference
-from forestgaps_dl.evaluation import ExternalEvaluator, EvaluationConfig, evaluate_model
+from forestgaps.inference import InferenceManager, InferenceConfig, run_inference
+from forestgaps.evaluation import ExternalEvaluator, EvaluationConfig, evaluate_model
 
 
 class TestInferenceEvaluationIntegration:
@@ -53,10 +53,10 @@ class TestInferenceEvaluationIntegration:
         
         return dsm, chm, metadata
     
-    @patch("forestgaps_dl.inference.core.torch.load")
-    @patch("forestgaps_dl.inference.core.load_raster")
-    @patch("forestgaps_dl.inference.core.save_raster")
-    @patch("forestgaps_dl.evaluation.core.load_raster")
+    @patch("forestgaps.inference.core.torch.load")
+    @patch("forestgaps.inference.core.load_raster")
+    @patch("forestgaps.inference.core.save_raster")
+    @patch("forestgaps.evaluation.core.load_raster")
     def test_inference_to_evaluation_workflow(self, mock_eval_load_raster, mock_save_raster, 
                                              mock_inf_load_raster, mock_torch_load, 
                                              mock_model, mock_raster_data, tmp_path):
@@ -133,7 +133,7 @@ class TestInferenceEvaluationIntegration:
         )
         
         # Remplacer la méthode predict de l'InferenceManager pour utiliser notre résultat simulé
-        with patch("forestgaps_dl.evaluation.core.InferenceManager") as mock_inf_manager:
+        with patch("forestgaps.evaluation.core.InferenceManager") as mock_inf_manager:
             mock_inf_manager_instance = MagicMock()
             mock_inf_manager_instance.predict.return_value = inference_result
             mock_inf_manager.return_value = mock_inf_manager_instance
@@ -154,10 +154,10 @@ class TestInferenceEvaluationIntegration:
         assert 5.0 in evaluation_result.metrics["by_threshold"]
         assert 10.0 in evaluation_result.metrics["by_threshold"]
         
-    @patch("forestgaps_dl.inference.torch.load")
-    @patch("forestgaps_dl.inference.load_raster")
-    @patch("forestgaps_dl.evaluation.torch.load")
-    @patch("forestgaps_dl.evaluation.load_raster")
+    @patch("forestgaps.inference.torch.load")
+    @patch("forestgaps.inference.load_raster")
+    @patch("forestgaps.evaluation.torch.load")
+    @patch("forestgaps.evaluation.load_raster")
     def test_high_level_api_integration(self, mock_eval_load_raster, mock_eval_torch_load,
                                        mock_inf_load_raster, mock_inf_torch_load,
                                        mock_model, mock_raster_data, tmp_path):
@@ -188,8 +188,8 @@ class TestInferenceEvaluationIntegration:
         os.makedirs(output_dir, exist_ok=True)
         
         # Remplacer les fonctions d'inférence et d'évaluation par des mocks
-        with patch("forestgaps_dl.inference.InferenceManager") as mock_inf_manager, \
-             patch("forestgaps_dl.evaluation.ExternalEvaluator") as mock_evaluator:
+        with patch("forestgaps.inference.InferenceManager") as mock_inf_manager, \
+             patch("forestgaps.evaluation.ExternalEvaluator") as mock_evaluator:
             
             # Configurer le mock pour InferenceManager
             mock_inf_result = MagicMock()
@@ -213,7 +213,7 @@ class TestInferenceEvaluationIntegration:
             mock_evaluator.return_value = mock_evaluator_instance
             
             # 1. Exécuter l'inférence avec l'API de haut niveau
-            with patch("forestgaps_dl.inference.InferenceManager", return_value=mock_inf_manager_instance):
+            with patch("forestgaps.inference.InferenceManager", return_value=mock_inf_manager_instance):
                 inference_result = run_inference(
                     model_path="test/model.pt",
                     dsm_path=dsm_path,
@@ -223,7 +223,7 @@ class TestInferenceEvaluationIntegration:
                 )
             
             # 2. Exécuter l'évaluation avec l'API de haut niveau
-            with patch("forestgaps_dl.evaluation.ExternalEvaluator", return_value=mock_evaluator_instance):
+            with patch("forestgaps.evaluation.ExternalEvaluator", return_value=mock_evaluator_instance):
                 evaluation_result = evaluate_model(
                     model_path="test/model.pt",
                     dsm_path=dsm_path,

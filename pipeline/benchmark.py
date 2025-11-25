@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script de benchmark pour ForestGaps-DL.
+Script de benchmark pour ForestGaps.
 
 Ce script permet de comparer systématiquement les performances de différentes
 architectures de modèles sur les mêmes données. Il génère des rapports détaillés
@@ -28,19 +28,19 @@ from tabulate import tabulate
 # Assurer que le package est dans le PATH
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from forestgaps_dl.config import ConfigurationManager, load_default_config
-from forestgaps_dl.environment import setup_environment
-from forestgaps_dl.utils.errors import ForestGapsError
-from forestgaps_dl.utils.logging import setup_logging
-from forestgaps_dl.models import create_model, ModelRegistry
-from forestgaps_dl.data.loaders import create_data_loaders
-from forestgaps_dl.training import Trainer
-from forestgaps_dl.training.callbacks import (
+from forestgaps.config import ConfigurationManager, load_default_config
+from forestgaps.environment import setup_environment
+from forestgaps.utils.errors import ForestGapsError
+from forestgaps.utils.logging import setup_logging
+from forestgaps.models import create_model, ModelRegistry
+from forestgaps.data.loaders import create_data_loaders
+from forestgaps.training import Trainer
+from forestgaps.training.callbacks import (
     TensorBoardCallback,
     ModelCheckpointCallback,
     EarlyStoppingCallback
 )
-from forestgaps_dl.utils.visualization import (
+from forestgaps.utils.visualization import (
     visualize_metrics_comparison,
     visualize_training_curves,
     create_comparison_table
@@ -58,7 +58,7 @@ def parse_arguments():
         argparse.Namespace: Les arguments analysés.
     """
     parser = argparse.ArgumentParser(
-        description='Script de benchmark pour ForestGaps-DL'
+        description='Script de benchmark pour ForestGaps'
     )
     parser.add_argument(
         '--config',
@@ -254,8 +254,8 @@ def evaluate_model_for_benchmark(model_info, config, env, data_loaders, dirs, lo
     """
     logger.info(f"Évaluation du modèle: {model_info['model_type']}")
     
-    from forestgaps_dl.models import load_model
-    from forestgaps_dl.training.metrics import SegmentationMetrics
+    from forestgaps.models import load_model
+    from forestgaps.training.metrics import SegmentationMetrics
     
     # Charger le modèle
     model = load_model(model_info["best_model_path"])
@@ -399,7 +399,7 @@ def generate_html_report(benchmark_results, dirs):
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ForestGaps-DL - Rapport de Benchmark</title>
+        <title>ForestGaps - Rapport de Benchmark</title>
         <style>
             body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
             h1, h2, h3 { color: #2c3e50; }
@@ -416,7 +416,7 @@ def generate_html_report(benchmark_results, dirs):
     </head>
     <body>
         <div class="container">
-            <h1>ForestGaps-DL - Rapport de Benchmark</h1>
+            <h1>ForestGaps - Rapport de Benchmark</h1>
             <p>Date: {date}</p>
             
             <h2>Résumé des performances</h2>
@@ -437,7 +437,7 @@ def generate_html_report(benchmark_results, dirs):
             {model_details}
             
             <footer>
-                <p>Généré par ForestGaps-DL Benchmark Tool</p>
+                <p>Généré par ForestGaps Benchmark Tool</p>
             </footer>
         </div>
     </body>
@@ -546,7 +546,7 @@ def run_benchmark(args):
     """
     # Configurer la journalisation
     logger = setup_logging(log_level=args.log_level)
-    logger.info("Démarrage du benchmark ForestGaps-DL")
+    logger.info("Démarrage du benchmark ForestGaps")
     
     try:
         # Charger la configuration

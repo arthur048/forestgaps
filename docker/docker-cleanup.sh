@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script de nettoyage des images Docker pour ForestGaps-DL
+# Script de nettoyage des images Docker pour ForestGaps
 
 # Définition des couleurs pour une meilleure lisibilité
 BLUE='\033[0;34m'
@@ -10,17 +10,17 @@ NC='\033[0m' # No Color
 
 # Fonction d'aide
 show_help() {
-    echo -e "${BLUE}ForestGaps-DL Docker Cleanup${NC}"
+    echo -e "${BLUE}ForestGaps Docker Cleanup${NC}"
     echo -e "Usage: $0 [OPTIONS]"
     echo
     echo -e "Options:"
     echo -e "  -h, --help       Afficher ce message d'aide"
     echo -e "  -a, --all        Supprimer tous les conteneurs et images Docker"
-    echo -e "  -c, --containers Supprimer uniquement les conteneurs liés à ForestGaps-DL"
-    echo -e "  -i, --images     Supprimer uniquement les images liées à ForestGaps-DL"
+    echo -e "  -c, --containers Supprimer uniquement les conteneurs liés à ForestGaps"
+    echo -e "  -i, --images     Supprimer uniquement les images liées à ForestGaps"
     echo -e "  -v, --volumes    Supprimer également les volumes Docker"
     echo
-    echo -e "Par défaut, seuls les conteneurs et images de ForestGaps-DL sont supprimés."
+    echo -e "Par défaut, seuls les conteneurs et images de ForestGaps sont supprimés."
     exit 0
 }
 
@@ -67,7 +67,7 @@ done
 
 # Nettoyer les conteneurs
 if [ "$CLEAN_CONTAINERS" = true ]; then
-    echo -e "${BLUE}Arrêt et suppression des conteneurs ForestGaps-DL...${NC}"
+    echo -e "${BLUE}Arrêt et suppression des conteneurs ForestGaps...${NC}"
     
     if [ "$CLEAN_ALL" = true ]; then
         echo -e "${YELLOW}Arrêt de tous les conteneurs Docker...${NC}"
@@ -75,34 +75,34 @@ if [ "$CLEAN_CONTAINERS" = true ]; then
         echo -e "${YELLOW}Suppression de tous les conteneurs Docker...${NC}"
         docker rm $(docker ps -a -q) 2>/dev/null || true
     else
-        # Arrêter et supprimer uniquement les conteneurs liés à ForestGaps-DL
-        forestgaps_containers=$(docker ps -a | grep forestgaps-dl | awk '{print $1}')
+        # Arrêter et supprimer uniquement les conteneurs liés à ForestGaps
+        forestgaps_containers=$(docker ps -a | grep forestgaps | awk '{print $1}')
         if [ -n "$forestgaps_containers" ]; then
-            echo -e "${YELLOW}Arrêt des conteneurs ForestGaps-DL...${NC}"
+            echo -e "${YELLOW}Arrêt des conteneurs ForestGaps...${NC}"
             docker stop $forestgaps_containers 2>/dev/null || true
-            echo -e "${YELLOW}Suppression des conteneurs ForestGaps-DL...${NC}"
+            echo -e "${YELLOW}Suppression des conteneurs ForestGaps...${NC}"
             docker rm $forestgaps_containers 2>/dev/null || true
         else
-            echo -e "${GREEN}Aucun conteneur ForestGaps-DL trouvé.${NC}"
+            echo -e "${GREEN}Aucun conteneur ForestGaps trouvé.${NC}"
         fi
     fi
 fi
 
 # Nettoyer les images
 if [ "$CLEAN_IMAGES" = true ]; then
-    echo -e "${BLUE}Suppression des images ForestGaps-DL...${NC}"
+    echo -e "${BLUE}Suppression des images ForestGaps...${NC}"
     
     if [ "$CLEAN_ALL" = true ]; then
         echo -e "${YELLOW}Suppression de toutes les images Docker...${NC}"
         docker rmi $(docker images -q) --force 2>/dev/null || true
     else
-        # Supprimer uniquement les images liées à ForestGaps-DL
-        forestgaps_images=$(docker images | grep forestgaps-dl | awk '{print $3}')
+        # Supprimer uniquement les images liées à ForestGaps
+        forestgaps_images=$(docker images | grep forestgaps | awk '{print $3}')
         if [ -n "$forestgaps_images" ]; then
-            echo -e "${YELLOW}Suppression des images ForestGaps-DL...${NC}"
+            echo -e "${YELLOW}Suppression des images ForestGaps...${NC}"
             docker rmi $forestgaps_images --force 2>/dev/null || true
         else
-            echo -e "${GREEN}Aucune image ForestGaps-DL trouvée.${NC}"
+            echo -e "${GREEN}Aucune image ForestGaps trouvée.${NC}"
         fi
     fi
 fi

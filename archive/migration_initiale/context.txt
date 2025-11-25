@@ -1,6 +1,6 @@
-Prompt de Contexte Global: ForestGaps-DL Package Refactorisation
+Prompt de Contexte Global: ForestGaps Package Refactorisation
 Vue d'ensemble du projet
-Ce projet consiste à refactoriser deux scripts monolithiques (forestgaps_dl_data_preparation.py et forestgaps_dl_u_net_training.py) en un package Python modulaire pour la détection de trouées forestières par deep learning. Le code utilise PyTorch et des techniques de traitement d'images géospatiales pour détecter les trouées forestières à partir de modèles numériques de surface (DSM) et de hauteur de canopée (CHM).
+Ce projet consiste à refactoriser deux scripts monolithiques (forestgaps_data_preparation.py et forestgaps_u_net_training.py) en un package Python modulaire pour la détection de trouées forestières par deep learning. Le code utilise PyTorch et des techniques de traitement d'images géospatiales pour détecter les trouées forestières à partir de modèles numériques de surface (DSM) et de hauteur de canopée (CHM).
 Objectifs principaux de la refactorisation
 
 Transformer le code en package Python modulaire suivant les principes SOLID
@@ -11,7 +11,7 @@ Assurer l'extensibilité pour de nouvelles architectures et fonctionnalités
 
 ARCHITECTURE DU PACKAGE:
 1. Refactorisation du module data/
-Nous devons extraire toutes les fonctionnalités de traitement des données de forestgaps_dl_data_preparation.py :
+Nous devons extraire toutes les fonctionnalités de traitement des données de forestgaps_data_preparation.py :
 text
 Apply to Objectif de ...
 data/
@@ -35,7 +35,7 @@ data/
     ├── factory.py            # Création des DataLoaders
     └── optimization.py       # Optimisation dynamique des paramètres
 2. Refactorisation du module models/
-Extraire les architectures des modèles de forestgaps_dl_u_net_training.py :
+Extraire les architectures des modèles de forestgaps_u_net_training.py :
 text
 Apply to Objectif de ...
 models/
@@ -57,7 +57,7 @@ models/
     ├── init.py
     └── conversion.py         # Conversion vers formats de déploiement
 3. Refactorisation du module training/
-Extraire la logique d'entraînement de forestgaps_dl_u_net_training.py :
+Extraire la logique d'entraînement de forestgaps_u_net_training.py :
 text
 Apply to Objectif de ...
 training/
@@ -154,7 +154,7 @@ Résumés de module dans /summary_tmp/
 
 Fichiers de référence
 
-Code legacy: archive/data_preparation/forestgaps_dl_data_preparation.py et archive/unet_training/forestgaps_dl_u_net_training.py
+Code legacy: archive/data_preparation/forestgaps_data_preparation.py et archive/unet_training/forestgaps_u_net_training.py
 Objectifs: archive/Objectif de migration.txt
 Résumés des modules: Consultez summary_tmp/ pour les modules déjà implémentés
 

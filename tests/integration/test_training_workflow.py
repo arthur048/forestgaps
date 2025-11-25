@@ -12,19 +12,19 @@ import torch
 import numpy as np
 from unittest.mock import patch, MagicMock, ANY
 
-from forestgaps_dl.config import ConfigurationManager
-from forestgaps_dl.data.datasets import GapDataset
-from forestgaps_dl.data.loaders import create_data_loaders
-from forestgaps_dl.models import create_model, ModelRegistry
-from forestgaps_dl.models.unet import UNet
-from forestgaps_dl.training import Trainer
-from forestgaps_dl.training.callbacks import (
+from forestgaps.config import ConfigurationManager
+from forestgaps.data.datasets import GapDataset
+from forestgaps.data.loaders import create_data_loaders
+from forestgaps.models import create_model, ModelRegistry
+from forestgaps.models.unet import UNet
+from forestgaps.training import Trainer
+from forestgaps.training.callbacks import (
     ModelCheckpointCallback,
     EarlyStoppingCallback,
     LearningRateSchedulerCallback
 )
-from forestgaps_dl.training.metrics import SegmentationMetrics
-from forestgaps_dl.environment import setup_environment, Environment
+from forestgaps.training.metrics import SegmentationMetrics
+from forestgaps.environment import setup_environment, Environment
 
 # ===================================================================================================
 # Fixtures pour les tests d'intégration du workflow d'entraînement
@@ -165,8 +165,8 @@ class TestTrainingWorkflow:
         assert mock_optimizer.called
         assert mock_loss.called
     
-    @patch('forestgaps_dl.training.Trainer._train_epoch')
-    @patch('forestgaps_dl.training.Trainer._validate')
+    @patch('forestgaps.training.Trainer._train_epoch')
+    @patch('forestgaps.training.Trainer._validate')
     def test_training_loop(self, mock_validate, mock_train_epoch, mock_config, mock_environment, mock_dataloader):
         """Tester la boucle d'entraînement complète."""
         # Configurer les mocks

@@ -11,7 +11,7 @@ import torch
 import numpy as np
 from unittest.mock import patch, MagicMock
 
-from forestgaps_dl.data.datasets import (
+from forestgaps.data.datasets import (
     GapDataset,
     GapRegressionDataset,
     TarArchiveDataset

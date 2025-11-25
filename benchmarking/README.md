@@ -63,8 +63,8 @@ Le module `reporting.py` permet de :
 ### Comparaison simple de modèles
 
 ```python
-from forestgaps_dl.config import load_default_config
-from forestgaps_dl.benchmarking import ModelComparison
+from forestgaps.config import load_default_config
+from forestgaps.benchmarking import ModelComparison
 
 # Définir les modèles à comparer
 model_configs = [
@@ -93,7 +93,7 @@ benchmark.generate_report("rapport_comparaison.html")
 ### Analyse approfondie des performances
 
 ```python
-from forestgaps_dl.benchmarking import MetricsAnalyzer
+from forestgaps.benchmarking import MetricsAnalyzer
 
 # Analyser les résultats d'une comparaison
 analyzer = MetricsAnalyzer(results)
@@ -111,7 +111,7 @@ sensitivity = analyzer.hyperparameter_sensitivity()
 ### Visualisations personnalisées
 
 ```python
-from forestgaps_dl.benchmarking import BenchmarkVisualizer
+from forestgaps.benchmarking import BenchmarkVisualizer
 
 # Créer un visualiseur avec les résultats
 visualizer = BenchmarkVisualizer(results)
@@ -131,7 +131,7 @@ visualizer.plot_metric_distributions("f1_score")
 Le module de benchmarking s'intègre avec l'interface en ligne de commande via le module `cli`, permettant d'exécuter des comparaisons de modèles directement depuis la ligne de commande :
 
 ```bash
-python -m forestgaps_dl.cli.benchmark --models unet,unet_film,deeplabv3_plus --thresholds 2,5,10,15 --output rapport.html
+python -m forestgaps.cli.benchmark --models unet,unet_film,deeplabv3_plus --thresholds 2,5,10,15 --output rapport.html
 ```
 
 ## Principes de conception

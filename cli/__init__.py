@@ -1,8 +1,8 @@
 """
-Module d'interface en ligne de commande pour ForestGaps-DL.
+Module d'interface en ligne de commande pour ForestGaps.
 
 Ce module fournit des interfaces en ligne de commande pour les différentes
-fonctionnalités du workflow ForestGaps-DL.
+fonctionnalités du workflow ForestGaps.
 """
 
 from . import preprocessing_cli

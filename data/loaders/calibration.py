@@ -66,7 +66,7 @@ class DataLoaderCalibrator:
         self.max_batch_size = max_batch_size
         self.num_batches = num_batches
         self.cache_calibration = cache_calibration
-        self.cache_dir = cache_dir or os.path.join(os.path.expanduser("~"), ".forestgaps_dl", "calibration")
+        self.cache_dir = cache_dir or os.path.join(os.path.expanduser("~"), ".from forestgaps", "calibration")
         
         # Créer le répertoire de cache si nécessaire
         if self.cache_calibration:

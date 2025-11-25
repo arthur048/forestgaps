@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from forestgaps_dl.config.base import ConfigurationManager, ConfigValidationError
+from forestgaps.config.base import ConfigurationManager, ConfigValidationError
 
 # ===================================================================================================
 # Tests pour ConfigurationManager

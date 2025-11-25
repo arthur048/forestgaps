@@ -10,7 +10,7 @@ from unittest.mock import patch, MagicMock
 import torch
 import torch.nn as nn
 
-from forestgaps_dl.models.registry import ModelRegistry, register_model
+from forestgaps.models.registry import ModelRegistry, register_model
 
 # ===================================================================================================
 # Classes fictives pour les tests

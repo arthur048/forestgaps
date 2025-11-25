@@ -35,7 +35,7 @@ Nous avons également amélioré le générateur de paramètres FiLM :
 
 ## Conformité avec le code legacy
 
-Ces implémentations assurent une compatibilité complète avec le code legacy (`forestgaps_dl_u_net_training.py`), notamment :
+Ces implémentations assurent une compatibilité complète avec le code legacy (`forestgaps_u_net_training.py`), notamment :
 
 - La factory de modèles via le registre
 - Les modèles avancés combinant plusieurs mécanismes

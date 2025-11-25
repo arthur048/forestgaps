@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Exemple d'entraînement simple pour ForestGaps-DL.
+Exemple d'entraînement simple pour ForestGaps.
 
 Ce script montre comment configurer et entraîner un modèle U-Net
 pour la segmentation de trouées forestières avec un ensemble minimal
@@ -22,12 +22,12 @@ from pathlib import Path
 # Assurer que le package est dans le PATH
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from forestgaps_dl.config import ConfigurationManager
-from forestgaps_dl.environment import setup_environment
-from forestgaps_dl.data.loaders import create_data_loaders
-from forestgaps_dl.models import create_model
-from forestgaps_dl.training import Trainer
-from forestgaps_dl.training.callbacks import (
+from forestgaps.config import ConfigurationManager
+from forestgaps.environment import setup_environment
+from forestgaps.data.loaders import create_data_loaders
+from forestgaps.models import create_model
+from forestgaps.training import Trainer
+from forestgaps.training.callbacks import (
     ModelCheckpointCallback,
     EarlyStoppingCallback,
     TensorBoardCallback
@@ -45,7 +45,7 @@ def parse_arguments():
         argparse.Namespace: Les arguments analysés.
     """
     parser = argparse.ArgumentParser(
-        description='Exemple d\'entraînement simple pour ForestGaps-DL'
+        description='Exemple d\'entraînement simple pour ForestGaps'
     )
     parser.add_argument(
         '--data_dir',
@@ -128,7 +128,7 @@ def setup_logging(log_dir):
     Returns:
         logging.Logger: Logger configuré.
     """
-    logger = logging.getLogger("forestgaps_dl")
+    logger = logging.getLogger("forestgaps")
     logger.setLevel(logging.INFO)
     
     # Formatter pour les logs
@@ -197,7 +197,7 @@ def main():
     
     # Configurer la journalisation
     logger = setup_logging(dirs["logs"])
-    logger.info("Démarrage de l'exemple d'entraînement ForestGaps-DL")
+    logger.info("Démarrage de l'exemple d'entraînement ForestGaps")
     logger.info(f"Type de modèle: {args.model_type}")
     logger.info(f"Taille de batch: {args.batch_size}")
     logger.info(f"Nombre d'époques: {args.epochs}")

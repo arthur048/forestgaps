@@ -1,6 +1,6 @@
-# Installation de ForestGaps-DL dans Google Colab
+# Installation de ForestGaps dans Google Colab
 
-Ce guide explique comment installer correctement ForestGaps-DL dans l'environnement Google Colab.
+Ce guide explique comment installer correctement ForestGaps dans l'environnement Google Colab.
 
 ## Méthode recommandée
 
@@ -11,7 +11,7 @@ La méthode recommandée utilise notre script d'installation spécial pour Colab
 
 ```python
 # Télécharger le script d'installation pour Colab
-!wget -O colab_install.py https://raw.githubusercontent.com/arthur048/forestgaps-dl/main/colab_install.py
+!wget -O colab_install.py https://raw.githubusercontent.com/arthur048/forestgaps/main/colab_install.py
 
 # Exécuter le script d'installation
 %run colab_install.py
@@ -30,7 +30,7 @@ Si vous rencontrez des problèmes avec la méthode recommandée, vous pouvez uti
 
 ```python
 # Installer sans dépendances (évite les réinstallations inutiles)
-!pip install --no-dependencies git+https://github.com/arthur048/forestgaps-dl.git
+!pip install --no-dependencies git+https://github.com/arthur048/forestgaps.git
 
 # Redémarrer le runtime (nécessaire après l'installation)
 # Cliquez sur "Runtime" > "Restart runtime" une fois l'installation terminée
@@ -49,11 +49,11 @@ Si vous obtenez l'erreur `ModuleNotFoundError: No module named 'forestgaps'`:
 1. Vérifiez que vous avez bien redémarré le runtime après l'installation
 2. Essayez d'installer le package avec l'option `--force-reinstall`:
    ```python
-   !pip install --force-reinstall git+https://github.com/arthur048/forestgaps-dl.git
+   !pip install --force-reinstall git+https://github.com/arthur048/forestgaps.git
    ```
 3. Vérifiez l'installation avec:
    ```python
-   !pip show forestgaps-dl
+   !pip show forestgaps
    ```
 
 ### Dépendances manquantes

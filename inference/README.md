@@ -1,4 +1,4 @@
-# Module d'inférence pour ForestGaps-DL
+# Module d'inférence pour ForestGaps
 
 Ce module fournit les fonctionnalités nécessaires pour appliquer les modèles entraînés à de nouvelles données DSM. Il permet d'effectuer des prédictions sur des données non vues pendant l'entraînement, de visualiser les résultats et de sauvegarder les prédictions.
 
@@ -57,7 +57,7 @@ Gère le processus d'inférence complet :
 ### Inférence sur un fichier unique
 
 ```python
-from forestgaps_dl.inference import run_inference
+from forestgaps.inference import run_inference
 
 # Exécuter l'inférence sur un fichier DSM
 result = run_inference(
@@ -81,7 +81,7 @@ result.save("path/to/save")
 ### Inférence par lots
 
 ```python
-from forestgaps_dl.inference import run_batch_inference
+from forestgaps.inference import run_batch_inference
 
 # Liste des fichiers DSM à traiter
 dsm_paths = [
@@ -109,7 +109,7 @@ for dsm_path, result in results.items():
 ### Configuration avancée
 
 ```python
-from forestgaps_dl.inference import InferenceManager, InferenceConfig
+from forestgaps.inference import InferenceManager, InferenceConfig
 
 # Configuration personnalisée
 config = InferenceConfig(
@@ -139,7 +139,7 @@ result = manager.predict("path/to/dsm.tif")
 
 ## Intégration avec d'autres modules
 
-Le module d'inférence s'intègre avec d'autres modules de ForestGaps-DL :
+Le module d'inférence s'intègre avec d'autres modules de ForestGaps :
 
 - **models** : Utilise les modèles entraînés pour l'inférence
 - **utils** : Utilise les fonctions utilitaires pour le traitement des données

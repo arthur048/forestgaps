@@ -12,7 +12,7 @@ import torch
 import numpy as np
 from unittest.mock import patch, MagicMock, call
 
-from forestgaps_dl.training.callbacks import (
+from forestgaps.training.callbacks import (
     Callback,
     ModelCheckpointCallback,
     EarlyStoppingCallback,

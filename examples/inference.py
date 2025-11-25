@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Exemple d'inférence pour ForestGaps-DL.
+Exemple d'inférence pour ForestGaps.
 
 Ce script montre comment charger un modèle préentraîné et l'utiliser pour faire
 des prédictions sur de nouvelles données DSM. Il permet également de visualiser
@@ -25,11 +25,11 @@ from tqdm import tqdm
 # Assurer que le package est dans le PATH
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from forestgaps_dl.config import ConfigurationManager
-from forestgaps_dl.environment import setup_environment
-from forestgaps_dl.models import load_model
-from forestgaps_dl.data.normalization import apply_normalization
-from forestgaps_dl.utils.visualization import (
+from forestgaps.config import ConfigurationManager
+from forestgaps.environment import setup_environment
+from forestgaps.models import load_model
+from forestgaps.data.normalization import apply_normalization
+from forestgaps.utils.visualization import (
     visualize_prediction_overlay,
     visualize_prediction_comparison
 )
@@ -46,7 +46,7 @@ def parse_arguments():
         argparse.Namespace: Les arguments analysés.
     """
     parser = argparse.ArgumentParser(
-        description='Exemple d\'inférence pour ForestGaps-DL'
+        description='Exemple d\'inférence pour ForestGaps'
     )
     parser.add_argument(
         '--model_path',
@@ -124,7 +124,7 @@ def setup_logging(log_dir):
     Returns:
         logging.Logger: Logger configuré.
     """
-    logger = logging.getLogger("forestgaps_dl")
+    logger = logging.getLogger("forestgaps")
     logger.setLevel(logging.INFO)
     
     # Formatter pour les logs
@@ -340,7 +340,7 @@ def main():
     
     # Configurer la journalisation
     logger = setup_logging(dirs["logs"])
-    logger.info("Démarrage de l'exemple d'inférence ForestGaps-DL")
+    logger.info("Démarrage de l'exemple d'inférence ForestGaps")
     logger.info(f"Modèle: {args.model_path}")
     logger.info(f"Seuil de hauteur: {args.threshold}m")
     

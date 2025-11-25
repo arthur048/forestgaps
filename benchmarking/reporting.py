@@ -79,7 +79,7 @@ class BenchmarkReporter:
         content = {}
         
         # Informations générales
-        content['title'] = "Rapport de Benchmarking des Modèles ForestGaps-DL"
+        content['title'] = "Rapport de Benchmarking des Modèles ForestGaps"
         content['date'] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         content['description'] = "Ce rapport présente les résultats de la comparaison de différents modèles de détection de trouées forestières."
         

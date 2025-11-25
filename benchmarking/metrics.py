@@ -1,5 +1,5 @@
 """
-Module de suivi et d'agrégation des métriques pour ForestGaps-DL.
+Module de suivi et d'agrégation des métriques pour ForestGaps.
 
 Ce module fournit des classes pour collecter, suivre et agréger les métriques
 de performance des modèles lors des comparaisons.

@@ -1,6 +1,6 @@
-# ForestGaps-DL Docker
+# ForestGaps Docker
 
-Documentation pour l'utilisation de ForestGaps-DL avec Docker.
+Documentation pour l'utilisation de ForestGaps avec Docker.
 
 ## Table des matières
 
@@ -19,7 +19,7 @@ Documentation pour l'utilisation de ForestGaps-DL avec Docker.
 
 ## Prérequis
 
-Pour utiliser ForestGaps-DL avec Docker, vous aurez besoin de :
+Pour utiliser ForestGaps avec Docker, vous aurez besoin de :
 
 - Docker Engine (>= 19.03)
 - Docker Compose (>= 1.27.0)
@@ -50,16 +50,16 @@ sudo systemctl restart docker
 
 ## Architecture Docker
 
-ForestGaps-DL est conteneurisé avec deux images Docker principales :
+ForestGaps est conteneurisé avec deux images Docker principales :
 
-1. **Image GPU (forestgaps-dl:latest)** : Basée sur PyTorch avec support CUDA, optimisée pour l'entraînement et l'inférence sur GPU.
+1. **Image GPU (forestgaps:latest)** : Basée sur PyTorch avec support CUDA, optimisée pour l'entraînement et l'inférence sur GPU.
 
-2. **Image CPU (forestgaps-dl:cpu)** : Version légère sans dépendances CUDA, adaptée aux environnements sans GPU ou pour le prétraitement des données.
+2. **Image CPU (forestgaps:cpu)** : Version légère sans dépendances CUDA, adaptée aux environnements sans GPU ou pour le prétraitement des données.
 
 Le système utilise également Docker Compose pour définir différents services selon les besoins :
 
-- **forestgaps-dl** : Service principal avec support GPU
-- **forestgaps-dl-cpu** : Service alternatif sans GPU
+- **forestgaps** : Service principal avec support GPU
+- **forestgaps-cpu** : Service alternatif sans GPU
 - **training** : Configuration spécifique pour l'entraînement
 - **inference** : Configuration pour l'inférence et la prédiction
 - **preprocessing** : Configuration pour le prétraitement des données
@@ -70,8 +70,8 @@ Le système utilise également Docker Compose pour définir différents services
 ### 1. Cloner le dépôt
 
 ```bash
-git clone https://github.com/arthur048/forestgaps-dl.git
-cd forestgaps-dl
+git clone https://github.com/arthur048/forestgaps.git
+cd forestgaps
 ```
 
 ### 2. Générer le fichier requirements.txt
@@ -205,7 +205,7 @@ services:
 Pour personnaliser les images Docker, modifiez les fichiers `Dockerfile` et `Dockerfile.cpu` selon vos besoins, puis reconstruisez :
 
 ```bash
-docker build -t forestgaps-dl:custom -f Dockerfile.custom .
+docker build -t forestgaps:custom -f Dockerfile.custom .
 ```
 
 ## Résolution des problèmes

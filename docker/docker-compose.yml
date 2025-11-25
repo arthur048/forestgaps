@@ -2,12 +2,12 @@ version: '3.8'
 
 services:
   # Service principal avec support GPU
-  forestgaps-dl:
+  forestgaps:
     build:
       context: .
       dockerfile: Dockerfile
-    image: forestgaps-dl:latest
-    container_name: forestgaps-dl
+    image: forestgaps:latest
+    container_name: forestgaps
     volumes:
       - ./data:/app/data
       - ./models:/app/models
@@ -24,12 +24,12 @@ services:
     restart: "no"
 
   # Service alternatif sans GPU
-  forestgaps-dl-cpu:
+  forestgaps-cpu:
     build:
       context: .
       dockerfile: Dockerfile.cpu
-    image: forestgaps-dl:cpu
-    container_name: forestgaps-dl-cpu
+    image: forestgaps:cpu
+    container_name: forestgaps-cpu
     volumes:
       - ./data:/app/data
       - ./models:/app/models
@@ -40,8 +40,8 @@ services:
 
   # Service d'entraînement avec GPU (exemple)
   training:
-    image: forestgaps-dl:latest
-    container_name: forestgaps-dl-training
+    image: forestgaps:latest
+    container_name: forestgaps-training
     volumes:
       - ./data:/app/data
       - ./models:/app/models
@@ -61,8 +61,8 @@ services:
 
   # Service d'inférence (exemple)
   inference:
-    image: forestgaps-dl:latest
-    container_name: forestgaps-dl-inference
+    image: forestgaps:latest
+    container_name: forestgaps-inference
     volumes:
       - ./data:/app/data
       - ./models:/app/models
@@ -81,8 +81,8 @@ services:
 
   # Service de prétraitement de données (CPU suffisant)
   preprocessing:
-    image: forestgaps-dl:cpu
-    container_name: forestgaps-dl-preprocessing
+    image: forestgaps:cpu
+    container_name: forestgaps-preprocessing
     volumes:
       - ./data:/app/data
       - ./config:/app/config
@@ -92,8 +92,8 @@ services:
 
   # Service pour l'évaluation des modèles
   evaluation:
-    image: forestgaps-dl:latest
-    container_name: forestgaps-dl-evaluation
+    image: forestgaps:latest
+    container_name: forestgaps-evaluation
     volumes:
       - ./data:/app/data
       - ./models:/app/models

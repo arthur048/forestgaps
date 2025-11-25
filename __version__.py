@@ -1,3 +1,3 @@
-"""Version du package ForestGaps-DL."""
+"""Version du package ForestGaps."""
 
 __version__ = '0.1.1' 

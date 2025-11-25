@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Exemple d'utilisation du système de gestion d'environnement de ForestGaps-DL.
+Exemple d'utilisation du système de gestion d'environnement de ForestGaps.
 
 Ce script montre comment détecter et configurer automatiquement l'environnement
 d'exécution (Colab ou local).
@@ -17,7 +17,7 @@ from pprint import pprint
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Importer les fonctions de gestion d'environnement
-from forestgaps_dl.environment import (
+from forestgaps.environment import (
     detect_environment,
     setup_environment,
     get_device,

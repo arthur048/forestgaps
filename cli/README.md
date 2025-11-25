@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-Le module `cli` fournit des interfaces en ligne de commande pour les différentes fonctionnalités du workflow ForestGaps-DL, permettant d'exécuter les tâches de prétraitement des données et d'entraînement des modèles de manière scriptée.
+Le module `cli` fournit des interfaces en ligne de commande pour les différentes fonctionnalités du workflow ForestGaps, permettant d'exécuter les tâches de prétraitement des données et d'entraînement des modèles de manière scriptée.
 
 ## Structure
 

@@ -1,6 +1,6 @@
-# Configuration de ForestGaps-DL
+# Configuration de ForestGaps
 
-Ce module fournit un système de configuration flexible pour le projet ForestGaps-DL. Il permet de gérer les paramètres pour le traitement des données, les modèles et l'entraînement.
+Ce module fournit un système de configuration flexible pour le projet ForestGaps. Il permet de gérer les paramètres pour le traitement des données, les modèles et l'entraînement.
 
 ## Structure
 
@@ -17,7 +17,7 @@ Ce module fournit un système de configuration flexible pour le projet ForestGap
 ### Charger la configuration par défaut
 
 ```python
-from forestgaps_dl.config import load_default_config
+from forestgaps.config import load_default_config
 
 # Charger la configuration par défaut
 config = load_default_config()
@@ -30,7 +30,7 @@ print(f"Type de modèle : {config.MODEL_TYPE}")
 ### Charger une configuration personnalisée
 
 ```python
-from forestgaps_dl.config import load_config_from_file
+from forestgaps.config import load_config_from_file
 
 # Charger une configuration à partir d'un fichier YAML ou JSON
 config = load_config_from_file("path/to/my_config.yaml")
@@ -39,7 +39,7 @@ config = load_config_from_file("path/to/my_config.yaml")
 ### Créer une configuration à partir d'un dictionnaire
 
 ```python
-from forestgaps_dl.config import create_config_from_dict
+from forestgaps.config import create_config_from_dict
 
 # Créer une configuration à partir d'un dictionnaire
 config_dict = {
@@ -85,7 +85,7 @@ Les configurations sont automatiquement validées lors du chargement grâce aux 
 ## Migration depuis l'ancien système
 
 Ce système de configuration remplace les classes `Config` des fichiers legacy :
-- `forestgaps_dl_u_net_training.py`
-- `forestgaps_dl_data_preparation.py`
+- `forestgaps_u_net_training.py`
+- `forestgaps_data_preparation.py`
 
 Il offre une plus grande flexibilité et une meilleure organisation des paramètres. 

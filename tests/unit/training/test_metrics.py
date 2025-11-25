@@ -10,7 +10,7 @@ import torch
 import numpy as np
 from unittest.mock import patch, MagicMock
 
-from forestgaps_dl.training.metrics import (
+from forestgaps.training.metrics import (
     SegmentationMetrics,
     iou_metric,
     precision_metric,

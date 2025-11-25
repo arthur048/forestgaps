@@ -1,10 +1,10 @@
-# ForestGaps-DL
+# ForestGaps
 
 Bibliothèque PyTorch pour la détection et l'analyse des trouées forestières par deep learning.
 
 ## Description
 
-ForestGaps-DL est un package Python modulaire conçu pour détecter et analyser les trouées forestières à partir d'images de télédétection, en utilisant des techniques de deep learning. Ce package implémente plusieurs architectures de réseaux de neurones (U-Net, DeepLabV3+, etc.) pour la segmentation et la régression sur des modèles numériques de surface (DSM) et de hauteur de canopée (CHM).
+ForestGaps est un package Python modulaire conçu pour détecter et analyser les trouées forestières à partir d'images de télédétection, en utilisant des techniques de deep learning. Ce package implémente plusieurs architectures de réseaux de neurones (U-Net, DeepLabV3+, etc.) pour la segmentation et la régression sur des modèles numériques de surface (DSM) et de hauteur de canopée (CHM).
 
 ## Architecture du package
 
@@ -179,7 +179,7 @@ Le tableau ci-dessous présente une analyse détaillée des dépendances entre l
 
 ## Architecture et flux de données
 
-Le package ForestGaps-DL implémente un flux de traitement complet pour la détection des trouées forestières :
+Le package ForestGaps implémente un flux de traitement complet pour la détection des trouées forestières :
 
 1. **Configuration** (`config`) : Point de départ de toute exécution, définit les paramètres du workflow
 2. **Environnement** (`environment`) : Configure l'environnement d'exécution (Colab ou local)
@@ -249,7 +249,7 @@ Les utilitaires (`utils`) fournissent des fonctionnalités communes à tous les 
 
 ## Principes de conception
 
-ForestGaps-DL est conçu selon les principes SOLID :
+ForestGaps est conçu selon les principes SOLID :
 
 1. **Principe de responsabilité unique (S)** : Chaque module et classe a une responsabilité unique et bien définie.
 2. **Principe ouvert/fermé (O)** : L'architecture permet d'étendre les fonctionnalités sans modifier le code existant (via les registres et les classes abstraites).
@@ -263,8 +263,8 @@ ForestGaps-DL est conçu selon les principes SOLID :
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/arthur048/forestgaps-dl.git
-cd forestgaps-dl
+git clone https://github.com/arthur048/forestgaps.git
+cd forestgaps
 
 # Installation en mode développement
 pip install -e .
@@ -274,10 +274,10 @@ pip install -e .
 
 ```python
 # Installation du package depuis GitHub
-!pip install git+https://github.com/arthur048/forestgaps-dl.git
+!pip install git+https://github.com/arthur048/forestgaps.git
 
 # Import et configuration de l'environnement
-from forestgaps_dl.environment import setup_environment
+from forestgaps.environment import setup_environment
 env = setup_environment()  # Détecte et configure automatiquement l'environnement Colab
 ```
 
@@ -286,9 +286,9 @@ env = setup_environment()  # Détecte et configure automatiquement l'environneme
 ### Prétraitement des données
 
 ```python
-from forestgaps_dl.config import load_default_config
-from forestgaps_dl.data.preprocessing import process_raster_pair_robustly
-from forestgaps_dl.data.generation import create_gap_masks
+from forestgaps.config import load_default_config
+from forestgaps.data.preprocessing import process_raster_pair_robustly
+from forestgaps.data.generation import create_gap_masks
 
 # Charger la configuration par défaut
 config = load_default_config()
@@ -304,10 +304,10 @@ mask_paths = create_gap_masks(result["aligned_chm"], thresholds, config.PROCESSE
 ### Entraînement d'un modèle
 
 ```python
-from forestgaps_dl.config import load_default_config
-from forestgaps_dl.models import create_model
-from forestgaps_dl.data.loaders import create_data_loaders
-from forestgaps_dl.training import Trainer
+from forestgaps.config import load_default_config
+from forestgaps.models import create_model
+from forestgaps.data.loaders import create_data_loaders
+from forestgaps.training import Trainer
 
 # Charger la configuration
 config = load_default_config()
@@ -334,8 +334,8 @@ results = trainer.train(epochs=50)
 ### Comparaison de modèles
 
 ```python
-from forestgaps_dl.config import load_default_config
-from forestgaps_dl.benchmarking import ModelComparison
+from forestgaps.config import load_default_config
+from forestgaps.benchmarking import ModelComparison
 
 # Définir les modèles à comparer
 model_configs = [

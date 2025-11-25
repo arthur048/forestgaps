@@ -65,7 +65,7 @@ class ColabEnvironment(Environment):
             os.makedirs(self.base_dir, exist_ok=True)
         else:
             # Utiliser un chemin temporaire
-            self.base_dir = '/content/forestgaps-dl'
+            self.base_dir = '/content/forestgaps'
             os.makedirs(self.base_dir, exist_ok=True)
         
         return self.base_dir

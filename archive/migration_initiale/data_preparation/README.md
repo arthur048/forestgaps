@@ -1,8 +1,8 @@
 # Préparation des données
 
-Ce dossier contient le code original de préparation des données qui sera progressivement migré vers la nouvelle structure du package forestgaps-dl.
+Ce dossier contient le code original de préparation des données qui sera progressivement migré vers la nouvelle structure du package forestgaps.
 
-Fichier principal: `forestgaps_dl_data_preparation.py`
+Fichier principal: `forestgaps_data_preparation.py`
 
 ## État de la migration
 

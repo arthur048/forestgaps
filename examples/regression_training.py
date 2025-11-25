@@ -19,17 +19,17 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-from forestgaps_dl.config import load_config_from_file, load_default_config
-from forestgaps_dl.environment import setup_environment
-from forestgaps_dl.models import create_model
-from forestgaps_dl.data.datasets.regression_dataset import (
+from forestgaps.config import load_config_from_file, load_default_config
+from forestgaps.environment import setup_environment
+from forestgaps.models import create_model
+from forestgaps.data.datasets.regression_dataset import (
     create_regression_dataset, 
     create_regression_dataloader,
     split_regression_dataset
 )
-from forestgaps_dl.training.metrics.regression import RegressionMetrics
-from forestgaps_dl.training.loss.regression import MSELoss, CombinedRegressionLoss
-from forestgaps_dl.utils.visualization.plots import plot_regression_results
+from forestgaps.training.metrics.regression import RegressionMetrics
+from forestgaps.training.loss.regression import MSELoss, CombinedRegressionLoss
+from forestgaps.utils.visualization.plots import plot_regression_results
 
 
 # Configuration du logging
@@ -40,7 +40,7 @@ logger = logging.getLogger("regression_example")
 
 def parse_args():
     """Parse les arguments de la ligne de commande."""
-    parser = argparse.ArgumentParser(description="Entraînement d'un modèle de régression ForestGaps-DL")
+    parser = argparse.ArgumentParser(description="Entraînement d'un modèle de régression ForestGaps")
     
     parser.add_argument("--config", type=str, default=None,
                         help="Chemin vers le fichier de configuration.")

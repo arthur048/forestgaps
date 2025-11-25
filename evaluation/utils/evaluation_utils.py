@@ -15,12 +15,12 @@ from typing import Dict, Any, Tuple, List, Optional, Union, Set
 from datetime import datetime
 
 # Imports locaux
-from forestgaps_dl.evaluation.metrics import (
+from forestgaps.evaluation.metrics import (
     compute_all_metrics, 
     create_metrics_report,
     find_optimal_threshold
 )
-from forestgaps_dl.inference.utils.geospatial import load_raster
+from forestgaps.inference.utils.geospatial import load_raster
 
 # Configuration du logging
 logger = logging.getLogger(__name__)
@@ -95,7 +95,7 @@ def create_ground_truth_from_chm(
     # Sauvegarder si nécessaire
     if save_path:
         # Sauvegarder le masque
-        from forestgaps_dl.inference.utils.geospatial import save_raster
+        from forestgaps.inference.utils.geospatial import save_raster
         save_raster(
             gap_mask, 
             save_path, 
@@ -171,7 +171,7 @@ def evaluate_prediction(
         
         # Sauvegarder les visualisations
         if save_visualizations:
-            from forestgaps_dl.inference.utils.visualization import (
+            from forestgaps.inference.utils.visualization import (
                 visualize_prediction,
                 visualize_error_map
             )
@@ -196,11 +196,11 @@ def evaluate_prediction(
             
             # Si nous avons des probabilités, sauvegarder la courbe ROC et PR
             if prediction_prob is not None:
-                from forestgaps_dl.evaluation.metrics import (
+                from forestgaps.evaluation.metrics import (
                     compute_roc_curve,
                     compute_precision_recall_curve
                 )
-                from forestgaps_dl.inference.utils.visualization import (
+                from forestgaps.inference.utils.visualization import (
                     plot_roc_curve,
                     plot_precision_recall_curve
                 )
@@ -297,7 +297,7 @@ def compare_models(
         
         # Générer des visualisations de comparaison
         if save_visualizations and len(predictions) > 1:
-            from forestgaps_dl.inference.utils.visualization import (
+            from forestgaps.inference.utils.visualization import (
                 visualize_comparison,
                 create_evaluation_plot
             )
@@ -562,7 +562,7 @@ def find_best_model(
             json.dump(comparison, f, indent=2)
         
         # Créer un graphique de comparaison
-        from forestgaps_dl.inference.utils.visualization import create_evaluation_plot
+        from forestgaps.inference.utils.visualization import create_evaluation_plot
         
         # Extraire les métriques clés pour le graphique
         key_metrics = ["accuracy_mean", "precision_mean", "recall_mean", "f1_score_mean", "iou_mean"]

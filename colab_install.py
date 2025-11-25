@@ -1,7 +1,7 @@
 """
-Script d'installation de ForestGaps-DL pour Google Colab.
+Script d'installation de ForestGaps pour Google Colab.
 
-Ce script installe le package ForestGaps-DL depuis GitHub tout en évitant
+Ce script installe le package ForestGaps depuis GitHub tout en évitant
 la réinstallation des dépendances déjà présentes dans l'environnement Colab.
 """
 
@@ -23,8 +23,8 @@ def check_if_in_colab():
         )
 
 def install_package():
-    """Installe ForestGaps-DL en évitant la réinstallation des dépendances."""
-    print("🚀 Installation de ForestGaps-DL pour Google Colab...")
+    """Installe ForestGaps en évitant la réinstallation des dépendances."""
+    print("🚀 Installation de ForestGaps pour Google Colab...")
     
     # Créer un fichier temporaire de configuration pip
     pip_conf = Path("/tmp/pip.conf")
@@ -42,13 +42,13 @@ def install_package():
     install_command = [
         sys.executable, "-m", "pip", "install", 
         "--no-dependencies",  # Évite d'installer les dépendances
-        "git+https://github.com/arthur048/forestgaps-dl.git"
+        "git+https://github.com/arthur048/forestgaps.git"
     ]
     
     # Installer le package sans dépendances
     try:
         subprocess.check_call(install_command)
-        print("✅ ForestGaps-DL installé avec succès (sans réinstaller les dépendances).")
+        print("✅ ForestGaps installé avec succès (sans réinstaller les dépendances).")
         
         # Vérifier si le package est importable
         try:
@@ -118,13 +118,13 @@ def main():
     
     if install_ok:
         print("\n✅ Installation terminée avec succès!")
-        print("ℹ️ Pour utiliser ForestGaps-DL, redémarrez le runtime Colab, puis importez le module comme suit:")
+        print("ℹ️ Pour utiliser ForestGaps, redémarrez le runtime Colab, puis importez le module comme suit:")
         print("\nfrom forestgaps.environment import setup_environment")
         print("env = setup_environment()\n")
     else:
         print("\n❌ Installation échouée.")
         print("ℹ️ Essayez d'installer manuellement avec:")
-        print("\n!pip install git+https://github.com/arthur048/forestgaps-dl.git")
+        print("\n!pip install git+https://github.com/arthur048/forestgaps.git")
 
 if __name__ == "__main__":
     main() 
