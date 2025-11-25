@@ -1,1 +1,18 @@
 # Configuration par défaut pour les modèles
+# Ce fichier contient les paramètres par défaut pour les modèles de détection de trouées
+
+# Type de modèle
+MODEL_TYPE: "film_cbam"  # Options: 'basic', 'film', 'cbam', 'droppath', 'film_cbam', 'all'
+
+# Paramètres généraux du modèle
+IN_CHANNELS: 1  # Nombre de canaux d'entrée (1 pour les MNS)
+DROPOUT_RATE: 0.2  # Taux de dropout pour la régularisation
+
+# Paramètres spécifiques aux modèles avancés
+DROP_PATH_RATE: 0.1  # Taux de DropPath (pour 'droppath' et 'all')
+USE_CHECKPOINTING: false  # Utiliser le gradient checkpointing pour économiser de la mémoire
+
+# Paramètres d'architecture
+ENCODER_CHANNELS: [64, 128, 256, 512]  # Nombre de filtres dans chaque couche d'encodeur
+DECODER_CHANNELS: [512, 256, 128, 64]  # Nombre de filtres dans chaque couche de décodeur
+USE_ATTENTION: true  # Utiliser des mécanismes d'attention dans le modèle

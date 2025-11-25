@@ -1,1 +1,0 @@
-# Harmonisation des systèmes de coordonnées

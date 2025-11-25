@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  # Service principal avec support GPU
+  forestgaps:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: forestgaps:latest
+    container_name: forestgaps
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./config:/app/config
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # Ne pas démarrer automatiquement
+    command: ["--help"]
+    restart: "no"
+
+  # Service alternatif sans GPU
+  forestgaps-cpu:
+    build:
+      context: .
+      dockerfile: Dockerfile.cpu
+    image: forestgaps:cpu
+    container_name: forestgaps-cpu
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./config:/app/config
+    # Ne pas démarrer automatiquement
+    command: ["--help"]
+    restart: "no"
+
+  # Service d'entraînement avec GPU (exemple)
+  training:
+    image: forestgaps:latest
+    container_name: forestgaps-training
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./config:/app/config
+      # Montage du dossier de logs pour TensorBoard
+      - ./logs:/app/logs
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # Exemple de commande d'entraînement
+    command: ["-m", "cli.training_cli", "train", "--config", "/app/config/defaults/training.yml"]
+    restart: "no"
+
+  # Service d'inférence (exemple)
+  inference:
+    image: forestgaps:latest
+    container_name: forestgaps-inference
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./config:/app/config
+      - ./outputs:/app/outputs
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # Exemple de commande d'inférence
+    command: ["-m", "forestgaps.inference", "predict", "--model", "/app/models/model.pth", "--input", "/app/data/input.tif", "--output", "/app/outputs/prediction.tif"]
+    restart: "no"
+
+  # Service de prétraitement de données (CPU suffisant)
+  preprocessing:
+    image: forestgaps:cpu
+    container_name: forestgaps-preprocessing
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+    # Exemple de commande de prétraitement
+    command: ["-m", "cli.preprocessing_cli", "preprocess", "--config", "/app/config/defaults/preprocessing.yml"]
+    restart: "no"
+
+  # Service pour l'évaluation des modèles
+  evaluation:
+    image: forestgaps:latest
+    container_name: forestgaps-evaluation
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./outputs:/app/outputs
+      - ./reports:/app/reports
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # Exemple de commande d'évaluation
+    command: ["-m", "forestgaps.evaluation", "evaluate", "--model", "/app/models/model.pth", "--data", "/app/data/validation", "--output", "/app/reports/evaluation.json"]
+    restart: "no" 

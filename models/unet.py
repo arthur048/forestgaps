@@ -1,1 +1,0 @@
-# Architecture U-Net de base

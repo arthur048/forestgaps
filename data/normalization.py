@@ -1,1 +1,0 @@
-# Techniques de normalisation cohérentes
