@@ -58,13 +58,13 @@ COPY --from=gdal-builder /usr/bin/gdal* /usr/bin/
 COPY --from=gdal-builder /usr/bin/ogr* /usr/bin/
 COPY --from=gdal-builder /usr/bin/proj* /usr/bin/
 
-# Copy GDAL development headers (needed for pip install GDAL)
-# Main GDAL headers
+# Copy ALL GDAL development headers (needed for pip install GDAL)
+# Using multiple patterns to ensure we get all GDAL-related headers
 COPY --from=gdal-builder /usr/include/gdal*.h /usr/include/
-# CPL (Common Portability Library) headers
-COPY --from=gdal-builder /usr/include/cpl_*.h /usr/include/
-# OGR (vector) headers
-COPY --from=gdal-builder /usr/include/ogr_*.h /usr/include/
+COPY --from=gdal-builder /usr/include/cpl*.h /usr/include/
+COPY --from=gdal-builder /usr/include/ogr*.h /usr/include/
+COPY --from=gdal-builder /usr/include/gnm*.h /usr/include/
+COPY --from=gdal-builder /usr/include/*dataset.h /usr/include/
 
 # Set GDAL environment variables (CRITICAL for rasterio)
 ENV GDAL_DATA=/usr/share/gdal \
