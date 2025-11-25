@@ -40,16 +40,20 @@ tabulate==0.9.0
 markdown==3.5.1
 
 # ====================
-# Geospatial (installed via conda-forge in Dockerfile)
+# ALL PACKAGES INSTALLED VIA CONDA IN DOCKERFILE
 # ====================
-# gdal==3.8.5  # Installed via: conda install -c conda-forge gdal
-# rasterio==1.3.9  # Installed via conda-forge (with all dependencies)
-# geopandas==0.14.2  # Installed via conda-forge
-# shapely==2.0.2  # Installed via conda-forge
-# fiona==1.9.5  # Installed via conda-forge
+# Ce fichier est maintenu pour référence mais tous les packages
+# sont installés via conda (pytorch channel + conda-forge)
+# pour garantir la cohérence et éviter les conflits
 
-# ====================
-# PyTorch (pre-installed in base image)
-# ====================
-# torch==2.4.0+cu124  # From pytorch/pytorch base image
-# torchvision==0.19.0+cu124  # From pytorch/pytorch base image
+# PyTorch + CUDA (pytorch channel)
+# torch==2.4.0
+# torchvision==0.19.0
+# pytorch-cuda==12.4
+
+# Geospatial (conda-forge)
+# gdal==3.8.5
+# rasterio==1.3.9
+# geopandas==0.14.2
+# shapely==2.0.2
+# fiona==1.9.5
