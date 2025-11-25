@@ -8,8 +8,6 @@
 #   docker-compose -f docker/docker-compose.yml down
 # ============================================
 
-version: '3.8'
-
 services:
   forestgaps:
     image: forestgaps:latest
@@ -19,7 +17,6 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-      target: development
       args:
         - PLATFORM=linux/amd64
         - BUILDKIT_INLINE_CACHE=1
@@ -66,8 +63,8 @@ services:
       - ../logs:/app/logs:rw
 
       # Development: Uncomment for live code editing
-      # - ../forestgaps:/app/forestgaps:rw
-      # - ../tests:/app/tests:rw
+      - ../forestgaps:/app/forestgaps:rw
+      - ../tests:/app/tests:rw
 
     # GPU resource allocation
     deploy:

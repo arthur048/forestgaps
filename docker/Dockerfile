@@ -39,7 +39,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # - GDAL with all its system libraries (proj, geos, xerces-c, etc.)
 # - Rasterio, GeoPandas, Fiona, Shapely
 # - No manual library copying needed!
-RUN conda install -c conda-forge -y \
+# Using build cache for faster rebuilds
+RUN --mount=type=cache,target=/opt/conda/pkgs \
+    conda install -c conda-forge -y \
     gdal=3.8.5 \
     rasterio=1.3.9 \
     geopandas=0.14.2 \
@@ -62,7 +64,9 @@ COPY requirements/requirements-dev.txt requirements-dev.txt
 
 # Install remaining dependencies
 # (GDAL, rasterio, geopandas already installed via conda)
-RUN pip install --no-cache-dir -r requirements.txt && \
+# Using build cache for faster rebuilds
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir -r requirements-gpu.txt && \
     pip install --no-cache-dir -r requirements-dev.txt
 
