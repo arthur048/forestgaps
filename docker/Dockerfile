@@ -46,7 +46,8 @@ ENV PATH="/opt/conda/bin:$PATH"
 RUN conda config --set channel_priority flexible && \
     conda config --prepend channels conda-forge && \
     conda config --prepend channels pytorch && \
-    conda config --set auto_update_conda false
+    conda config --set auto_update_conda false && \
+    conda config --set solver classic
 
 # ============================================
 # Install ALL Dependencies via Conda
