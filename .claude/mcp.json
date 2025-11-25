@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "web-fetch": {
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["@anthropic-ai/servers", "web-fetch"],
+      "env": {}
+    },
+    "web-search": {
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["@anthropic-ai/servers", "web-search"],
+      "env": {}
+    }
+  }
+}

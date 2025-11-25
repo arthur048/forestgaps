@@ -2,21 +2,22 @@
 Module de gestion d'environnement pour le projet forestgaps.
 
 Ce module fournit des classes pour détecter et configurer automatiquement
-l'environnement d'exécution (Colab ou local).
+l'environnement d'exécution (Docker, Colab ou local).
 """
 
 import sys
 from .base import Environment
 from .local import LocalEnvironment
 from .colab import ColabEnvironment
+from .docker import DockerEnvironment
 
 
 def detect_environment():
     """
     Détecte automatiquement l'environnement d'exécution.
-    
+
     Returns:
-        Une instance de l'environnement détecté (ColabEnvironment ou LocalEnvironment).
+        Une instance de l'environnement détecté (DockerEnvironment, ColabEnvironment ou LocalEnvironment).
     """
     return Environment.detect()
 
@@ -52,6 +53,7 @@ __all__ = [
     'Environment',
     'LocalEnvironment',
     'ColabEnvironment',
+    'DockerEnvironment',
     'detect_environment',
     'setup_environment',
     'get_device'

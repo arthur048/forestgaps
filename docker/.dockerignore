@@ -1,0 +1,180 @@
+# ForestGaps Docker Build Context Exclusions
+# Reduces build context size and prevents unnecessary file copying
+
+# ====================
+# Python
+# ====================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+develop-eggs/
+.installed.cfg
+
+# ====================
+# Virtual Environments
+# ====================
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# ====================
+# IDE & Editors
+# ====================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# ====================
+# Jupyter Notebooks
+# ====================
+.ipynb_checkpoints/
+*.ipynb
+notebooks/
+
+# ====================
+# Data Files (mount as volumes instead)
+# ====================
+data/
+datasets/
+*.tif
+*.tiff
+*.geotiff
+*.h5
+*.hdf5
+*.npy
+*.npz
+*.pkl
+*.pickle
+*.csv
+*.json
+
+# ====================
+# Model Checkpoints (mount as volumes)
+# ====================
+models/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.pb
+
+# ====================
+# Outputs & Logs
+# ====================
+outputs/
+logs/
+results/
+*.log
+tensorboard_logs/
+runs/
+
+# ====================
+# Git & Version Control
+# ====================
+.git/
+.gitignore
+.gitattributes
+.gitmodules
+.github/
+
+# ====================
+# Documentation
+# ====================
+docs/
+*.md
+!README.md
+!docker/README.md
+
+# ====================
+# Tests (included only in dev builds)
+# ====================
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# ====================
+# CI/CD
+# ====================
+.gitlab-ci.yml
+.travis.yml
+circle.yml
+appveyor.yml
+
+# ====================
+# OS Files
+# ====================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ====================
+# Temporary Files
+# ====================
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+.cache/
+tmp/
+
+# ====================
+# Docker Files (avoid recursion)
+# ====================
+docker/
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# ====================
+# Archives
+# ====================
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# ====================
+# Project Specific
+# ====================
+archive/
+examples/
+scripts/
+colab_install.py
+CLAUDE.md
+context_llm.md
+COLAB_README.md

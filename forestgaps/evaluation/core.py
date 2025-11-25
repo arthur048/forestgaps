@@ -11,7 +11,7 @@ import logging
 import torch
 import numpy as np
 from typing import Dict, Any, List, Optional, Union, Tuple
-from forestgaps.dataclasses import dataclass
+from dataclasses import dataclass
 import rasterio
 from tqdm import tqdm
 from pathlib import Path
@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from forestgaps.environment import setup_environment
-from forestgaps.config import forestgaps.configurationManager, load_default_config
+from forestgaps.config import configurationManager, load_default_config
 from forestgaps.utils.io.serialization import load_model as load_model_checkpoint
 from forestgaps.models.registry import ModelRegistry
 

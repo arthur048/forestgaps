@@ -11,7 +11,7 @@ import logging
 import torch
 import numpy as np
 from typing import Dict, Any, List, Optional, Union, Tuple
-from forestgaps.dataclasses import dataclass
+from dataclasses import dataclass
 import rasterio
 from tqdm import tqdm
 from pathlib import Path

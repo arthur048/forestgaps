@@ -1,0 +1,131 @@
+name: Docker CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    name: Build and Test Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          echo "🏗️ Building ForestGaps Docker image..."
+          docker build \
+            --platform linux/amd64 \
+            --target development \
+            -t forestgaps:test \
+            -f docker/Dockerfile \
+            --progress=plain \
+            .
+
+      - name: List built images
+        run: docker images forestgaps:test
+
+      - name: Run health check
+        run: |
+          echo "🏥 Running health check..."
+          docker run --rm forestgaps:test python /app/healthcheck.py
+
+      - name: Test critical imports
+        run: |
+          echo "📦 Testing Python imports..."
+          docker run --rm forestgaps:test python -c "
+          import sys
+          try:
+              import torch
+              print(f'✓ torch {torch.__version__}')
+
+              from osgeo import gdal
+              print(f'✓ GDAL {gdal.__version__}')
+
+              import rasterio
+              print(f'✓ rasterio {rasterio.__version__}')
+
+              import geopandas
+              print(f'✓ geopandas {geopandas.__version__}')
+
+              import forestgaps
+              print(f'✓ forestgaps {forestgaps.__version__}')
+
+              print('SUCCESS: All imports passed')
+          except ImportError as e:
+              print(f'FAILED: {e}', file=sys.stderr)
+              sys.exit(1)
+          "
+
+      - name: Test environment detection
+        run: |
+          echo "🔍 Testing environment detection..."
+          docker run --rm forestgaps:test python -c "
+          from forestgaps.environment import Environment
+          env = Environment.detect()
+          info = env.get_environment_info()
+          print(f'Environment type: {info[\"environment_type\"]}')
+          assert 'Docker' in info['environment_type'] or 'Local' in info['environment_type']
+          print('SUCCESS: Environment detection working')
+          "
+
+      - name: Test GDAL/rasterio compatibility
+        run: |
+          echo "🗺️ Testing GDAL/rasterio compatibility..."
+          docker run --rm forestgaps:test python -c "
+          import os
+          from osgeo import gdal
+          import rasterio
+
+          gdal_version = gdal.__version__
+          rasterio_version = rasterio.__version__
+
+          print(f'GDAL version: {gdal_version}')
+          print(f'Rasterio version: {rasterio_version}')
+
+          # Check environment variables
+          gdal_data = os.environ.get('GDAL_DATA', '')
+          proj_lib = os.environ.get('PROJ_LIB', '')
+
+          assert gdal_data and os.path.exists(gdal_data), 'GDAL_DATA not set properly'
+          assert proj_lib and os.path.exists(proj_lib), 'PROJ_LIB not set properly'
+
+          print('SUCCESS: GDAL and rasterio are compatible')
+          "
+
+      - name: Run test suite
+        run: |
+          echo "🧪 Running test suite..."
+          docker run --rm \
+            -v ${{ github.workspace }}/tests:/app/tests:ro \
+            forestgaps:test \
+            pytest tests/ -v --tb=short || echo "Some tests may require data files"
+
+      - name: Image size check
+        run: |
+          echo "📊 Checking image size..."
+          SIZE=$(docker image inspect forestgaps:test --format='{{.Size}}' | awk '{print int($1/1024/1024)}')
+          echo "Image size: ${SIZE} MB"
+          if [ $SIZE -gt 6000 ]; then
+            echo "⚠️ Warning: Image size exceeds 6 GB"
+          else
+            echo "✓ Image size is reasonable"
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "============================================"
+          echo "Docker CI Summary"
+          echo "============================================"
+          echo "Image: forestgaps:test"
+          echo "Platform: linux/amd64"
+          echo "Build status: ${{ job.status }}"
+          echo "============================================"

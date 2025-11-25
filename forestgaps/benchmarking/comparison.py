@@ -17,7 +17,7 @@ import torch
 import numpy as np
 from torch.utils.data import DataLoader
 
-from forestgaps.config import forestgaps.config
+from forestgaps.config import config
 from forestgaps.models import ModelRegistry
 from forestgaps.training import Trainer
 from forestgaps.training.metrics import SegmentationMetrics

@@ -90,20 +90,11 @@ Le script apparie automatiquement les fichiers par leur **préfixe commun**:
 - **Système de coordonnées**: WGS84, Lambert93, ou tout CRS valide
 - **Nodata**: Valeur nodata définie dans les métadonnées
 
-### Résolution
-- **Recommandé**: 0.5m - 2m par pixel
-- **Minimum**: 0.25m par pixel
-- **Maximum**: 5m par pixel
 
 ### Taille
 - **Minimum**: 512×512 pixels
 - **Recommandé**: 2000×2000 pixels ou plus
 - **Maximum**: Aucune limite (le script crée des tuiles de 256×256)
-
-### Alignement
-- **DSM et CHM doivent couvrir la même zone**
-- Si non alignés, le script les aligne automatiquement
-- Le DSM est utilisé comme référence pour l'alignement
 
 ## 🚀 Utilisation du Script de Préparation
 

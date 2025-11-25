@@ -1,111 +1,163 @@
+# ============================================
+# ForestGaps Docker Compose Configuration
+# ============================================
+# Production-ready orchestration for forest canopy gap detection
+#
+# Usage:
+#   docker-compose -f docker/docker-compose.yml up
+#   docker-compose -f docker/docker-compose.yml down
+# ============================================
+
 version: '3.8'
 
 services:
-  # Service principal avec support GPU
   forestgaps:
+    image: forestgaps:latest
+    container_name: forestgaps-main
+
+    # Build configuration
     build:
-      context: .
-      dockerfile: Dockerfile
-    image: forestgaps:latest
-    container_name: forestgaps
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: development
+      args:
+        - PLATFORM=linux/amd64
+        - BUILDKIT_INLINE_CACHE=1
+
+    # NVIDIA GPU runtime
+    runtime: nvidia
+
+    # Environment variables
+    environment:
+      # Single GPU configuration
+      - NVIDIA_VISIBLE_DEVICES=0
+      - CUDA_VISIBLE_DEVICES=0
+      - CUDA_DEVICE_ORDER=PCI_BUS_ID
+      - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+
+      # Multi-core CPU for batch processing
+      - OMP_NUM_THREADS=8
+      - MKL_NUM_THREADS=8
+      - NUMEXPR_NUM_THREADS=8
+
+      # Python configuration
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+
+      # Logging
+      - LOG_LEVEL=INFO
+
+      # ForestGaps specific
+      - FORESTGAPS_ENV=docker
+      - DOCKER_CONTAINER=1
+
+    # Volume mounts
     volumes:
-      - ./data:/app/data
-      - ./models:/app/models
-      - ./config:/app/config
+      # Data (read-only to prevent accidental modifications)
+      - ../data:/app/data:ro
+
+      # Models (read-write for saving checkpoints)
+      - ../models:/app/models:rw
+
+      # Outputs (read-write for saving predictions)
+      - ../outputs:/app/outputs:rw
+
+      # Logs (read-write for TensorBoard and training logs)
+      - ../logs:/app/logs:rw
+
+      # Development: Uncomment for live code editing
+      # - ../forestgaps:/app/forestgaps:rw
+      # - ../tests:/app/tests:rw
+
+    # GPU resource allocation
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              count: 1
+              device_ids: ['0']  # Use first GPU only
               capabilities: [gpu]
-    # Ne pas démarrer automatiquement
-    command: ["--help"]
-    restart: "no"
+        limits:
+          cpus: '8'  # Limit to 8 CPU cores for batch processing
+          memory: 32G  # Maximum memory usage
 
-  # Service alternatif sans GPU
-  forestgaps-cpu:
-    build:
-      context: .
-      dockerfile: Dockerfile.cpu
-    image: forestgaps:cpu
-    container_name: forestgaps-cpu
-    volumes:
-      - ./data:/app/data
-      - ./models:/app/models
-      - ./config:/app/config
-    # Ne pas démarrer automatiquement
-    command: ["--help"]
-    restart: "no"
+    # Shared memory for DataLoader workers
+    # Increase if you get "OSError: [Errno 28] No space left on device"
+    shm_size: '8gb'
 
-  # Service d'entraînement avec GPU (exemple)
-  training:
-    image: forestgaps:latest
-    container_name: forestgaps-training
-    volumes:
-      - ./data:/app/data
-      - ./models:/app/models
-      - ./config:/app/config
-      # Montage du dossier de logs pour TensorBoard
-      - ./logs:/app/logs
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
-    # Exemple de commande d'entraînement
-    command: ["-m", "cli.training_cli", "train", "--config", "/app/config/defaults/training.yml"]
-    restart: "no"
+    # Port mappings
+    ports:
+      - "6006:6006"  # TensorBoard
+      - "8888:8888"  # Jupyter Notebook
 
-  # Service d'inférence (exemple)
-  inference:
-    image: forestgaps:latest
-    container_name: forestgaps-inference
-    volumes:
-      - ./data:/app/data
-      - ./models:/app/models
-      - ./config:/app/config
-      - ./outputs:/app/outputs
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
-    # Exemple de commande d'inférence
-    command: ["-m", "forestgaps.inference", "predict", "--model", "/app/models/model.pth", "--input", "/app/data/input.tif", "--output", "/app/outputs/prediction.tif"]
-    restart: "no"
+    # Networking
+    networks:
+      - forestgaps-network
 
-  # Service de prétraitement de données (CPU suffisant)
-  preprocessing:
-    image: forestgaps:cpu
-    container_name: forestgaps-preprocessing
-    volumes:
-      - ./data:/app/data
-      - ./config:/app/config
-    # Exemple de commande de prétraitement
-    command: ["-m", "cli.preprocessing_cli", "preprocess", "--config", "/app/config/defaults/preprocessing.yml"]
-    restart: "no"
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "/app/healthcheck.py"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
-  # Service pour l'évaluation des modèles
-  evaluation:
-    image: forestgaps:latest
-    container_name: forestgaps-evaluation
-    volumes:
-      - ./data:/app/data
-      - ./models:/app/models
-      - ./outputs:/app/outputs
-      - ./reports:/app/reports
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
-    # Exemple de commande d'évaluation
-    command: ["-m", "forestgaps.evaluation", "evaluate", "--model", "/app/models/model.pth", "--data", "/app/data/validation", "--output", "/app/reports/evaluation.json"]
-    restart: "no" 
+    # Restart policy
+    restart: unless-stopped
+
+    # Stdin/TTY for interactive use
+    stdin_open: true
+    tty: true
+
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "forestgaps"
+
+networks:
+  forestgaps-network:
+    driver: bridge
+    name: forestgaps-net
+
+# ============================================
+# Additional Services (Optional)
+# ============================================
+
+# Uncomment to add TensorBoard as a separate service
+# tensorboard:
+#   image: forestgaps:latest
+#   container_name: forestgaps-tensorboard
+#   command: tensorboard --logdir=/app/logs --host=0.0.0.0 --port=6006
+#   ports:
+#     - "6006:6006"
+#   volumes:
+#     - ../logs:/app/logs:ro
+#   networks:
+#     - forestgaps-network
+#   restart: unless-stopped
+
+# ============================================
+# Usage Examples:
+# ============================================
+#
+# Start services:
+#   docker-compose -f docker/docker-compose.yml up -d
+#
+# View logs:
+#   docker-compose -f docker/docker-compose.yml logs -f
+#
+# Execute command in running container:
+#   docker-compose -f docker/docker-compose.yml exec forestgaps python -m forestgaps.cli.train
+#
+# Open shell:
+#   docker-compose -f docker/docker-compose.yml exec forestgaps /bin/bash
+#
+# Stop services:
+#   docker-compose -f docker/docker-compose.yml down
+#
+# Rebuild and start:
+#   docker-compose -f docker/docker-compose.yml up --build
+# ============================================

@@ -2,12 +2,19 @@ from setuptools import setup, find_packages
 import os
 
 # Récupérer la version depuis __version__.py
-with open('__version__.py') as f:
-    exec(f.read())
+import os
+
+# On construit le chemin vers forestgaps/__version__.py
+version_path = os.path.join("forestgaps", "__version__.py")
+
+version_ns = {}
+with open(version_path) as f:
+    exec(f.read(), {}, version_ns)
+
 
 setup(
     name="forestgaps",
-    version=__version__,
+    version=version_ns['__version__'],
     packages=find_packages(),
     package_data={
         '': ['*.yaml', '*.yml', '*.json'],  # Inclure les fichiers de configuration

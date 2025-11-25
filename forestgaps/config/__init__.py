@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 from typing import Dict, Any, Optional
 
-from .base import forestgaps.config
+from .base import config
 from .schema import validate_config, DataSchema, ModelSchema, TrainingSchema
 
 

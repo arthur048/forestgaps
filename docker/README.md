@@ -1,246 +1,421 @@
-# ForestGaps Docker
+# ForestGaps Docker Setup
 
-Documentation pour l'utilisation de ForestGaps avec Docker.
+Configuration Docker complète pour le projet ForestGaps avec support CUDA/GPU.
 
-## Table des matières
+## 📋 Vue d'Ensemble
 
-- [Prérequis](#prérequis)
-- [Architecture Docker](#architecture-docker)
-- [Installation](#installation)
-- [Utilisation](#utilisation)
-  - [Commandes de base](#commandes-de-base)
-  - [Entraînement de modèles](#entraînement-de-modèles)
-  - [Inférence](#inférence)
-  - [Prétraitement des données](#prétraitement-des-données)
-  - [Évaluation des modèles](#évaluation-des-modèles)
-- [Volumes et persistance des données](#volumes-et-persistance-des-données)
-- [Configuration avancée](#configuration-avancée)
-- [Résolution des problèmes](#résolution-des-problèmes)
+Cette configuration Docker résout définitivement les problèmes de compatibilité rasterio/GDAL et fournit un environnement reproductible pour le développement et le déploiement.
 
-## Prérequis
+### Caractéristiques
 
-Pour utiliser ForestGaps avec Docker, vous aurez besoin de :
+- ✅ **Python 3.10** avec PyTorch 2.4.0
+- ✅ **CUDA 12.4** + cuDNN 9 pour GPU
+- ✅ **GDAL 3.8.0** préinstallé sans conflits
+- ✅ **Rasterio 1.3.9** compatible
+- ✅ **Multi-core CPU** optimisé pour batch processing
+- ✅ **Scripts simplifiés** pour développeurs débutants
 
-- Docker Engine (>= 19.03)
-- Docker Compose (>= 1.27.0)
-- Pour l'accélération GPU : NVIDIA Container Toolkit (nvidia-docker2)
+## 🚀 Démarrage Rapide
 
-### Installation de Docker
+### 1. Prérequis
 
+**Sur votre machine :**
+- Docker Desktop installé ([télécharger](https://www.docker.com/products/docker-desktop))
+- Pour GPU : NVIDIA Driver ≥ 525.60.13 + nvidia-container-toolkit
+
+**Vérifier Docker :**
 ```bash
-# Pour Ubuntu/Debian
-sudo apt-get update
-sudo apt-get install -y docker.io docker-compose
-
-# Pour Windows/macOS
-# Téléchargez et installez Docker Desktop depuis le site officiel
+docker --version
+docker-compose --version
 ```
 
-### Installation de NVIDIA Docker (pour GPU)
+**Vérifier GPU (optionnel) :**
+```bash
+nvidia-smi
+```
+
+### 2. Build de l'Image
+
+**Méthode simple (recommandée) :**
+```bash
+./scripts/docker-build.sh
+```
+
+**Méthode manuelle :**
+```bash
+docker build -f docker/Dockerfile --target development -t forestgaps:latest .
+```
+
+Le build prend environ **10-15 minutes** la première fois (téléchargement des images de base).
+
+### 3. Validation
+
+Vérifiez que tout fonctionne :
+```bash
+./scripts/docker-test.sh
+```
+
+Cela exécute 7 tests automatiques :
+1. ✓ Image existe
+2. ✓ Container démarre
+3. ✓ Imports Python (torch, rasterio, geopandas, forestgaps)
+4. ✓ GPU disponible (si présent)
+5. ✓ Détection environnement
+6. ✓ Compatibilité GDAL/rasterio
+7. ✓ Health check
+
+## 💻 Utilisation
+
+### Commandes Principales
+
+#### Ouvrir un Shell Interactif
+```bash
+./scripts/docker-run.sh shell
+```
+
+Vous êtes maintenant dans le container. Essayez :
+```bash
+python -c "import forestgaps; print(forestgaps.__version__)"
+python -c "import torch; print(f'GPU: {torch.cuda.is_available()}')"
+```
+
+#### Lancer Jupyter Notebook
+```bash
+./scripts/docker-run.sh jupyter
+```
+
+Accédez à : http://localhost:8888 (token: `forestgaps`)
+
+#### Entraîner un Modèle
+```bash
+./scripts/docker-run.sh train --data-dir ./data --models-dir ./models
+```
+
+#### Inférence sur Nouvelles Données
+```bash
+./scripts/docker-run.sh inference --data-dir ./data --models-dir ./models
+```
+
+#### Exécuter les Tests
+```bash
+./scripts/docker-run.sh test
+```
+
+### Options Avancées
+
+#### Spécifier Répertoires Personnalisés
+```bash
+./scripts/docker-run.sh train \
+  --data-dir /chemin/vers/data \
+  --models-dir /chemin/vers/models \
+  --outputs-dir /chemin/vers/outputs \
+  --logs-dir /chemin/vers/logs
+```
+
+#### Mode CPU Uniquement
+```bash
+./scripts/docker-run.sh shell --gpu disabled
+```
+
+#### Utiliser une Image Spécifique
+```bash
+./scripts/docker-run.sh shell --image forestgaps:v1.0.0
+```
+
+## 🏗️ Architecture Docker
+
+### Images de Base
+
+L'image utilise une approche multi-stage :
+
+```
+Stage 1: GDAL Builder (osgeo/gdal:ubuntu-small-3.8.0)
+         └─> Fournit GDAL 3.8.0 + bibliothèques système
+
+Stage 2: PyTorch Base (pytorch/pytorch:2.4.0-cuda12.4-cudnn9-devel)
+         └─> Python 3.10 + CUDA 12.4 + PyTorch 2.4.0
+         └─> Copie GDAL depuis Stage 1
+
+Stage 3: Dependencies
+         └─> Installation ordonnée des dépendances Python
+
+Stage 4: Development
+         └─> Installation ForestGaps + outils dev
+         └─> Image finale ~4.5 GB
+```
+
+### Points de Montage (Volumes)
+
+| Volume | Mode | Usage |
+|--------|------|-------|
+| `./data` → `/app/data` | ro | Données d'entrée (DSM, CHM) |
+| `./models` → `/app/models` | rw | Checkpoints modèles |
+| `./outputs` → `/app/outputs` | rw | Résultats prédictions |
+| `./logs` → `/app/logs` | rw | Logs TensorBoard |
+
+**Note :** `ro` = read-only, `rw` = read-write
+
+## 🔧 Configuration GPU
+
+### Installation NVIDIA Container Toolkit (Windows WSL2)
+
+Si vous avez un GPU NVIDIA et Docker Desktop sur Windows :
 
 ```bash
-# Pour Ubuntu/Debian
+# Dans WSL2
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
 curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
-curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | \
+  sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+
 sudo apt-get update
-sudo apt-get install -y nvidia-docker2
+sudo apt-get install -y nvidia-container-toolkit
 sudo systemctl restart docker
 ```
 
-## Architecture Docker
-
-ForestGaps est conteneurisé avec deux images Docker principales :
-
-1. **Image GPU (forestgaps:latest)** : Basée sur PyTorch avec support CUDA, optimisée pour l'entraînement et l'inférence sur GPU.
-
-2. **Image CPU (forestgaps:cpu)** : Version légère sans dépendances CUDA, adaptée aux environnements sans GPU ou pour le prétraitement des données.
-
-Le système utilise également Docker Compose pour définir différents services selon les besoins :
-
-- **forestgaps** : Service principal avec support GPU
-- **forestgaps-cpu** : Service alternatif sans GPU
-- **training** : Configuration spécifique pour l'entraînement
-- **inference** : Configuration pour l'inférence et la prédiction
-- **preprocessing** : Configuration pour le prétraitement des données
-- **evaluation** : Configuration pour l'évaluation des modèles
-
-## Installation
-
-### 1. Cloner le dépôt
+### Vérifier GPU dans Container
 
 ```bash
-git clone https://github.com/arthur048/forestgaps.git
-cd forestgaps
+./scripts/docker-run.sh shell
+# Dans le container:
+python -c "import torch; print(torch.cuda.is_available())"
+python -c "import torch; print(torch.cuda.get_device_name(0))"
 ```
 
-### 2. Générer le fichier requirements.txt
+## 🐛 Troubleshooting
 
-```bash
-# Installer les dépendances pour l'analyseur
-bash scripts/install_dep.sh
+### Problème : Image Build Échoue
 
-# Générer requirements.txt
-python utils/dependency_analyzer.py
-```
+**Symptôme :** Erreur pendant `docker build`
 
-### 3. Construire les images Docker
+**Solutions :**
+1. Rebuild sans cache :
+   ```bash
+   ./scripts/docker-build.sh --no-cache
+   ```
 
-```bash
-# Rendre les scripts exécutables
-chmod +x scripts/*.sh
+2. Vérifier espace disque disponible :
+   ```bash
+   df -h
+   ```
 
-# Construire les images Docker (GPU et CPU)
-bash scripts/docker-build.sh
-```
+3. Vérifier logs détaillés :
+   ```bash
+   docker build -f docker/Dockerfile --target development --progress=plain -t forestgaps:latest .
+   ```
 
-### 4. Vérifier l'installation
+### Problème : GPU Non Détecté
 
-```bash
-# Tester les images Docker
-bash scripts/docker-test.sh
-```
+**Symptôme :** `torch.cuda.is_available()` retourne `False`
 
-## Utilisation
+**Solutions :**
+1. Vérifier driver NVIDIA sur host :
+   ```bash
+   nvidia-smi
+   ```
 
-### Commandes de base
+2. Vérifier nvidia-docker :
+   ```bash
+   docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi
+   ```
 
-Le script `docker-run.sh` facilite l'exécution des conteneurs avec les configurations appropriées :
+3. Relancer Docker Desktop
 
-```bash
-# Afficher l'aide
-bash scripts/docker-run.sh --help
+### Problème : "No Space Left on Device"
 
-# Lancer un shell interactif dans le conteneur
-bash scripts/docker-run.sh shell
+**Symptôme :** Erreur lors du training avec DataLoader
 
-# Forcer l'utilisation de l'image CPU
-bash scripts/docker-run.sh --cpu shell
-
-# Forcer l'utilisation de l'image GPU
-bash scripts/docker-run.sh --gpu shell
-```
-
-### Entraînement de modèles
-
-```bash
-# Entraîner un modèle avec docker-compose
-docker-compose up training
-
-# Ou avec le script docker-run.sh (crée automatiquement les volumes nécessaires)
-bash scripts/docker-run.sh train --config /app/config/defaults/training.yml
-
-# En spécifiant un fichier de configuration personnalisé
-bash scripts/docker-run.sh train --config /app/config/mon_entrainement.yml
-```
-
-### Inférence
-
-```bash
-# Prédiction avec un modèle préentraîné
-bash scripts/docker-run.sh predict --model /app/models/model.pth --input /app/data/input.tif --output /app/outputs/prediction.tif
-
-# Version CPU (pour les machines sans GPU)
-bash scripts/docker-run.sh --cpu predict --model /app/models/model.pth --input /app/data/input.tif --output /app/outputs/prediction.tif
-```
-
-### Prétraitement des données
-
-```bash
-# Prétraitement avec la configuration par défaut
-bash scripts/docker-run.sh preprocess --config /app/config/defaults/preprocessing.yml
-
-# Avec des paramètres personnalisés
-bash scripts/docker-run.sh preprocess --input /app/data/raw --output /app/data/processed
-```
-
-### Évaluation des modèles
-
-```bash
-# Évaluer un modèle
-bash scripts/docker-run.sh evaluate --model /app/models/model.pth --data /app/data/validation --output /app/reports/evaluation.json
-```
-
-## Volumes et persistance des données
-
-Par défaut, les volumes suivants sont montés dans les conteneurs :
-
-- `./data:/app/data` : Données d'entrée et de sortie
-- `./models:/app/models` : Modèles entraînés
-- `./config:/app/config` : Fichiers de configuration
-- `./logs:/app/logs` : Logs d'entraînement et TensorBoard (pour training)
-- `./outputs:/app/outputs` : Résultats de prédiction (pour inference)
-- `./reports:/app/reports` : Rapports d'évaluation (pour evaluation)
-
-Pour monter des volumes supplémentaires :
-
-```bash
-bash scripts/docker-run.sh -v "/chemin/local:/chemin/conteneur" train --config /app/config/training.yml
-```
-
-## Configuration avancée
-
-### Utilisation de la mémoire et des GPUs
-
-Par défaut, Docker utilisera toutes les ressources disponibles. Pour limiter l'utilisation :
-
+**Solution :**
+Le container utilise déjà `shm-size: 8gb`. Si insuffisant, éditer `docker-compose.yml` :
 ```yaml
-# Dans docker-compose.yml
-services:
-  training:
-    deploy:
-      resources:
-        limits:
-          cpus: '4'
-          memory: 8G
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+shm_size: '16gb'  # Augmenter à 16 GB
 ```
 
-### Personnalisation des images Docker
+### Problème : GDAL Version Mismatch
 
-Pour personnaliser les images Docker, modifiez les fichiers `Dockerfile` et `Dockerfile.cpu` selon vos besoins, puis reconstruisez :
+**Symptôme :** Erreur "GDAL API version must be specified"
+
+**Solution :**
+Ceci ne devrait PAS arriver grâce à notre Dockerfile. Si cela se produit :
+```bash
+./scripts/docker-run.sh shell
+# Dans le container:
+python -c "from osgeo import gdal; print(gdal.__version__)"
+python -c "import rasterio; print(rasterio.__version__)"
+```
+
+Les versions doivent être :
+- GDAL : 3.8.0
+- Rasterio : 1.3.9
+
+### Problème : Permissions Denied
+
+**Symptôme :** Impossible d'écrire dans `/app/models` ou `/app/outputs`
+
+**Solution :**
+Le container s'exécute avec l'utilisateur `forestgaps` (UID 1000). Vérifier permissions sur host :
+```bash
+sudo chown -R 1000:1000 ./models ./outputs ./logs
+```
+
+## 📦 Docker Compose
+
+### Démarrer avec Docker Compose
 
 ```bash
-docker build -t forestgaps:custom -f Dockerfile.custom .
+docker-compose -f docker/docker-compose.yml up -d
 ```
 
-## Résolution des problèmes
-
-### Problèmes courants
-
-#### Erreur "NVIDIA CUDA not found"
-
-Vérifiez que NVIDIA Docker est correctement installé :
+### Voir les Logs
 
 ```bash
-# Vérifier l'installation de NVIDIA Docker
-docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
+docker-compose -f docker/docker-compose.yml logs -f
 ```
 
-Si cette commande échoue, réinstallez NVIDIA Docker.
+### Arrêter
 
-#### Erreur "Out of memory"
+```bash
+docker-compose -f docker/docker-compose.yml down
+```
 
-Limitez la mémoire utilisée par PyTorch dans votre script ou configuration :
+### Rebuild
 
+```bash
+docker-compose -f docker/docker-compose.yml up --build
+```
+
+## 📊 Optimisations Performance
+
+### Multi-Core CPU (Batch Processing)
+
+Le container est configuré pour utiliser **8 CPU cores** pour le preprocessing parallèle des données pendant le training.
+
+Variables d'environnement (déjà configurées) :
+```yaml
+OMP_NUM_THREADS=8
+MKL_NUM_THREADS=8
+```
+
+### GPU Memory Management
+
+Configuration automatique pour éviter les OOM (Out Of Memory) :
+```yaml
+PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+```
+
+## 🧪 Développement
+
+### Live Code Editing
+
+Pour développer sans rebuilder :
+
+1. Décommenter dans `docker-compose.yml` :
+   ```yaml
+   volumes:
+     - ../forestgaps:/app/forestgaps:rw
+     - ../tests:/app/tests:rw
+   ```
+
+2. Relancer :
+   ```bash
+   docker-compose -f docker/docker-compose.yml up -d
+   ```
+
+Vos modifications dans `forestgaps/` sont maintenant live !
+
+### Ajouter des Dépendances
+
+1. Ajouter dans `requirements/requirements.txt`
+2. Rebuild l'image :
+   ```bash
+   ./scripts/docker-build.sh
+   ```
+
+## 📝 Fichiers Importants
+
+| Fichier | Description |
+|---------|-------------|
+| `docker/Dockerfile` | Build multi-stage complet |
+| `docker/docker-compose.yml` | Orchestration Docker |
+| `docker/.dockerignore` | Exclusions build context |
+| `docker/healthcheck.py` | Health check container |
+| `scripts/docker-build.sh` | Script de build |
+| `scripts/docker-run.sh` | Script d'exécution |
+| `scripts/docker-test.sh` | Script de validation |
+| `requirements/requirements.txt` | Dépendances production |
+
+## 🎯 Compatibilité Colab
+
+Le code reste 100% compatible avec Google Colab !
+
+**Détection automatique de l'environnement :**
 ```python
-# Dans votre script Python
-torch.cuda.set_per_process_memory_fraction(0.7)  # Utilise 70% de la mémoire GPU
+from forestgaps.environment import setup_environment
+
+env = setup_environment()
+# Détecte automatiquement : Docker, Colab, ou Local
 ```
 
-#### Problèmes de permissions
+**Résultat :**
+- Dans Docker : `DockerEnvironment`
+- Dans Colab : `ColabEnvironment`
+- En local : `LocalEnvironment`
 
-Si vous rencontrez des problèmes de permissions avec les volumes Docker :
+Aucune modification de code nécessaire ! 🎉
+
+## 🔒 Sécurité
+
+- ✅ Container s'exécute en **non-root** (utilisateur `forestgaps`)
+- ✅ Volumes data en **read-only** pour éviter modifications accidentelles
+- ✅ **Pas de secrets** dans l'image (utiliser variables d'environnement)
+- ✅ Dépendances **pinnées** pour éviter supply chain attacks
+
+### Scanner Vulnérabilités
 
 ```bash
-# Ajustez les permissions des dossiers montés
-sudo chown -R 1000:1000 ./data ./models ./outputs
+# Installer trivy
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+
+# Scanner l'image
+trivy image forestgaps:latest
 ```
 
-### Obtenir de l'aide
+## 📚 Ressources
 
-Pour des questions spécifiques, veuillez ouvrir une issue sur le dépôt GitHub ou contacter directement les mainteneurs. 
+- [Docker Documentation](https://docs.docker.com/)
+- [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-docker)
+- [PyTorch Docker Images](https://hub.docker.com/r/pytorch/pytorch/tags)
+- [OSGeo GDAL Docker](https://hub.docker.com/r/osgeo/gdal)
+
+## 🆘 Support
+
+**Problème avec Docker ?**
+1. Consulter la section Troubleshooting ci-dessus
+2. Vérifier les logs : `docker logs <container_id>`
+3. Ouvrir une issue sur GitHub avec :
+   - Version Docker : `docker --version`
+   - OS : `uname -a` ou `ver` (Windows)
+   - Logs complets de l'erreur
+
+## 📄 License
+
+Ce projet est sous licence MIT. Voir [LICENSE](../LICENSE) pour plus de détails.
+
+---
+
+**Prêt à démarrer ? 🚀**
+
+```bash
+# 1. Build l'image
+./scripts/docker-build.sh
+
+# 2. Vérifier que tout fonctionne
+./scripts/docker-test.sh
+
+# 3. Ouvrir un shell
+./scripts/docker-run.sh shell
+
+# 4. Commencer à coder !
+```
+
+**Des questions ?** Consultez le [README principal](../README.md) ou ouvrez une issue !

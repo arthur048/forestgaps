@@ -12,27 +12,58 @@ class Environment(ABC):
     def detect(cls):
         """
         Détecte automatiquement l'environnement d'exécution.
-        
+
+        Ordre de priorité:
+        1. Docker (via /.dockerenv ou variables d'environnement)
+        2. Google Colab (via module google.colab)
+        3. Local (par défaut)
+
         Returns:
-            Une instance de l'environnement détecté (ColabEnvironment ou LocalEnvironment).
+            Une instance de l'environnement détecté (DockerEnvironment, ColabEnvironment ou LocalEnvironment).
         """
         try:
+            # Priorité 1: Vérifier Docker en premier
+            # Méthode 1: Fichier /.dockerenv
+            if os.path.exists("/.dockerenv"):
+                from forestgaps.environment.docker import DockerEnvironment
+                print("✅ Environnement Docker détecté (via /.dockerenv).")
+                return DockerEnvironment()
+
+            # Méthode 2: Variable d'environnement DOCKER_CONTAINER
+            if os.environ.get("DOCKER_CONTAINER") == "1":
+                from forestgaps.environment.docker import DockerEnvironment
+                print("✅ Environnement Docker détecté (via DOCKER_CONTAINER).")
+                return DockerEnvironment()
+
+            # Méthode 3: Vérifier /proc/1/cgroup pour Docker/Kubernetes
+            try:
+                with open("/proc/1/cgroup", "r") as f:
+                    content = f.read()
+                    if "docker" in content or "kubepods" in content:
+                        from forestgaps.environment.docker import DockerEnvironment
+                        print("✅ Environnement Docker détecté (via /proc/1/cgroup).")
+                        return DockerEnvironment()
+            except (FileNotFoundError, PermissionError):
+                pass
+
+            # Priorité 2: Vérifier Google Colab
             # Méthode principale: Vérifier si le module 'google.colab' est disponible
             if 'google.colab' in sys.modules or os.environ.get('COLAB_GPU', '') == '1':
                 from forestgaps.environment.colab import ColabEnvironment
                 print("✅ Environnement Google Colab détecté.")
                 return ColabEnvironment()
-            
+
             # Méthode alternative: Vérifier le path système pour identifier Colab
             if '/usr/local/lib/python3' in sys.path and '/content' in os.getcwd():
                 from forestgaps.environment.colab import ColabEnvironment
                 print("✅ Environnement Google Colab détecté (via path système).")
                 return ColabEnvironment()
-            
-            # Par défaut, utiliser l'environnement local
+
+            # Priorité 3: Par défaut, utiliser l'environnement local
             from forestgaps.environment.local import LocalEnvironment
             print("✅ Environnement local détecté.")
             return LocalEnvironment()
+
         except Exception as e:
             # Si une erreur se produit pendant la détection, utiliser l'environnement local par défaut
             print(f"⚠️ Erreur lors de la détection de l'environnement: {str(e)}")
