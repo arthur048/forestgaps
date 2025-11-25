@@ -6,6 +6,7 @@ sur des paires DSM/CHM indépendantes. Il permet de calculer des métriques dét
 de performance et de générer des rapports d'évaluation complets.
 """
 
+import os
 import logging
 from typing import Dict, Any, List, Optional, Union, Tuple
 

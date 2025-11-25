@@ -6,14 +6,14 @@ Ce module fournit des fonctionnalités pour générer des tuiles et des masques
 des trouées forestières.
 """
 
-from data.generation.tiling import (
+from .tiling import (
     generate_tiles,
     create_tile_grid,
     extract_tile,
     save_tile_metadata
 )
 
-from data.generation.masks import (
+from .masks import (
     generate_gap_masks,
     create_binary_mask,
     refine_mask,

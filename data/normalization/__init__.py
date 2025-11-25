@@ -5,13 +5,13 @@ Ce module fournit des fonctionnalités pour normaliser les données raster (DSM/
 avant l'entraînement des modèles de détection des trouées forestières.
 """
 
-from data.normalization.statistics import (
+from .statistics import (
     NormalizationStatistics,
     compute_normalization_statistics,
     batch_compute_statistics
 )
 
-from data.normalization.strategies import (
+from .strategies import (
     NormalizationMethod,
     NormalizationStrategy,
     MinMaxNormalization,
@@ -22,7 +22,7 @@ from data.normalization.strategies import (
     create_normalization_strategy
 )
 
-from data.normalization.normalization import (
+from .normalization import (
     NormalizationLayer,
     InputNormalization,
     create_normalization_layer,
@@ -30,7 +30,7 @@ from data.normalization.normalization import (
     denormalize_batch
 )
 
-from data.normalization.io import (
+from .io import (
     save_stats_json,
     load_stats_json,
     save_stats_pickle,

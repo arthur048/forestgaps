@@ -6,10 +6,10 @@ architectures de modèles et configurations d'entraînement pour la
 détection des trouées forestières.
 """
 
-from benchmarking.comparison import ModelComparison
-from benchmarking.metrics import AggregatedMetrics, MetricsTracker
-from benchmarking.visualization import BenchmarkVisualizer
-from benchmarking.reporting import BenchmarkReporter
+from .comparison import ModelComparison
+from .metrics import AggregatedMetrics, MetricsTracker
+from .visualization import BenchmarkVisualizer
+from .reporting import BenchmarkReporter
 
 __all__ = [
     'ModelComparison',
