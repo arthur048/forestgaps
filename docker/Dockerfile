@@ -58,42 +58,42 @@ RUN conda config --set channel_priority flexible && \
 RUN --mount=type=cache,target=/opt/conda/pkgs \
     conda install -y \
     # PyTorch + CUDA (canal pytorch officiel)
-    pytorch=2.4.0 \
-    torchvision=0.19.0 \
-    pytorch-cuda=12.4 \
+    "pytorch>=2.4.0,<2.5" \
+    "torchvision>=0.19.0,<0.20" \
+    "pytorch-cuda=12.4" \
     -c pytorch -c nvidia && \
     # Geospatial (déjà dans l'image mais on force les versions)
     conda install -y -c conda-forge \
-    gdal=3.8.5 \
-    rasterio=1.3.9 \
-    geopandas=0.14.2 \
-    fiona=1.9.5 \
-    shapely=2.0.2 && \
+    "gdal>=3.8,<3.9" \
+    "rasterio>=1.3,<1.4" \
+    "geopandas>=0.14,<0.15" \
+    "fiona>=1.9,<2.0" \
+    "shapely>=2.0,<3.0" && \
     # ML & Scientific
     conda install -y -c conda-forge \
-    scikit-learn=1.3.2 \
-    scikit-image=0.22.0 \
-    numpy=1.26.3 \
-    pandas=2.1.4 \
-    scipy=1.11.4 && \
+    "scikit-learn>=1.3,<1.5" \
+    "scikit-image>=0.22,<0.23" \
+    "numpy>=1.26,<2.0" \
+    "pandas>=2.1,<3.0" \
+    "scipy>=1.11,<1.12" && \
     # Visualization
     conda install -y -c conda-forge \
-    matplotlib=3.8.2 \
-    seaborn=0.13.0 \
-    pillow=10.1.0 && \
+    "matplotlib>=3.8,<3.9" \
+    "seaborn>=0.13,<0.14" \
+    "pillow>=10.1,<11.0" && \
     # Utils
     conda install -y -c conda-forge \
-    pydantic=2.5.0 \
-    pyyaml=6.0.1 \
-    tensorboard=2.15.1 \
-    tqdm=4.66.1 \
-    tabulate=0.9.0 && \
+    "pydantic>=2.5,<3.0" \
+    "pyyaml>=6.0,<7.0" \
+    "tensorboard>=2.15,<3.0" \
+    "tqdm>=4.66,<5.0" \
+    "tabulate>=0.9,<1.0" && \
     # Dev tools
     conda install -y -c conda-forge \
-    pytest=7.4.3 \
-    black=23.12.1 \
-    isort=5.13.2 \
-    flake8=6.1.0 && \
+    "pytest>=7.4,<8.0" \
+    "black>=23.12,<25.0" \
+    "isort>=5.13,<6.0" \
+    "flake8>=6.1,<7.0" && \
     conda clean -afy
 
 # Upgrade pip (pour rares packages non sur conda)
