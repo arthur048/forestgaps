@@ -1,22 +1,22 @@
 # ============================================
-# ForestGaps Docker Image - NGC PyTorch Base
+# ForestGaps Docker Image - NGC PyTorch 25.03
 # ============================================
-# Approche optimale : Image NGC pré-construite + wheels pip
-# Build time : ~2-3 min (vs 30+ min avec conda)
 # 
-# L'image NGC inclut déjà :
-#   - PyTorch 2.5 + CUDA 12.6 + cuDNN 9.3
-#   - NumPy, SciPy, Pandas
-#   - TensorBoard, JupyterLab
-#   - OpenCV (via DALI)
-#   - NCCL, TensorRT, etc.
+# POURQUOI 25.03 ?
+# - Inclut /etc/pip/constraint.txt natif (empêche les upgrades NumPy)
+# - PyTorch 2.7 compatible NumPy 2.x si besoin
+# - Python 3.12, CUDA 12.8, cuDNN 9.8
+# - Ubuntu 24.04
+#
+# ATTENTION: Volta (V100) n'est plus supporté depuis 25.01
+# Pour Volta, utiliser NGC 24.12 ou NVIDIA AI Enterprise
 # ============================================
 
-FROM nvcr.io/nvidia/pytorch:24.08-py3
+FROM nvcr.io/nvidia/pytorch:25.03-py3
 
 LABEL maintainer="vdlinden.arthur@gmail.com"
 LABEL description="ForestGaps - Forest canopy gap detection using deep learning"
-LABEL version="0.1.1"
+LABEL version="0.2.0"
 
 # ============================================
 # Environment Variables
@@ -27,11 +27,17 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # ============================================
-# Install Geospatial Packages (wheels only, no compilation)
+# Vérifier les contraintes NGC existantes
 # ============================================
-# ORDRE IMPORTANT:
-# 1. D'abord les wheels Python (incluent GDAL embarqué)
-# 2. Ensuite optionnellement gdal-bin pour les CLI
+# NGC 25.03 a déjà /etc/pip/constraint.txt
+# On peut voir son contenu ou l'étendre si besoin
+RUN echo "=== NGC pip constraints ===" && \
+    head -50 /etc/pip/constraint.txt || echo "No constraint file found"
+
+# ============================================
+# Install Geospatial Packages
+# ============================================
+# Les contraintes NGC empêchent les upgrades de NumPy
 RUN pip install \
     rasterio \
     geopandas \
@@ -41,15 +47,13 @@ RUN pip install \
     rioxarray \
     xarray
 
-# GDAL CLI tools not needed - rasterio wheels include GDAL Python bindings
-
 # ============================================
 # Install Additional ML/Science Packages
 # ============================================
-# Certains sont déjà dans NGC mais on s'assure des versions
+# opencv-python-headless évite les conflits avec DALI
 RUN pip install \
     scikit-image \
-    opencv-python \
+    opencv-python-headless \
     pydantic \
     pyyaml \
     tqdm \
@@ -57,7 +61,7 @@ RUN pip install \
     seaborn
 
 # ============================================
-# Install Dev Tools (optional, comment out for production)
+# Install Dev Tools
 # ============================================
 RUN pip install \
     pytest \
@@ -69,68 +73,43 @@ RUN pip install \
 # Setup Working Directory
 # ============================================
 WORKDIR /app
-
-# Create directories
 RUN mkdir -p /app/data /app/models /app/outputs /app/logs /app/tests
 
 # ============================================
 # Install ForestGaps Package
 # ============================================
-# Copy project files
 COPY forestgaps/ /app/forestgaps/
 COPY setup.py README.md ./
 COPY pytest.ini ./
-
-# Copy optional files if they exist
 COPY MANIFEST.in* ./
 
-# Install in editable mode
 RUN pip install -e .
 
-# Copy tests and health check
 COPY tests/ /app/tests/
 COPY docker/healthcheck.py /app/healthcheck.py
 
 # ============================================
 # Verify Installation
 # ============================================
-RUN python -c "import torch; print(f'✓ PyTorch {torch.__version__}')" && \
+RUN python -c "import numpy; print(f'✓ NumPy {numpy.__version__}')" && \
+    python -c "import torch; print(f'✓ PyTorch {torch.__version__}')" && \
     python -c "import torch; print(f'✓ CUDA available: {torch.cuda.is_available()}')" && \
     python -c "import rasterio; print(f'✓ Rasterio {rasterio.__version__}')" && \
     python -c "import geopandas; print(f'✓ GeoPandas {geopandas.__version__}')" && \
-    python -c "import cv2; print(f'✓ OpenCV {cv2.__version__}')"
-
-# ============================================
-# Security: Non-Root User
-# ============================================
-# Note: Commenté car l'image NGC utilise root par défaut
-# et certaines opérations CUDA peuvent nécessiter root
-# Décommente si tu veux un user non-root :
-#
-# RUN useradd -m -u 1000 -s /bin/bash forestgaps && \
-#     chown -R forestgaps:forestgaps /app
-# USER forestgaps
+    python -c "import cv2; print(f'✓ OpenCV {cv2.__version__}')" && \
+    python -c "import torch; t = torch.tensor([1.0]).numpy(); print('✓ torch.numpy() works')"
 
 # ============================================
 # Runtime Configuration
 # ============================================
 ENV CUDA_DEVICE_ORDER=PCI_BUS_ID \
     TORCH_HOME=/app/.torch \
-    # Architectures GPU supportées (Volta -> Hopper)
-    TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0;8.6;8.9;9.0"
+    # Architectures: Turing -> Hopper (Volta retiré en 25.01)
+    TORCH_CUDA_ARCH_LIST="7.5;8.0;8.6;8.9;9.0"
 
-# ============================================
-# Health Check
-# ============================================
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
     CMD python /app/healthcheck.py || exit 1
 
-# ============================================
-# Expose Ports
-# ============================================
 EXPOSE 6006 8888
 
-# ============================================
-# Default Command
-# ============================================
 CMD ["python", "-c", "from forestgaps.environment import Environment; env = Environment.detect(); import pprint; pprint.pprint(env.get_environment_info())"]

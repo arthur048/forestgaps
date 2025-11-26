@@ -1,97 +1,53 @@
 # ============================================
 # ForestGaps Docker Compose Configuration
 # ============================================
-# Production-ready orchestration for forest canopy gap detection
-#
-# Usage:
-#   docker-compose -f docker/docker-compose.yml up
-#   docker-compose -f docker/docker-compose.yml down
-# ============================================
 
 services:
+  # =========================================
+  # Service principal ForestGaps (base, sans ports)
+  # =========================================
   forestgaps:
-    image: forestgaps:latest
-    container_name: forestgaps-main
-
-    # Build configuration
     build:
       context: ..
       dockerfile: docker/Dockerfile
-      args:
-        - PLATFORM=linux/amd64
-        - BUILDKIT_INLINE_CACHE=1
+    image: forestgaps:latest
+    container_name: forestgaps-main
 
-    # NVIDIA GPU runtime
-    runtime: nvidia
-
-    # Environment variables
-    environment:
-      # Single GPU configuration
-      - NVIDIA_VISIBLE_DEVICES=0
-      - CUDA_VISIBLE_DEVICES=0
-      - CUDA_DEVICE_ORDER=PCI_BUS_ID
-      - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
-
-      # Multi-core CPU for batch processing
-      - OMP_NUM_THREADS=8
-      - MKL_NUM_THREADS=8
-      - NUMEXPR_NUM_THREADS=8
-
-      # Python configuration
-      - PYTHONUNBUFFERED=1
-      - PYTHONDONTWRITEBYTECODE=1
-
-      # Logging
-      - LOG_LEVEL=INFO
-
-      # ForestGaps specific
-      - FORESTGAPS_ENV=docker
-      - DOCKER_CONTAINER=1
-
-    # Volume mounts
-    volumes:
-      # Data (read-only to prevent accidental modifications)
-      - ../data:/app/data:ro
-
-      # Models (read-write for saving checkpoints)
-      - ../models:/app/models:rw
-
-      # Outputs (read-write for saving predictions)
-      - ../outputs:/app/outputs:rw
-
-      # Logs (read-write for TensorBoard and training logs)
-      - ../logs:/app/logs:rw
-
-      # Development: Uncomment for live code editing
-      - ../forestgaps:/app/forestgaps:rw
-      - ../tests:/app/tests:rw
-
-    # GPU resource allocation
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ['0']  # Use first GPU only
+              count: 1
               capabilities: [gpu]
         limits:
-          cpus: '8'  # Limit to 8 CPU cores for batch processing
-          memory: 32G  # Maximum memory usage
+          memory: 32G
 
-    # Shared memory for DataLoader workers
-    # Increase if you get "OSError: [Errno 28] No space left on device"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=0
+      - CUDA_VISIBLE_DEVICES=0
+      - CUDA_DEVICE_ORDER=PCI_BUS_ID
+      - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+      - OMP_NUM_THREADS=8
+      - MKL_NUM_THREADS=8
+      - NUMEXPR_NUM_THREADS=8
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - FORESTGAPS_ENV=docker
+      - LOG_LEVEL=INFO
+
+    volumes:
+      - ../data:/app/data:rws
+      - ../models:/app/models:rw
+      - ../outputs:/app/outputs:rw
+      - ../logs:/app/logs:rw
+      - ../forestgaps:/app/forestgaps:rw
+      - ../tests:/app/tests:rw
+
     shm_size: '8gb'
+    stdin_open: true
+    tty: true
 
-    # Port mappings
-    ports:
-      - "6006:6006"  # TensorBoard
-      - "8888:8888"  # Jupyter Notebook
-
-    # Networking
-    networks:
-      - forestgaps-network
-
-    # Health check
     healthcheck:
       test: ["CMD", "python", "/app/healthcheck.py"]
       interval: 30s
@@ -99,62 +55,69 @@ services:
       retries: 3
       start_period: 10s
 
-    # Restart policy
-    restart: unless-stopped
-
-    # Stdin/TTY for interactive use
-    stdin_open: true
-    tty: true
-
-    # Logging configuration
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-        labels: "forestgaps"
 
-networks:
-  forestgaps-network:
-    driver: bridge
-    name: forestgaps-net
+  # =========================================
+  # Jupyter Lab
+  # =========================================
+  jupyter:
+    image: forestgaps:latest
+    container_name: forestgaps-jupyter
+    depends_on:
+      - forestgaps
+    command: >
+      jupyter lab 
+      --ip=0.0.0.0 
+      --port=8888 
+      --no-browser 
+      --allow-root
+      --ServerApp.token=''
+      --ServerApp.password=''
+    ports:
+      - "8888:8888"
+    volumes:
+      - ../data:/app/data:ro
+      - ../models:/app/models:rw
+      - ../outputs:/app/outputs:rw
+      - ../logs:/app/logs:rw
+      - ../forestgaps:/app/forestgaps:rw
+      - ../tests:/app/tests:rw
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=0
+      - CUDA_VISIBLE_DEVICES=0
+    shm_size: '8gb'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  # =========================================
+  # TensorBoard
+  # =========================================
+  tensorboard:
+    image: forestgaps:latest
+    container_name: forestgaps-tensorboard
+    depends_on:
+      - forestgaps
+    command: tensorboard --logdir=/app/logs --bind_all
+    ports:
+      - "6006:6006"
+    volumes:
+      - ../logs:/app/logs:ro
+    restart: unless-stopped
 
 # ============================================
-# Additional Services (Optional)
-# ============================================
-
-# Uncomment to add TensorBoard as a separate service
-# tensorboard:
-#   image: forestgaps:latest
-#   container_name: forestgaps-tensorboard
-#   command: tensorboard --logdir=/app/logs --host=0.0.0.0 --port=6006
-#   ports:
-#     - "6006:6006"
-#   volumes:
-#     - ../logs:/app/logs:ro
-#   networks:
-#     - forestgaps-network
-#   restart: unless-stopped
-
-# ============================================
-# Usage Examples:
-# ============================================
-#
-# Start services:
-#   docker-compose -f docker/docker-compose.yml up -d
-#
-# View logs:
-#   docker-compose -f docker/docker-compose.yml logs -f
-#
-# Execute command in running container:
-#   docker-compose -f docker/docker-compose.yml exec forestgaps python -m forestgaps.cli.train
-#
-# Open shell:
-#   docker-compose -f docker/docker-compose.yml exec forestgaps /bin/bash
-#
-# Stop services:
-#   docker-compose -f docker/docker-compose.yml down
-#
-# Rebuild and start:
-#   docker-compose -f docker/docker-compose.yml up --build
+# Usage:
+#   docker-compose build  #construire l'image
+#   docker-compose up -d          # Tout lancer
+#   docker-compose up jupyter tensorboard  # Les deux services
+#   docker-compose run --rm forestgaps bash  # Shell
 # ============================================
