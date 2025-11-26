@@ -98,7 +98,7 @@ RUN python -c "import torch; print(f'✓ PyTorch {torch.__version__}')" && \
     python -c "import torch; print(f'✓ CUDA available: {torch.cuda.is_available()}')" && \
     python -c "import rasterio; print(f'✓ Rasterio {rasterio.__version__}')" && \
     python -c "import geopandas; print(f'✓ GeoPandas {geopandas.__version__}')" && \
-    python -c "from osgeo import gdal; print(f'✓ GDAL {gdal.__version__}')"
+    python -c "import cv2; print(f'✓ OpenCV {cv2.__version__}')"
 
 # ============================================
 # Security: Non-Root User
