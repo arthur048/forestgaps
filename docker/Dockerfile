@@ -74,6 +74,7 @@ RUN --mount=type=cache,target=/opt/conda/pkgs \
     "matplotlib>=3.8,<3.9" \
     "seaborn>=0.13,<0.14" \
     "pillow>=10.1,<11.0" \
+    "opencv>=4.8,<5.0" \
     # Utils
     "pydantic>=2.5,<3.0" \
     "pyyaml>=6.0,<7.0" \
