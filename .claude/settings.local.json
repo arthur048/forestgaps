@@ -3,7 +3,9 @@
     "allow": [
       "Bash(git commit -m \"$(cat <<''EOF''\nDocs: Corriger notebook Colab et ajouter documentation\n\nPhase 2 - Validation installation Colab\n\nCorrections:\n- ✅ Test_Package_ForestGaps.ipynb: forestgaps_dl → forestgaps\n- ✅ Création docs/COLAB_SETUP.md avec guide complet\n\nDocumentation ajoutée:\n- Installation rapide sur Colab\n- Clarification du nom du package (forestgaps)\n- Setup environnement et Google Drive\n- Troubleshooting commun\n- Workflow complet exemple\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git push:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(docker run:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
