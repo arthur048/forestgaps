@@ -30,9 +30,8 @@ ENV PYTHONUNBUFFERED=1 \
 # Install Geospatial Packages (wheels only, no compilation)
 # ============================================
 # Les wheels manylinux incluent leurs propres libs (GDAL, GEOS, PROJ)
-# Pas besoin de libgdal-dev !
+# Rasterio installe automatiquement GDAL comme dépendance
 RUN pip install \
-    GDAL \
     rasterio \
     geopandas \
     fiona \
