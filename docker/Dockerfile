@@ -24,10 +24,13 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # ============================================
 # Install System Dependencies
 # ============================================
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Force fast mirrors and minimal dependencies
+RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     git \
+    wget \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # ============================================
@@ -45,11 +48,12 @@ ENV PATH="/opt/conda/bin:$PATH"
 # ============================================
 # Mamba résout tout d'un coup - résolution en secondes au lieu de minutes/heures
 # Ordre des channels : pytorch > nvidia > conda-forge
+# Python 3.10 pour compatibilité avec Google Colab
 RUN --mount=type=cache,target=/opt/conda/pkgs \
     mamba install -y \
     -c pytorch -c nvidia -c conda-forge \
-    # Python
-    python=3.11 \
+    # Python (3.10 = Colab version)
+    python=3.10 \
     # PyTorch + CUDA
     "pytorch>=2.4.0,<2.5" \
     "torchvision>=0.19.0,<0.20" \
