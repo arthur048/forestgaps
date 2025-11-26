@@ -29,8 +29,9 @@ ENV PYTHONUNBUFFERED=1 \
 # ============================================
 # Install Geospatial Packages (wheels only, no compilation)
 # ============================================
-# Les wheels manylinux incluent leurs propres libs (GDAL, GEOS, PROJ)
-# Rasterio installe automatiquement GDAL comme dépendance
+# ORDRE IMPORTANT:
+# 1. D'abord les wheels Python (incluent GDAL embarqué)
+# 2. Ensuite optionnellement gdal-bin pour les CLI
 RUN pip install \
     rasterio \
     geopandas \
@@ -40,12 +41,15 @@ RUN pip install \
     rioxarray \
     xarray
 
+# GDAL CLI tools not needed - rasterio wheels include GDAL Python bindings
+
 # ============================================
 # Install Additional ML/Science Packages
 # ============================================
 # Certains sont déjà dans NGC mais on s'assure des versions
 RUN pip install \
     scikit-image \
+    opencv-python \
     pydantic \
     pyyaml \
     tqdm \
