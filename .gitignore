@@ -1,8 +1,13 @@
 # Données volumineuses
 data/
-models/
+/models/
 logs/
 outputs/
+
+# Trained model weights (but allow forestgaps/models/ source code)
+*.pt
+*.pth
+*.ckpt
 
 # Docker artifacts
 docker/data/

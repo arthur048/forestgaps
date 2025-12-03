@@ -5,6 +5,8 @@ Ce module fournit une implémentation PyTorch de l'architecture DeepLabV3+,
 connue pour ses performances dans les tâches de segmentation sémantique.
 """
 
+from typing import Dict, Any
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -288,8 +290,25 @@ class DeepLabV3Plus(ForestGapModel):
     def get_output_names(self):
         """
         Retourne les noms des sorties du modèle.
-        
+
         Returns:
             Liste des noms des sorties.
         """
-        return ["mask"] 
+        return ["mask"]
+
+    def get_complexity(self) -> Dict[str, Any]:
+        """
+        Retourne des informations sur la complexité du modèle DeepLabV3+.
+
+        Returns:
+            Dictionnaire contenant des informations sur la complexité comme
+            le nombre de paramètres, les canaux de l'encodeur, etc.
+        """
+        return {
+            "parameters": self.get_num_parameters(),
+            "encoder_channels": self.encoder_channels,
+            "encoder_depth": len(self.encoder_channels),
+            "in_channels": self.in_channels,
+            "out_channels": self.out_channels,
+            "model_type": "DeepLabV3Plus"
+        } 
