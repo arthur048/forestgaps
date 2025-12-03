@@ -23,7 +23,6 @@ jobs:
           echo "🏗️ Building ForestGaps Docker image..."
           docker build \
             --platform linux/amd64 \
-            --target development \
             -t forestgaps:test \
             -f docker/Dockerfile \
             --progress=plain \

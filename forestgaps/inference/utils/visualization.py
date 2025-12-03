@@ -653,3 +653,58 @@ def visualize_error_map(
         logger.info(f"Figure sauvegardée dans: {save_path}")
     
     return fig 
+
+def visualize_predictions(
+    prediction: np.ndarray,
+    probability: Optional[np.ndarray] = None,
+    output_dir: str = ".",
+    base_name: str = "prediction",
+    threshold: Optional[float] = None,
+    **kwargs
+) -> str:
+    """
+    Wrapper pour générer plusieurs visualisations d'une prédiction.
+
+    Args:
+        prediction: Prédiction binaire (2D array)
+        probability: Prédiction de probabilité (2D array, optionnel)
+        output_dir: Répertoire pour sauvegarder les visualisations
+        base_name: Nom de base pour les fichiers de sortie
+        threshold: Seuil utilisé pour la prédiction (pour le titre)
+        **kwargs: Arguments additionnels pour visualize_prediction()
+
+    Returns:
+        Chemin du répertoire de visualisations
+    """
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Générer titre avec seuil si disponible
+    if threshold is not None:
+        title = f"{base_name} (seuil: {threshold}m)"
+    else:
+        title = base_name
+
+    # Visualisation de la prédiction binaire
+    pred_path = os.path.join(output_dir, f"{base_name}_binary.png")
+    visualize_prediction(
+        prediction=prediction,
+        title=f"Prédiction binaire - {title}",
+        save_path=pred_path,
+        **kwargs
+    )
+
+    # Visualisation de la probabilité si disponible
+    if probability is not None:
+        prob_path = os.path.join(output_dir, f"{base_name}_probability.png")
+        visualize_prediction(
+            prediction=probability,
+            title=f"Probabilité - {title}",
+            save_path=prob_path,
+            **kwargs
+        )
+
+    return output_dir
+
+
+# Alias pour compatibilité
+create_comparison_figure = visualize_comparison

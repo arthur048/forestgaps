@@ -22,9 +22,8 @@ from forestgaps.utils.io.serialization import load_model as load_model_checkpoin
 from forestgaps.models.registry import ModelRegistry
 
 from .utils.geospatial import load_raster, save_raster, preserve_metadata
-# from .utils.processing import preprocess_dsm, postprocess_prediction, batch_predict  # Module n'existe pas
-# from .utils.image_processing import preprocess_dsm, postprocess_prediction  # Fonctions n'existent pas non plus
-from .utils.visualization import visualize_predictions, create_comparison_figure
+from .utils.processing import preprocess_dsm, postprocess_prediction, batch_predict
+from .utils.visualization import visualize_prediction, visualize_comparison
 
 # Configuration du logging
 logger = logging.getLogger(__name__)
