@@ -140,4 +140,8 @@ def get_model_from_config(config: dict) -> nn.Module:
     if not model_type:
         raise ValueError("La configuration doit contenir un 'model_type'")
     
-    return ModelRegistry.create(model_type, **model_params) 
+    return ModelRegistry.create(model_type, **model_params)
+
+
+# Créer une instance globale du registre pour faciliter les imports
+model_registry = ModelRegistry() 

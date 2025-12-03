@@ -9,7 +9,7 @@ de canopée ou de modèles numériques de surface.
 import logging
 from typing import Dict, Any, Type, Optional
 
-from .registry import ModelRegistry, get_model_from_config
+from .registry import ModelRegistry, get_model_from_config, model_registry
 from .base import (
     ForestGapModel,
     ThresholdConditionedModel,
@@ -19,9 +19,6 @@ from .base import (
 
 # Configuration du logging
 logger = logging.getLogger(__name__)
-
-# Créer une instance globale du registre de modèles
-model_registry = ModelRegistry()
 
 # Exposer les fonctions principales
 __all__ = [
