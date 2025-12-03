@@ -38,10 +38,10 @@ services:
       - LOG_LEVEL=INFO
 
     volumes:
-      - ../data:/app/data:rws
-      - ../models:/app/models:rw
-      - ../outputs:/app/outputs:rw
-      - ../logs:/app/logs:rw
+      - ../data:/app/data
+      - ../models:/app/models
+      - ../outputs:/app/outputs
+      - ../logs:/app/logs
 
     shm_size: '8gb'
     stdin_open: true
@@ -80,9 +80,9 @@ services:
       - "8888:8888"
     volumes:
       - ../data:/app/data:ro
-      - ../models:/app/models:rw
-      - ../outputs:/app/outputs:rw
-      - ../logs:/app/logs:rw
+      - ../models:/app/models
+      - ../outputs:/app/outputs
+      - ../logs:/app/logs
     environment:
       - NVIDIA_VISIBLE_DEVICES=0
       - CUDA_VISIBLE_DEVICES=0

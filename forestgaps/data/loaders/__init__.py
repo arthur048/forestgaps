@@ -74,13 +74,20 @@ def create_data_loaders(config, batch_size=None, num_workers=None, **kwargs):
     if not mask_paths:
         raise FileNotFoundError(f"Aucun masque trouvé dans {tiles_dir}")
 
-    return create_train_val_dataloaders(
+    train_loader, val_loader = create_train_val_dataloaders(
         input_paths=input_paths,
         mask_paths=mask_paths,
         batch_size=batch_size,
         num_workers=num_workers,
         **kwargs
     )
+
+    # Retourner un dict avec train, val, et test (test = val pour quick test)
+    return {
+        'train': train_loader,
+        'val': val_loader,
+        'test': val_loader  # Utiliser val comme test pour quick test
+    }
 
 
 __all__ = [
