@@ -169,6 +169,30 @@ results = compare_models(
 )
 ```
 
+### 6. Benchmarking des modèles
+
+ForestGaps inclut un système de benchmarking complet pour comparer automatiquement les architectures.
+
+**Démarrage rapide :**
+```bash
+# 1. Lancer Docker + TensorBoard
+cd docker/ && docker-compose up -d
+
+# 2. Entrer dans le container
+docker exec -it forestgaps-main bash
+
+# 3. Test rapide (5-10 min)
+python scripts/benchmark_quick_test.py --experiment-name "test"
+```
+
+**Résultats automatiques :**
+- Métriques comparatives (IoU, F1, Precision, Recall)
+- Visualisations (courbes, graphiques, radar charts)
+- Rapports HTML/Markdown
+- TensorBoard temps réel → http://localhost:6006
+
+📚 **Documentation complète** : [docs/benchmarking/README.md](docs/benchmarking/README.md)
+
 ## Utilisation Docker
 
 ForestGaps peut être utilisé via Docker pour garantir un environnement cohérent et portable :
