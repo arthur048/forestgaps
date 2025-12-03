@@ -18,7 +18,7 @@ import numpy as np
 from torch.utils.data import DataLoader
 
 from forestgaps.config import Config
-from forestgaps.models import ModelRegistry
+from forestgaps.models import model_registry
 from forestgaps.training import Trainer
 from forestgaps.training.metrics import SegmentationMetrics
 from forestgaps.environment import get_device
@@ -109,8 +109,8 @@ class ModelComparison:
                 raise BenchmarkingError(f"La configuration du modèle {i} ne contient pas de 'name'")
             
             model_type = config['name']
-            if not ModelRegistry.get_model_class(model_type):
-                available_models = ModelRegistry.list_models()
+            if not model_registry.get_model_class(model_type):
+                available_models = model_registry.list_models()
                 raise BenchmarkingError(
                     f"Le modèle '{model_type}' n'est pas enregistré. "
                     f"Options disponibles: {available_models}"
@@ -142,9 +142,9 @@ class ModelComparison:
         """
         model_type = model_config['name']
         model_params = model_config.get('params', {})
-        
+
         # Créer le modèle
-        model = ModelRegistry.create(model_type, **model_params)
+        model = model_registry.create(model_type, **model_params)
         model.to(self.device)
         
         # Créer le trainer
