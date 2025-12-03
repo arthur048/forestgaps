@@ -17,7 +17,7 @@ import torch
 import numpy as np
 from torch.utils.data import DataLoader
 
-from forestgaps.config import config
+from forestgaps.config import Config
 from forestgaps.models import ModelRegistry
 from forestgaps.training import Trainer
 from forestgaps.training.metrics import SegmentationMetrics
@@ -25,9 +25,9 @@ from forestgaps.environment import get_device
 from forestgaps.utils.io.serialization import save_json, load_json
 from forestgaps.utils.errors import BenchmarkingError
 
-from benchmarking.metrics import AggregatedMetrics, MetricsTracker
-from benchmarking.visualization import BenchmarkVisualizer
-from benchmarking.reporting import BenchmarkReporter
+from forestgaps.benchmarking.metrics import AggregatedMetrics, MetricsTracker
+from forestgaps.benchmarking.visualization import BenchmarkVisualizer
+from forestgaps.benchmarking.reporting import BenchmarkReporter
 
 
 logger = logging.getLogger(__name__)

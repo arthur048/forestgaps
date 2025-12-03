@@ -1,0 +1,141 @@
+
+PLAN D'ACTION DETAILLE - POUR FAIRE FONCTIONNER benchmark_quick_test.py
+========================================================================
+
+ETAPE 1: CORRIGER ERREURS BLOQUANTES (obligatoire)
+====================================================
+
+[1.1] Fichier: g:\Mon Drive\forestgaps-dl\forestgaps\benchmarking\comparison.py
+      
+      ACTION 1: Ajouter import manquant
+        Ligne 21 (apres les imports existants):
+        + from forestgaps.config import Config
+      
+      ACTION 2: Corriger import relatif
+        Ligne 28 (remplacer):
+        - from benchmarking.metrics import AggregatedMetrics, MetricsTracker
+        + from forestgaps.benchmarking.metrics import AggregatedMetrics, MetricsTracker
+      
+      ACTION 3: Corriger import relatif
+        Ligne 29 (remplacer):
+        - from benchmarking.visualization import BenchmarkVisualizer
+        + from forestgaps.benchmarking.visualization import BenchmarkVisualizer
+      
+      ACTION 4: Corriger import relatif
+        Ligne 30 (remplacer):
+        - from benchmarking.reporting import BenchmarkReporter
+        + from forestgaps.benchmarking.reporting import BenchmarkReporter
+
+[1.2] Fichier: g:\Mon Drive\forestgaps-dl\forestgaps\config\__init__.py
+      
+      VERIFICATION: Config est-il dans __all__?
+        Actuellement: __all__ = [..., 'Config', ...]
+        Statut: SEMBLE OK (a verifier)
+
+ETAPE 2: TESTER benchmark_quick_test.py
+========================================
+
+Commande:
+  cd g:\Mon Drive\forestgaps-dl
+  python scripts\benchmark_quick_test.py --epochs 1 --models unet --max-train-tiles 5 --max-val-tiles 2
+
+Resultat attendu:
+  - Si OK: Script Lance l'entraînement
+  - Si ERREUR: Passer a ETAPE 3
+
+ETAPE 3: SI ERREURS SUR DATA LOADERS
+====================================
+
+[3.1] Fichier: g:\Mon Drive\forestgaps-dl\forestgaps\data\loaders\__init__.py
+      
+      VERIFICATION: create_data_loaders wrapper fonctionne?
+        - Ligne 36-83: Fonction create_data_loaders
+        - Statut: Wrapper adaptatif pour compatibilite
+        - Action: TESTER avec le script
+
+ETAPE 4: SI ERREURS SUR MODELS
+==============================
+
+[4.1] Fichier: g:\Mon Drive\forestgaps-dl\forestgaps\models\__init__.py
+      
+      VERIFICATION: ModelRegistry exporte correctement?
+        Ligne 24: model_registry = ModelRegistry()
+        Ligne 36: 'model_registry' dans __all__
+        Statut: SEMBLE OK
+
+ETAPE 5: SI ERREURS SUR TRAINING
+================================
+
+[5.1] Fichier: g:\Mon Drive\forestgaps-dl\forestgaps\training\__init__.py
+      
+      VERIFICATION: Trainer et SegmentationMetrics exportes?
+        Ligne 8: from .trainer import Trainer
+        Ligne 9: from .metrics.segmentation import SegmentationMetrics
+        Ligne 14-18: Dans __all__
+        Statut: SEMBLE OK
+
+ETAPE 6: SI ERREURS EVALUATION (optionnel)
+==========================================
+
+[6.1] Fichier: g:\Mon Drive\forestgaps-dl\forestgaps\evaluation\core.py
+      
+      PROBLEME: Ligne 27 import de module inexistant
+        from forestgaps.inference.utils.processing import preprocess_dsm
+      
+      SOLUTION 1 (rapide): Commenter la ligne si pas utilisee
+        # from forestgaps.inference.utils.processing import preprocess_dsm
+      
+      SOLUTION 2 (meilleure): Creer la fonction
+        - Creer g:\Mon Drive\forestgaps-dl\forestgaps\inference\utils\processing.py
+        OU
+        - Ajouter preprocess_dsm dans g:\Mon Drive\forestgaps-dl\forestgaps\inference\utils\image_processing.py
+
+[6.2] Fichier: g:\Mon Drive\forestgaps-dl\forestgaps\evaluation\utils\evaluation_utils.py
+      
+      PROBLEME: Ligne 174,203,300,565 import de fonction inexistante
+        from forestgaps.inference.utils.visualization import visualize_predictions
+      
+      SOLUTION 1 (rapide): Remplacer par create_evaluation_plot
+        from forestgaps.inference.utils.visualization import create_evaluation_plot
+        # visualize_predictions -> create_evaluation_plot
+      
+      SOLUTION 2 (meilleure): Creer visualize_predictions dans visualization.py
+
+ETAPE 7: CORRIGER AUTRES SCRIPTS (optionnel)
+============================================
+
+[7.1] forestgaps\cli\preprocessing_cli.py
+      Ligne 14: from forestgaps.config import forestgaps.configManager
+      -> from forestgaps.config import load_default_config
+      
+      Ligne 15: from forestgaps.environment import get_environment
+      -> from forestgaps.environment import setup_environment
+
+[7.2] forestgaps\cli\training_cli.py
+      Identique a 7.1
+
+[7.3] forestgaps\pipeline\benchmark.py
+      Ligne 31: from forestgaps.config import forestgaps.configurationManager
+      -> from forestgaps.config import load_default_config
+      
+      Ligne 34: from forestgaps.utils.logging import setup_logging
+      -> Creer fonction OU utiliser logging.basicConfig
+      
+      Ligne 38-42: TensorBoardCallback, ModelCheckpointCallback, EarlyStoppingCallback
+      -> LoggingCallback, CheckpointingCallback, VisualizationCallback
+
+[7.4] forestgaps\pipeline\complete_workflow.py
+      Ligne 29: Identique a 7.3 ligne 31
+      Ligne 30: from forestgaps.environment import is_colab_environment
+      -> Creer fonction helper ou utiliser detect_environment
+
+RESUME DES CORRECTIONS MINIMALES
+================================
+
+POUR FAIRE FONCTIONNER benchmark_quick_test.py:
+  1. Corriger forestgaps/benchmarking/comparison.py (4 corrections)
+  2. Verifier forestgaps/config/__init__.py exporte Config
+  3. OPTIONNEL: Corriger evaluation/ si benchmarking l'utilise
+
+TOTAL TIME ESTIMATE: 5-10 minutes pour corrections critiques
+

@@ -1,37 +1,38 @@
 # Configuration par défaut pour l'entraînement
 # Ce fichier contient les paramètres par défaut pour l'entraînement des modèles
 
-# Paramètres de base pour l'entraînement
-BATCH_SIZE: 32  # Taille des batchs pour l'entraînement
-EPOCHS: 50  # Nombre maximal d'époques
-LEARNING_RATE: 0.001  # Taux d'apprentissage initial
-WEIGHT_DECAY: 0.0001  # Régularisation L2
+training:
+  # Paramètres de base pour l'entraînement
+  batch_size: 32  # Taille des batchs pour l'entraînement
+  epochs: 50  # Nombre maximal d'époques
+  learning_rate: 0.001  # Taux d'apprentissage initial
+  weight_decay: 0.0001  # Régularisation L2
 
-# Paramètres pour l'optimisation de l'entraînement
-NUM_WORKERS: 6  # Nombre de workers pour le DataLoader
-PIN_MEMORY: true  # Utiliser pin_memory pour accélérer le transfert vers GPU
-PREFETCH_FACTOR: 20  # Facteur de préchargement pour le DataLoader
-USE_AMP: true  # Utiliser la précision mixte automatique
-USE_GRADIENT_CHECKPOINTING: false  # Économiser de la mémoire GPU
+  # Paramètres pour l'optimisation de l'entraînement
+  num_workers: 6  # Nombre de workers pour le DataLoader
+  pin_memory: true  # Utiliser pin_memory pour accélérer le transfert vers GPU
+  prefetch_factor: 20  # Facteur de préchargement pour le DataLoader
+  use_amp: true  # Utiliser la précision mixte automatique
+  use_gradient_checkpointing: false  # Économiser de la mémoire GPU
 
-# Paramètres pour l'augmentation des données
-AUGMENTATION: true  # Activer l'augmentation des données
-MIXUP_ALPHA: 0.2  # Paramètre alpha pour mixup (0 = désactivé)
-ADVANCED_AUG_PROB: 0.3  # Probabilité d'appliquer des augmentations avancées
-ENABLE_ELASTIC: false  # Activer les transformations élastiques
+  # Paramètres pour l'augmentation des données
+  augmentation: true  # Activer l'augmentation des données
+  mixup_alpha: 0.2  # Paramètre alpha pour mixup (0 = désactivé)
+  advanced_aug_prob: 0.3  # Probabilité d'appliquer des augmentations avancées
+  enable_elastic: false  # Activer les transformations élastiques
 
-# Paramètres pour le scheduler
-SCHEDULER_TYPE: "cosine"  # Type de scheduler (options: 'step', 'cosine', 'plateau')
-SCHEDULER_STEP_SIZE: 10  # Taille des pas pour le StepLR
-SCHEDULER_GAMMA: 0.1  # Facteur de réduction pour le StepLR
-WARMUP_EPOCHS: 5  # Nombre d'époques de warmup
+  # Paramètres pour le scheduler
+  scheduler_type: "cosine"  # Type de scheduler (options: 'step', 'cosine', 'plateau')
+  scheduler_step_size: 10  # Taille des pas pour le StepLR
+  scheduler_gamma: 0.1  # Facteur de réduction pour le StepLR
+  warmup_epochs: 5  # Nombre d'époques de warmup
 
-# Paramètres pour l'early stopping
-PATIENCE: 10  # Nombre d'époques sans amélioration avant d'arrêter
-MIN_DELTA: 0.001  # Amélioration minimale pour considérer un progrès
+  # Paramètres pour l'early stopping
+  patience: 10  # Nombre d'époques sans amélioration avant d'arrêter
+  min_delta: 0.001  # Amélioration minimale pour considérer un progrès
 
-# Paramètres pour la fonction de perte
-LOSS_TYPE: "combined"  # Type de fonction de perte (options: 'dice', 'focal', 'combined')
-FOCAL_ALPHA: 0.5  # Paramètre alpha pour la perte focale
-FOCAL_GAMMA: 2.0  # Paramètre gamma pour la perte focale
-DICE_SMOOTH: 1.0e-6  # Paramètre de lissage pour la perte Dice
+  # Paramètres pour la fonction de perte
+  loss_type: "combined"  # Type de fonction de perte (options: 'dice', 'focal', 'combined')
+  focal_alpha: 0.5  # Paramètre alpha pour la perte focale
+  focal_gamma: 2.0  # Paramètre gamma pour la perte focale
+  dice_smooth: 1.0e-6  # Paramètre de lissage pour la perte Dice

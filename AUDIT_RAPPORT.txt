@@ -1,0 +1,181 @@
+
+===============================================================================
+AUDIT COMPLET DES IMPORTS - ForestGaps Package
+===============================================================================
+
+OBJECTIF: Faire fonctionner benchmark_quick_test.py en corrigeant tous les
+          problemes d'imports dans le package forestgaps/
+
+===============================================================================
+1. ERREURS CRITIQUES (BLOQUENT benchmark_quick_test.py IMMEDIATEMENT)
+===============================================================================
+
+ERREUR #1 - forestgaps/benchmarking/comparison.py LIGNE 28-30
+  Imports RELATIFS au lieu d'ABSOLUS (BUG SYNTAXE)
+  
+  ACTUELLEMENT:
+    28: from benchmarking.metrics import AggregatedMetrics, MetricsTracker
+    29: from benchmarking.visualization import BenchmarkVisualizer
+    30: from benchmarking.reporting import BenchmarkReporter
+  
+  A CORRIGER EN:
+    from forestgaps.benchmarking.metrics import AggregatedMetrics, MetricsTracker
+    from forestgaps.benchmarking.visualization import BenchmarkVisualizer
+    from forestgaps.benchmarking.reporting import BenchmarkReporter
+
+ERREUR #2 - forestgaps/benchmarking/comparison.py LIGNE 49
+  Config utilisee mais NON IMPORTEE
+  
+  LIGNE 49: def __init__(self, model_configs: List[Dict[str, Any]], base_config: Config, ...):
+  
+  SOLUTION:
+    Ajouter en haut du fichier (apres les imports):
+    from forestgaps.config import Config
+
+===============================================================================
+2. ERREURS IMPORTANTES (BLOQUE MODULES DEPENDANTS)
+===============================================================================
+
+ERREUR #3 - forestgaps/evaluation/core.py LIGNE 27
+  Import de MODULE INEXISTANT
+  
+  ACTUELLEMENT:
+    27: from forestgaps.inference.utils.processing import preprocess_dsm
+  
+  PROBLEME:
+    - Fichier forestgaps/inference/utils/processing.py n'existe pas
+    - Fichiers reels: geospatial.py, image_processing.py, visualization.py
+  
+  SOLUTIONS POSSIBLES:
+    1. Ajouter fonction preprocess_dsm dans image_processing.py
+    2. Creer forestgaps/inference/utils/processing.py avec preprocess_dsm
+    3. Supprimer l'import et la fonction si elle n'est pas utilisee
+
+ERREUR #4 - forestgaps/evaluation/utils/evaluation_utils.py LIGNE 174,203,300,565
+  Import de FONCTIONS INEXISTANTES
+  
+  ACTUELLEMENT:
+    from forestgaps.inference.utils.visualization import visualize_predictions
+  
+  PROBLEME:
+    - visualize_predictions n'existe pas
+    - Fonctions reelles: create_evaluation_plot
+  
+  SOLUTION:
+    - Creer visualize_predictions OU utiliser create_evaluation_plot
+
+===============================================================================
+3. ERREURS SYNTAXE INVALIDE
+===============================================================================
+
+ERREUR #5 - forestgaps/cli/preprocessing_cli.py LIGNE 14-15
+  Syntaxe INVALIDE + Classes INEXISTANTES
+  
+  LIGNE 14: from forestgaps.config import forestgaps.configManager
+  >>> ERREUR: "forestgaps.configManager" (double notation invalide)
+  
+  LIGNE 15: from forestgaps.environment import get_environment
+  >>> ERREUR: get_environment n'existe pas (disponibles: setup_environment)
+  
+  SOLUTIONS:
+    Ligne 14: from forestgaps.config import load_default_config
+    Ligne 15: from forestgaps.environment import setup_environment
+
+ERREUR #6 - forestgaps/cli/training_cli.py LIGNE 15
+  Identique a ERREUR #5
+
+ERREUR #7 - forestgaps/pipeline/benchmark.py LIGNE 31, 34, 38-42
+  Syntaxe INVALIDE + Fonctions/Classes INEXISTANTES
+  
+  LIGNE 31: from forestgaps.config import forestgaps.configurationManager, load_default_config
+  >>> ERREUR: "forestgaps.configurationManager" (double notation invalide)
+  >>> SOLUTION: from forestgaps.config import load_default_config
+  
+  LIGNE 34: from forestgaps.utils.logging import setup_logging
+  >>> ERREUR: setup_logging n'existe pas
+  >>> SOLUTION: Creer forestgaps/utils/logging.py OU utiliser logging.basicConfig
+  
+  LIGNE 38-42: from forestgaps.training.callbacks import (
+                   TensorBoardCallback, ModelCheckpointCallback, EarlyStoppingCallback)
+  >>> ERREUR: Ces classes n'existent pas
+  >>> CLASSES REELLES: LoggingCallback, CheckpointingCallback, VisualizationCallback
+  >>> SOLUTION: Utiliser les noms corrects
+
+ERREUR #8 - forestgaps/pipeline/complete_workflow.py LIGNE 29-30
+  LIGNE 29: Identique a ERREUR #7 ligne 31
+  LIGNE 30: from forestgaps.environment import setup_environment, is_colab_environment
+  >>> ERREUR: is_colab_environment n'existe pas
+  >>> SOLUTION: Creer fonction OU utiliser detect_environment
+
+===============================================================================
+4. PLAN DE CORRECTION PAR PRIORITE
+===============================================================================
+
+PRIORITE 1: CORRECTION CRITIQUE (BLOQUE benchmark_quick_test.py)
+  Fichiers a modifier:
+    1. forestgaps/benchmarking/comparison.py
+       - Ligne 21: + from forestgaps.config import Config
+       - Ligne 28: from benchmarking.metrics -> from forestgaps.benchmarking.metrics
+       - Ligne 29: from benchmarking.visualization -> from forestgaps.benchmarking.visualization
+       - Ligne 30: from benchmarking.reporting -> from forestgaps.benchmarking.reporting
+    
+    2. forestgaps/config/__init__.py
+       - Verifier que Config est exporte dans __all__
+
+PRIORITE 2: VERIFICATIONS
+  1. forestgaps/environment/__init__.py: setup_environment exporte?
+  2. forestgaps/training/__init__.py: Trainer et SegmentationMetrics exportes?
+  3. forestgaps/data/loaders/__init__.py: create_data_loaders disponible?
+  4. forestgaps/models/__init__.py: ModelRegistry disponible?
+
+PRIORITE 3: CORRECTIONS IMPORTANTES (SI evaluation utilise)
+  1. forestgaps/evaluation/core.py ligne 27
+  2. forestgaps/evaluation/utils/evaluation_utils.py
+
+PRIORITE 4: AUTRES SCRIPTS
+  1. forestgaps/cli/preprocessing_cli.py
+  2. forestgaps/cli/training_cli.py
+  3. forestgaps/pipeline/benchmark.py
+  4. forestgaps/pipeline/complete_workflow.py
+
+===============================================================================
+5. DEPENDANCES POUR benchmark_quick_test.py (TRACE COMPLETE)
+===============================================================================
+
+benchmark_quick_test.py
+  |--- load_default_config [OK - forestgaps/config/__init__.py]
+  |--- setup_environment [OK - forestgaps/environment/__init__.py]
+  |--- create_data_loaders [WRAPPER - forestgaps/data/loaders/__init__.py]
+  |--- ModelComparison [ERREUR - forestgaps/benchmarking/comparison.py]
+        |--- ModelRegistry [OK]
+        |--- Trainer [OK]
+        |--- SegmentationMetrics [OK]
+        |--- get_device [OK]
+        |--- save_json, load_json [OK]
+        |--- BenchmarkingError [OK]
+        |--- AggregatedMetrics [ERREUR - import relatif ligne 28]
+        |--- BenchmarkVisualizer [ERREUR - import relatif ligne 29]
+        |--- BenchmarkReporter [ERREUR - import relatif ligne 30]
+        |--- Config [ERREUR - non importe ligne 49]
+
+===============================================================================
+RESUME DES FICHIERS A MODIFIER
+===============================================================================
+
+BLOCKER IMMEDIATEMENT (Pour benchmark_quick_test.py):
+  [ ] forestgaps/benchmarking/comparison.py (2 modifications critiques)
+  [ ] forestgaps/config/__init__.py (verification)
+
+BLOQUE SI UTILISE:
+  [ ] forestgaps/evaluation/core.py
+  [ ] forestgaps/data/loaders/__init__.py
+
+BLOQUE AUTRES SCRIPTS:
+  [ ] forestgaps/evaluation/utils/evaluation_utils.py
+  [ ] forestgaps/cli/preprocessing_cli.py
+  [ ] forestgaps/cli/training_cli.py
+  [ ] forestgaps/pipeline/benchmark.py
+  [ ] forestgaps/pipeline/complete_workflow.py
+
+===============================================================================
+

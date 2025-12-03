@@ -126,8 +126,21 @@ class Environment(ABC):
     def get_environment_info(self) -> Dict[str, Any]:
         """
         Récupère des informations sur l'environnement d'exécution.
-        
+
         Returns:
             Dictionnaire contenant des informations sur l'environnement.
         """
         pass
+
+    def get_device(self) -> str:
+        """
+        Détecte et renvoie le dispositif à utiliser pour les calculs (CPU ou GPU).
+
+        Returns:
+            Le dispositif à utiliser ('cuda' ou 'cpu').
+        """
+        try:
+            import torch
+            return 'cuda' if torch.cuda.is_available() else 'cpu'
+        except ImportError:
+            return 'cpu'

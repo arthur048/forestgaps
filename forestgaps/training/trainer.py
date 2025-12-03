@@ -17,7 +17,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-from forestgaps.config import config
+from forestgaps.config import Config
 from forestgaps.environment import get_device
 
 from .metrics.segmentation import SegmentationMetrics

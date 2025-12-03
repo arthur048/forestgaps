@@ -4,6 +4,17 @@ import json
 import yaml
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Union
+from types import SimpleNamespace
+
+
+def dict_to_namespace(d):
+    """Convertit récursivement un dict en SimpleNamespace pour accès par attributs."""
+    if isinstance(d, dict):
+        return SimpleNamespace(**{k: dict_to_namespace(v) for k, v in d.items()})
+    elif isinstance(d, list):
+        return [dict_to_namespace(item) for item in d]
+    else:
+        return d
 
 
 class Config:
@@ -74,13 +85,13 @@ class Config:
     def load_config(self, filepath: str) -> None:
         """
         Charge une configuration à partir d'un fichier.
-        
+
         Args:
             filepath: Chemin du fichier de configuration à charger.
         """
         # Déterminer le format en fonction de l'extension
         format = 'yaml' if filepath.endswith(('.yaml', '.yml')) else 'json'
-        
+
         # Charger le fichier dans le format approprié
         if format == 'yaml':
             with open(filepath, 'r') as f:
@@ -88,11 +99,15 @@ class Config:
         else:
             with open(filepath, 'r') as f:
                 config_dict = json.load(f)
-        
-        # Mise à jour des attributs
+
+        # Mise à jour des attributs - convertir les dicts en namespace pour accès par attributs
         for k, v in config_dict.items():
-            setattr(self, k, v)
-        
+            # Convertir les dicts en SimpleNamespace pour permettre config.training.epochs
+            if isinstance(v, dict):
+                setattr(self, k, dict_to_namespace(v))
+            else:
+                setattr(self, k, v)
+
         print(f"Configuration chargée depuis {filepath}")
     
     def update_from_dict(self, config_dict: Dict[str, Any]) -> None:

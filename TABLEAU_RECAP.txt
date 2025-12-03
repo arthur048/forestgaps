@@ -1,0 +1,133 @@
+
+================================================================================
+TABLEAU RECAP - ERREURS D'IMPORTS (Format comprimé pour reference rapide)
+================================================================================
+
+[PRIORITE 1 - CRITIQUE] Bloque benchmark_quick_test.py IMMEDIATEMENT
++---------------------------------------+----------+----+-------------------------------------------+
+| Fichier                               | Ligne(s) | Nb | Erreur                                    |
++---------------------------------------+----------+----+-------------------------------------------+
+| benchmarking/comparison.py            | 21       | 1  | Config non importé                        |
+| benchmarking/comparison.py            | 28-30    | 3  | Imports relatifs (from benchmarking.)     |
+| config/__init__.py                    | TOUT     | 0  | Vérification: Config dans __all__?        |
++---------------------------------------+----------+----+-------------------------------------------+
+
+[PRIORITE 2 - HAUTE] Bloque modules dépendants
++---------------------------------------+----------+----+-------------------------------------------+
+| Fichier                               | Ligne(s) | Nb | Erreur                                    |
++---------------------------------------+----------+----+-------------------------------------------+
+| evaluation/core.py                    | 27       | 1  | Import module inexistant (processing.py)  |
+| evaluation/utils/evaluation_utils.py  | 174/203/ | 1  | Fonction inexistante (visualize_predict.)|
+|                                       | 300/565  |    |                                           |
+| data/loaders/__init__.py              | TOUT     | 0  | Wrapper à tester (create_data_loaders)    |
++---------------------------------------+----------+----+-------------------------------------------+
+
+[PRIORITE 3 - MOYENNE] Erreurs syntaxe
++---------------------------------------+----------+----+-------------------------------------------+
+| Fichier                               | Ligne(s) | Nb | Erreur                                    |
++---------------------------------------+----------+----+-------------------------------------------+
+| cli/preprocessing_cli.py              | 14-15    | 2  | Syntaxe invalide + fonc. inexistante      |
+| cli/training_cli.py                   | 15       | 1  | Fonction inexistante (get_environment)    |
++---------------------------------------+----------+----+-------------------------------------------+
+
+[PRIORITE 4 - BASSE] Scripts pipeline
++---------------------------------------+----------+----+-------------------------------------------+
+| Fichier                               | Ligne(s) | Nb | Erreur                                    |
++---------------------------------------+----------+----+-------------------------------------------+
+| pipeline/benchmark.py                 | 31/34    | 2  | Syntaxe invalide + function inexistante   |
+| pipeline/benchmark.py                 | 38-42    | 1  | Classes inexistantes (Callbacks)          |
+| pipeline/complete_workflow.py         | 29/30    | 2  | Syntaxe invalide + function inexistante   |
++---------------------------------------+----------+----+-------------------------------------------+
+
+TOTAL: 8 fichiers, 16 corrections, 2 critiques, 2 importantes, 4 syntaxe, 4 pipeline
+
+================================================================================
+CORRECTIONS PAR TYPE D'ERREUR
+================================================================================
+
+TYPE 1: Imports relatifs -> Imports absolus (3 corrections)
+  - benchmarking/comparison.py:28 from benchmarking.metrics -> from forestgaps.benchmarking.metrics
+  - benchmarking/comparison.py:29 from benchmarking.visualization -> from forestgaps.benchmarking.visualization
+  - benchmarking/comparison.py:30 from benchmarking.reporting -> from forestgaps.benchmarking.reporting
+
+TYPE 2: Classe/Fonction non importée (1 correction)
+  - benchmarking/comparison.py:21 Ajouter: from forestgaps.config import Config
+
+TYPE 3: Syntaxe double notation -> Syntaxe correcte (4 corrections)
+  - cli/preprocessing_cli.py:14 forestgaps.configManager -> load_default_config
+  - cli/training_cli.py:15 Identique
+  - pipeline/benchmark.py:31 forestgaps.configurationManager -> load_default_config
+  - pipeline/complete_workflow.py:29 Identique
+
+TYPE 4: Fonction inexistante -> Remplacer ou créer (4 corrections)
+  - cli/preprocessing_cli.py:15 get_environment -> setup_environment
+  - cli/training_cli.py:15 Identique
+  - pipeline/benchmark.py:34 setup_logging -> créer ou utiliser logging.basicConfig
+  - pipeline/complete_workflow.py:30 is_colab_environment -> créer fonction
+
+TYPE 5: Module inexistant -> Créer ou importer ailleurs (2 corrections)
+  - evaluation/core.py:27 processing.preprocess_dsm -> créer dans image_processing.py
+  - evaluation/utils/evaluation_utils.py visualize_predictions -> créer ou utiliser create_evaluation_plot
+
+TYPE 6: Classes inexistantes -> Utiliser classes existantes (3 corrections)
+  - pipeline/benchmark.py:38-42 TensorBoardCallback -> VisualizationCallback
+  - pipeline/benchmark.py:38-42 ModelCheckpointCallback -> CheckpointingCallback
+  - pipeline/benchmark.py:38-42 EarlyStoppingCallback -> créer ou supprimer
+
+================================================================================
+CHECKLIST RAPIDE DE CORRECTION
+================================================================================
+
+ETAPE 1: Correction de comparison.py
+  [ ] forestgaps/benchmarking/comparison.py:
+      [ ] Ajouter 'from forestgaps.config import Config' après ligne 20
+      [ ] Corriger ligne 28: from benchmarking.metrics -> from forestgaps.benchmarking.metrics
+      [ ] Corriger ligne 29: from benchmarking.visualization -> from forestgaps.benchmarking.visualization
+      [ ] Corriger ligne 30: from benchmarking.reporting -> from forestgaps.benchmarking.reporting
+
+ETAPE 2: Vérification
+  [ ] forestgaps/config/__init__.py:
+      [ ] Config est-il dans __all__? (probablement oui)
+
+ETAPE 3: Test immédiat
+  [ ] cd g:\Mon Drive\forestgaps-dl
+  [ ] python scripts\benchmark_quick_test.py --epochs 1
+
+ETAPE 4: Si erreurs evaluation
+  [ ] forestgaps/evaluation/core.py:27: Commenter ou créer preprocess_dsm
+  [ ] forestgaps/evaluation/utils/evaluation_utils.py: Remplacer visualize_predictions
+
+ETAPE 5: Autres scripts (si nécessaire)
+  [ ] cli/preprocessing_cli.py, cli/training_cli.py, pipeline/*.py
+
+================================================================================
+TEMPS ESTIMÉ PAR PHASE
+================================================================================
+
+Corrections critiques (ETAPE 1-2): 5 minutes
+Test et diagnostique (ETAPE 3): 5 minutes
+Corrections evaluation (ETAPE 4): 10-15 minutes (seulement si nécessaire)
+Autres scripts (ETAPE 5): 20-30 minutes (priorité basse)
+
+TOTAL POUR benchmark_quick_test.py: 10-15 minutes
+
+================================================================================
+FICHIERS DE RAPPORT À CONSULTER
+================================================================================
+
+Pour commencer:
+  1. SYNTHESE_AUDIT.txt (2 min) -> Aperçu rapide
+
+Pour implémenter:
+  2. PLAN_ACTION_DETAILLE.txt (10 min) -> Guide étape par étape
+  3. AUDIT_RAPPORT.txt (5 min) -> Détails de chaque erreur
+
+Pour référence:
+  4. MAP_CORRESPONDANCE_CODE.txt (3 min) -> Archive vs Nouveau code
+  5. RAPPORT_INDEX_COMPLET.txt (5 min) -> Index complet
+
+Ce fichier:
+  6. Ce fichier (TABLEAU_RECAP.txt) (2 min) -> Format comprimé
+
+================================================================================
+

@@ -12,6 +12,7 @@ services:
       dockerfile: docker/Dockerfile
     image: forestgaps:latest
     container_name: forestgaps-main
+    command: tail -f /dev/null
 
     deploy:
       resources:
@@ -41,9 +42,6 @@ services:
       - ../models:/app/models:rw
       - ../outputs:/app/outputs:rw
       - ../logs:/app/logs:rw
-      - ../forestgaps:/app/forestgaps:rw
-      - ../tests:/app/tests:rw
-      - ../scripts:/app/scripts:ro
 
     shm_size: '8gb'
     stdin_open: true
@@ -85,9 +83,6 @@ services:
       - ../models:/app/models:rw
       - ../outputs:/app/outputs:rw
       - ../logs:/app/logs:rw
-      - ../forestgaps:/app/forestgaps:rw
-      - ../tests:/app/tests:rw
-      - ../scripts:/app/scripts:ro
     environment:
       - NVIDIA_VISIBLE_DEVICES=0
       - CUDA_VISIBLE_DEVICES=0

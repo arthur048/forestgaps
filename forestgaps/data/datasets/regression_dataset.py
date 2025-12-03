@@ -15,9 +15,20 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
 
-from forestgaps.data.normalization import normalize_data
+# from forestgaps.inference.utils.image_processing import normalize_data  # Module inference pose problème
 from forestgaps.data.datasets.transforms import create_transform_pipeline
 from forestgaps.utils.errors import DataError
+
+# Fonction normalize_data simplifiée pour éviter les imports problématiques
+def normalize_data(data, stats):
+    """Normalisation simple min-max."""
+    if not stats:
+        return data
+    min_val = stats.get('min', data.min())
+    max_val = stats.get('max', data.max())
+    if max_val - min_val > 0:
+        return (data - min_val) / (max_val - min_val)
+    return data
 
 logger = logging.getLogger(__name__)
 

@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from forestgaps.environment import setup_environment
-from forestgaps.config import configurationManager, load_default_config
+from forestgaps.config import load_default_config  # configurationManager n'existe pas
 from forestgaps.utils.io.serialization import load_model as load_model_checkpoint
 from forestgaps.models.registry import ModelRegistry
 

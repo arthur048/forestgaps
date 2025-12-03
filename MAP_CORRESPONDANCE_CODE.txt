@@ -1,0 +1,94 @@
+
+MAP DE CORRESPONDANCE: Archive vs Nouveau Code
+===============================================
+
+ANCIEN CODE (archive/migration_initiale/) -> NOUVEAU CODE (forestgaps/)
+
+Configuration:
+  Archive: class Config (dans data_preparation.py)
+  Nouveau: forestgaps/config/base.py::Config
+  Nouveau: forestgaps/config/__init__.py::load_default_config()
+
+Environment:
+  Nouveau: forestgaps/environment/base.py::Environment
+  Nouveau: forestgaps/environment/local.py::LocalEnvironment
+  Nouveau: forestgaps/environment/colab.py::ColabEnvironment
+  Nouveau: forestgaps/environment/__init__.py::setup_environment()
+  Nouveau: forestgaps/environment/__init__.py::get_device()
+  
+  MANQUANT: get_environment() - utiliser setup_environment()
+  MANQUANT: is_colab_environment() - creer ou utiliser detect_environment()
+
+Data Processing:
+  Archive: Fonctions dans data_preparation.py (align, preprocess, etc.)
+  Nouveau: forestgaps/data/preprocessing/alignment.py::align_rasters()
+  Nouveau: forestgaps/data/preprocessing/conversion.py::convert_to_numpy()
+  Nouveau: forestgaps/data/generation/masks.py::create_gap_mask()
+  Nouveau: forestgaps/data/generation/tiling.py::create_tiles_from_raster()
+  
+  MANQUANT: preprocess_dsm() - probablement dans image_processing.py
+
+Data Loading:
+  Archive: Classes DataLoader custom
+  Nouveau: forestgaps/data/loaders/factory.py::create_train_val_dataloaders()
+  Nouveau: forestgaps/data/loaders/__init__.py::create_data_loaders() [WRAPPER]
+
+Models:
+  Archive: Fonctions pour creer modeles
+  Nouveau: forestgaps/models/registry.py::ModelRegistry
+  Nouveau: forestgaps/models/__init__.py::create_model()
+  Nouveau: forestgaps/models/unet/basic.py::UNet
+  Nouveau: forestgaps/models/unet/film_unet.py::UNetFiLM
+  Nouveau: forestgaps/models/deeplabv3/basic.py::DeepLabV3Plus
+
+Training:
+  Archive: Boucles d'entraînement
+  Nouveau: forestgaps/training/trainer.py::Trainer
+  Nouveau: forestgaps/training/metrics/segmentation.py::SegmentationMetrics
+  
+  MANQUANT: TensorBoardCallback - utiliser VisualizationCallback
+  MANQUANT: ModelCheckpointCallback - utiliser CheckpointingCallback
+  MANQUANT: EarlyStoppingCallback - creer ou utiliser CheckpointingCallback
+
+Benchmarking:
+  Archive: Scripts manuels
+  Nouveau: forestgaps/benchmarking/comparison.py::ModelComparison
+  Nouveau: forestgaps/benchmarking/metrics.py::AggregatedMetrics
+  Nouveau: forestgaps/benchmarking/visualization.py::BenchmarkVisualizer
+  Nouveau: forestgaps/benchmarking/reporting.py::BenchmarkReporter
+  
+  ERREUR: Imports relatifs au lieu d'absolus dans comparison.py
+
+Utilities:
+  Archive: Fonctions diverses
+  Nouveau: forestgaps/utils/errors.py::ErrorHandler
+  Nouveau: forestgaps/utils/io/serialization.py::save_json(), load_json()
+  Nouveau: forestgaps/utils/visualization/plots.py
+  Nouveau: forestgaps/utils/visualization/maps.py
+  
+  MANQUANT: setup_logging() - creer dans utils/logging.py ou utiliser logging standard
+
+Inference:
+  Nouveau: forestgaps/inference/core.py::InferenceManager
+  Nouveau: forestgaps/inference/utils/geospatial.py::load_raster(), save_raster()
+  Nouveau: forestgaps/inference/utils/image_processing.py::normalize_data()
+  Nouveau: forestgaps/inference/utils/visualization.py::create_evaluation_plot()
+  
+  MANQUANT: preprocess_dsm() - creer dans image_processing.py
+  MANQUANT: postprocess_prediction() - creer si necessaire
+  MANQUANT: visualize_predictions() - creer ou utiliser create_evaluation_plot
+
+Evaluation:
+  Nouveau: forestgaps/evaluation/core.py::ExternalEvaluator
+  Nouveau: forestgaps/evaluation/metrics.py
+  Nouveau: forestgaps/evaluation/utils/evaluation_utils.py
+  
+  ERREUR: Import de module processing inexistant
+  ERREUR: Import de fonction visualize_predictions inexistante
+
+Configuration Manager (ANCIEN):
+  Archive: class ConfigurationManager
+  Nouveau: forestgaps/config/base.py::Config + load_default_config()
+  NOTE: configurationManager et configManager n'existent PAS
+  NOTE: forestgaps.configurationManager n'existe PAS (double notation invalide)
+

@@ -1,0 +1,160 @@
+
+===============================================================================
+INDEX DES RAPPORTS D'AUDIT - ForestGaps Package
+===============================================================================
+
+DATE: 2025-12-03
+OBJECTIF: Audit complet des imports pour faire fonctionner benchmark_quick_test.py
+
+===============================================================================
+FICHIERS DE RAPPORT GENERES
+===============================================================================
+
+1. SYNTHESE_AUDIT.txt (LECTURE RAPIDE - 2 min)
+   - Resume des 8 groupes d'erreurs
+   - 2 critiques, 2 importantes, 4 syntaxe invalide
+   - Total des fichiers affectes par priorite
+
+2. AUDIT_RAPPORT.txt (COMPLET - 5 min)
+   - Description detaillee de CHAQUE erreur
+   - Exemple du code problematique
+   - Solution propose pour chaque erreur
+   - Trace complete des dependances pour benchmark_quick_test.py
+   - Resume des fichiers a modifier par priorite
+
+3. MAP_CORRESPONDANCE_CODE.txt (REFERENCE - 3 min)
+   - Correspondance Archive -> Nouveau Code
+   - Ancien code (data_preparation.py) -> Nouveau structure (forestgaps/)
+   - Classes/Fonctions manquantes identifiees
+   - Ou trouver les remplacements
+
+4. PLAN_ACTION_DETAILLE.txt (IMPLEMENTATION - 10 min)
+   - Etapes numerotees de 1 a 7
+   - Actions exactes pour chaque fichier
+   - Numeros de lignes specifiques
+   - Code exact a remplacer
+   - Commandes de test a executer
+
+===============================================================================
+PRIORISATION DES FICHIERS A CORRIGER
+===============================================================================
+
+PRIORITE 1 - CRITIQUE (pour benchmark_quick_test.py)
+  [ ] forestgaps/benchmarking/comparison.py
+      - Ajouter import Config
+      - 3 imports relatifs a corriger (lignes 28-30)
+      
+  [ ] forestgaps/config/__init__.py
+      - Verifier que Config est exporte
+
+PRIORITE 2 - HAUTE (si utilise durant execution)
+  [ ] forestgaps/data/loaders/__init__.py (wrapper a tester)
+  [ ] forestgaps/models/registry.py (a verifier)
+  [ ] forestgaps/training/__init__.py (a verifier)
+  [ ] forestgaps/evaluation/core.py (ligne 27)
+  [ ] forestgaps/evaluation/utils/evaluation_utils.py (lignes 174,203,300,565)
+
+PRIORITE 3 - MOYENNE (autres scripts)
+  [ ] forestgaps/cli/preprocessing_cli.py (lignes 14-15)
+  [ ] forestgaps/cli/training_cli.py (ligne 15)
+
+PRIORITE 4 - BASSE (pipeline non critique)
+  [ ] forestgaps/pipeline/benchmark.py (lignes 31,34,38-42)
+  [ ] forestgaps/pipeline/complete_workflow.py (lignes 29-30)
+
+===============================================================================
+GUIDE DE LECTURE RECOMMANDE
+===============================================================================
+
+1. DEBUT RAPIDE (5 min):
+   Lire SYNTHESE_AUDIT.txt
+
+2. COMPREHENSION COMPLETE (10 min):
+   Lire AUDIT_RAPPORT.txt
+
+3. REFERENCE CODE (3 min):
+   Consulter MAP_CORRESPONDANCE_CODE.txt si besoin de correspondance ancien/nouveau
+
+4. IMPLEMENTATION (10-20 min):
+   Suivre PLAN_ACTION_DETAILLE.txt etape par etape
+
+===============================================================================
+CORRECTIONS MINIMALES POUR benchmark_quick_test.py
+===============================================================================
+
+FICHIER 1: forestgaps/benchmarking/comparison.py
+  ACTION 1: Ligne 21 (apres imports) -> + from forestgaps.config import Config
+  ACTION 2: Ligne 28 -> from forestgaps.benchmarking.metrics ...
+  ACTION 3: Ligne 29 -> from forestgaps.benchmarking.visualization ...
+  ACTION 4: Ligne 30 -> from forestgaps.benchmarking.reporting ...
+
+FICHIER 2: forestgaps/config/__init__.py
+  VERIFICATION: Config dans __all__? (semble OK)
+
+TEMPS ESTIME: 5 minutes
+
+===============================================================================
+INFORMATIONS UTILES
+===============================================================================
+
+Working Directory: g:\Mon Drive\forestgaps-dl
+
+Script a faire fonctionner:
+  python scripts\benchmark_quick_test.py
+
+Structure du package:
+  forestgaps/
+  ├── config/              (load_default_config) [OK]
+  ├── environment/         (setup_environment, get_device) [OK]
+  ├── models/              (ModelRegistry, create_model) [OK]
+  ├── training/            (Trainer, SegmentationMetrics) [OK]
+  ├── data/                (create_data_loaders wrapper) [A TESTER]
+  ├── benchmarking/        (ModelComparison) [ERREUR]
+  ├── evaluation/          (ExternalEvaluator) [ERREUR]
+  ├── inference/           (InferenceManager) [PARTIELLEMENT OK]
+  ├── cli/                 (scripts CLI) [ERREUR SYNTAXE]
+  ├── pipeline/            (scripts pipeline) [ERREUR SYNTAXE]
+  └── utils/               (errors, io, visualization, profiling) [OK]
+
+Dependances principales pour benchmark_quick_test.py:
+  - load_default_config (forestgaps/config)
+  - setup_environment (forestgaps/environment)
+  - create_data_loaders (forestgaps/data/loaders)
+  - ModelComparison (forestgaps/benchmarking) <- ERREURS ICI
+    - ModelRegistry (forestgaps/models)
+    - Trainer (forestgaps/training)
+    - SegmentationMetrics (forestgaps/training/metrics)
+    - AggregatedMetrics, BenchmarkVisualizer, BenchmarkReporter (forestgaps/benchmarking)
+
+===============================================================================
+STATISTIQUES D'ERREURS
+===============================================================================
+
+Total de fichiers problematiques: 8
+  - Erreurs critiques: 2 (benchmarking, config)
+  - Erreurs importantes: 2 (evaluation)
+  - Erreurs syntaxe: 4 (cli, pipeline)
+
+Types d'erreurs:
+  - Imports relatifs: 3 (comparison.py)
+  - Classes/Fonctions inexistantes: 10+ (setup_logging, get_environment, etc.)
+  - Imports de modules inexistants: 1 (processing.py)
+  - Syntaxe invalide (double notation): 4 (configManager, configurationManager)
+
+Modules fonctionnels identifiees: 10+
+Modules avec erreurs: 8
+
+Taux d'erreurs: ~44% des fichiers affectes
+
+===============================================================================
+NOTES IMPORTANTES
+===============================================================================
+
+1. Le code n'a JAMAIS fonctionne - c'est une migration de archive/
+2. Les erreurs sont systematiques et cohesives (pattern clair)
+3. Les corrections sont straightforward (imports et noms)
+4. Pas de problemes de logique ou d'algorithme identifiees
+5. Une fois corriges, les imports devraient fonctionner
+
+===============================================================================
+

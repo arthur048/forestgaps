@@ -86,6 +86,7 @@ COPY MANIFEST.in* ./
 RUN pip install -e .
 
 COPY tests/ /app/tests/
+COPY scripts/ /app/scripts/
 COPY docker/healthcheck.py /app/healthcheck.py
 
 # ============================================

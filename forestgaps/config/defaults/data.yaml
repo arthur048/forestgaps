@@ -1,14 +1,20 @@
 # Configuration par défaut pour les données
 # Ce fichier contient les paramètres par défaut pour le traitement des données
 
-# Paramètres de base pour les tuiles
-TILE_SIZE: 256  # Taille des tuiles en pixels
-THRESHOLDS: [10, 15, 20, 25, 30]  # Seuils de hauteur en mètres pour la détection des trouées
-TEST_SPLIT: 0.15  # Proportion de données pour le test
-VAL_SPLIT: 0.15  # Proportion de données pour la validation
-OVERLAP: 0.30  # Chevauchement entre les tuiles lors de l'extraction
+data:
+  # Paramètres de base pour les tuiles
+  tile_size: 256  # Taille des tuiles en pixels
+  thresholds: [10, 15, 20, 25, 30]  # Seuils de hauteur en mètres pour la détection des trouées
+  test_split: 0.15  # Proportion de données pour le test
+  val_split: 0.15  # Proportion de données pour la validation
+  overlap: 0.30  # Chevauchement entre les tuiles lors de l'extraction
 
-# Paramètres pour le traitement des données
-MIN_VALID_RATIO: 0.7  # Ratio minimum de pixels valides dans une tuile pour qu'elle soit conservée
-FORCE_REGENERATE: false  # Forcer la régénération des tuiles même si elles existent déjà
-SAVE_REPORT: true  # Sauvegarder les rapports d'analyse des rasters
+  # Paramètres pour le traitement des données
+  min_valid_ratio: 0.7  # Ratio minimum de pixels valides dans une tuile pour qu'elle soit conservée
+  force_regenerate: false  # Forcer la régénération des tuiles même si elles existent déjà
+  save_report: true  # Sauvegarder les rapports d'analyse des rasters
+
+  # Limites pour test rapide (seront overridées par les scripts de bench si nécessaire)
+  max_train_tiles: null
+  max_val_tiles: null
+  max_test_tiles: null
