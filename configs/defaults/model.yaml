@@ -1,0 +1,46 @@
+# Default model configuration
+# Conforme Document 1: UNet-FiLM recommended architecture
+
+# Model type
+model_type: unet_film  # unet, unet_film, deeplabv3_plus, attention_unet, res_unet, res_unet_film, regression_unet
+
+# Task type
+task: segmentation  # segmentation or regression
+
+# Basic architecture parameters
+in_channels: 1
+out_channels: 1
+base_channels: 64
+depth: 4  # Number of encoder/decoder stages
+
+# FiLM conditioning (for unet_film, res_unet_film)
+num_conditions: 1  # Number of threshold conditions
+
+# Attention mechanisms
+use_attention: false
+attention_type: null  # cbam, se, attention_gate, or null
+
+# Regularization
+dropout_rate: 0.1
+droppath_rate: 0.0
+
+# Normalization
+norm_type: batch  # batch, group, or instance
+num_groups: 8  # For GroupNorm
+
+# Activation function
+activation: relu  # relu, leaky_relu, gelu, silu
+
+# DeepLabV3+ specific
+aspp_dilations: [6, 12, 18]
+low_level_channels: 48
+
+# Output activation
+output_activation: sigmoid  # sigmoid, softmax, or none
+
+# Model initialization
+init_method: kaiming  # kaiming, xavier, orthogonal, default
+
+# Pretrained weights
+pretrained: false
+pretrained_path: null

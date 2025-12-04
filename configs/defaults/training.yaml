@@ -1,0 +1,118 @@
+# Default training configuration
+# Conforme "Audit du workflow PyTorch" + Document 3 "Matériel et Méthode"
+
+# Basic training parameters
+epochs: 50
+batch_size: 16
+val_batch_size: null  # Same as batch_size if null
+
+# Device configuration
+device: auto  # auto, cuda, or cpu
+num_workers: 4
+pin_memory: true
+
+# Reproducibility
+seed: 42
+
+# Optimizer configuration
+optimizer:
+  type: adamw  # adam, adamw, sgd, rmsprop
+  lr: 0.001
+  weight_decay: 0.01
+  betas: [0.9, 0.999]
+  eps: 1.0e-8
+  # SGD specific
+  momentum: 0.9
+  nesterov: true
+
+# Learning rate scheduler
+scheduler:
+  type: onecycle  # onecycle, cosine, reduce_on_plateau, step, exponential, none
+
+  # OneCycleLR (recommended - Document 2)
+  max_lr: 0.01
+  pct_start: 0.3
+  div_factor: 25.0
+  final_div_factor: 10000.0
+
+  # CosineAnnealingLR
+  T_max: null  # Set to epochs if null
+  eta_min: 0.0
+
+  # ReduceLROnPlateau
+  mode: min
+  factor: 0.1
+  patience: 10
+  threshold: 0.0001
+  monitor: val_loss
+
+  # StepLR
+  step_size: 30
+  gamma: 0.1
+
+  # Warmup
+  warmup_epochs: 0
+  warmup_start_lr: 1.0e-6
+
+# Loss function configuration
+loss:
+  type: combo  # combo, bce, dice, focal
+
+  # ComboLoss weights (must sum to 1)
+  bce_weight: 0.5
+  dice_weight: 0.3
+  focal_weight: 0.2
+
+  # FocalLoss parameters
+  focal_alpha: 0.25
+  focal_gamma: 2.0
+
+  # DiceLoss parameters
+  smooth: 1.0
+
+# Callbacks configuration
+callbacks:
+  # Early stopping (Document 3: patience=10)
+  early_stopping: true
+  early_stopping_monitor: val_loss
+  early_stopping_patience: 10
+  early_stopping_mode: min
+  early_stopping_min_delta: 0.0
+
+  # Model checkpoint
+  checkpoint_save_best_only: true
+  checkpoint_monitor: val_loss
+  checkpoint_mode: min
+  checkpoint_save_frequency: 1
+
+  # TensorBoard
+  tensorboard_enabled: true
+  tensorboard_log_dir: runs
+  tensorboard_comment: ""
+
+  # Progress bar
+  progress_bar: true
+
+# Training optimizations
+optimization:
+  # Automatic Mixed Precision (Document 2: AMP recommended)
+  use_amp: true
+
+  # Gradient clipping (Document 2: clip gradients)
+  gradient_clip_value: null  # Clip by value (null = disabled)
+  gradient_clip_norm: 1.0    # Clip by norm (null = disabled)
+
+  # Gradient accumulation
+  accumulate_grad_batches: 1
+
+  # Gradient checkpointing (memory optimization)
+  use_gradient_checkpointing: false
+
+  # torch.compile() (PyTorch 2.0+)
+  use_torch_compile: false
+  compile_mode: default  # default, reduce-overhead, max-autotune
+
+# Output directories
+save_dir: outputs
+checkpoint_dir: checkpoints
+log_dir: logs

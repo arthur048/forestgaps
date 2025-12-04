@@ -19,8 +19,7 @@ from ..blocks.upsampling import BilinearUpsampling
 from ..blocks.attention import AttentionGate
 
 
-# DEPRECATED: See docs/ARCHITECTURE_DECISIONS.md
-# @model_registry.register("attention_unet")
+@model_registry.register("attention_unet")
 class AttentionUNet(UNetBaseModel):
     """
     Implémentation de l'architecture Attention U-Net.

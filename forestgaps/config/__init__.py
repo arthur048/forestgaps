@@ -11,6 +11,30 @@ from typing import Dict, Any, Optional
 
 from .base import Config
 from .schema import validate_config, DataSchema, ModelSchema, TrainingSchema
+from .loader import (
+    load_yaml,
+    save_yaml,
+    load_training_config,
+    load_data_config,
+    load_model_config,
+    load_complete_config,
+    merge_configs,
+    config_to_dict,
+    save_config,
+)
+from .schemas import (
+    TrainingConfig,
+    DataConfig,
+    ModelConfig,
+    OptimizerConfig,
+    SchedulerConfig,
+    LossConfig,
+    CallbackConfig,
+    OptimizationConfig,
+    PreprocessingConfig,
+    AugmentationConfig,
+    DatasetConfig,
+)
 
 
 def load_default_config() -> Config:
@@ -93,6 +117,7 @@ def create_config_from_dict(config_dict: Dict[str, Any]) -> Config:
 
 # Exporter les classes et fonctions principales
 __all__ = [
+    # Legacy config system
     'Config',
     'validate_config',
     'DataSchema',
@@ -100,5 +125,27 @@ __all__ = [
     'TrainingSchema',
     'load_default_config',
     'load_config_from_file',
-    'create_config_from_dict'
+    'create_config_from_dict',
+    # New Pydantic-based config system
+    'load_yaml',
+    'save_yaml',
+    'load_training_config',
+    'load_data_config',
+    'load_model_config',
+    'load_complete_config',
+    'merge_configs',
+    'config_to_dict',
+    'save_config',
+    # Pydantic schemas
+    'TrainingConfig',
+    'DataConfig',
+    'ModelConfig',
+    'OptimizerConfig',
+    'SchedulerConfig',
+    'LossConfig',
+    'CallbackConfig',
+    'OptimizationConfig',
+    'PreprocessingConfig',
+    'AugmentationConfig',
+    'DatasetConfig',
 ]
