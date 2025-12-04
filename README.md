@@ -51,13 +51,15 @@ pip install -e .
 
 ```python
 # Méthode recommandée : script d'installation optimisé
-!wget -O colab_install.py https://raw.githubusercontent.com/arthur048/forestgaps/main/colab_install.py
+!wget -O colab_install.py https://raw.githubusercontent.com/arthur048/forestgaps/main/scripts/colab_install.py
 %run colab_install.py
 
 # Redémarrer le runtime puis :
 from forestgaps.environment import setup_environment
 env = setup_environment()
 ```
+
+**💡 Démarrage ultra-rapide:** Utilisez directement les notebooks Colab complets (voir section [Notebooks Google Colab](#notebooks-google-colab-) ci-dessous) pour un workflow clé en main.
 
 ## Guide de démarrage rapide
 
@@ -192,6 +194,52 @@ python scripts/benchmark_quick_test.py --experiment-name "test"
 - TensorBoard temps réel → http://localhost:6006
 
 📚 **Documentation complète** : [docs/benchmarking/README.md](docs/benchmarking/README.md)
+
+## Notebooks Google Colab 📓
+
+ForestGaps fournit des notebooks Colab complets et prêts à l'emploi pour accélérer votre démarrage :
+
+### 🎯 Training Complet
+[`ForestGaps_Training_Complete_Colab.ipynb`](ForestGaps_Training_Complete_Colab.ipynb)
+
+Workflow complet : **Train → Eval → Inference sur données indépendantes**
+
+**Fonctionnalités :**
+- Configuration rapide (quick) ou production (1 ligne à changer)
+- Training avec Combo Loss (BCE + Dice + Focal)
+- OneCycleLR scheduler + AMP + Gradient clipping
+- TensorBoard integration en temps réel
+- Visualisations complètes :
+  - Courbes training/validation loss
+  - Learning rate schedule
+  - Métriques (Accuracy, Precision, Recall, F1, IoU)
+  - Matrice de confusion
+- Validation sur données externes
+- Checkpointing automatique
+
+### 📊 Benchmarking Multi-Modèles
+[`ForestGaps_Benchmark_Complete_Colab.ipynb`](ForestGaps_Benchmark_Complete_Colab.ipynb)
+
+Comparaison automatisée de plusieurs modèles (UNet, FiLM-UNet, DeepLabV3+, etc.)
+
+**Fonctionnalités :**
+- Configuration quick/production
+- Training parallèle de multiples modèles
+- TensorBoard multi-run
+- Visualisations avancées :
+  - Courbes loss comparées
+  - Heatmap métriques
+  - Bar charts groupés
+  - Radar charts performance
+- Sélection automatique du meilleur modèle
+- Validation externe
+- Export résultats (CSV, images, rapports)
+
+**Démarrage rapide :**
+1. Ouvrir un notebook dans Google Colab
+2. Choisir la config (quick/production) dans la première cellule
+3. Exécuter toutes les cellules
+4. Récupérer les résultats automatiquement
 
 ## Utilisation Docker
 
