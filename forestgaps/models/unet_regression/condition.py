@@ -5,6 +5,8 @@ Ce module fournit une implémentation PyTorch de l'architecture U-Net
 conditionnée par seuil pour les tâches de régression sur des données forestières.
 """
 
+from typing import Dict, Any
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -223,8 +225,26 @@ class ThresholdConditionedRegressionUNet(ForestGapModel):
     def get_output_names(self):
         """
         Retourne les noms des sorties du modèle.
-        
+
         Returns:
             Liste des noms des sorties.
         """
-        return ["prediction"] 
+        return ["prediction"]
+
+    def get_complexity(self) -> Dict[str, Any]:
+        """
+        Retourne des informations sur la complexité du modèle.
+
+        Returns:
+            Dictionnaire contenant des informations sur la complexité.
+        """
+        return {
+            "parameters": self.get_num_parameters(),
+            "init_features": self.init_features,
+            "condition_dim": self.condition_dim,
+            "depth": 4,
+            "in_channels": self.in_channels,
+            "out_channels": self.out_channels,
+            "bilinear": self.bilinear,
+            "model_type": "ThresholdConditionedRegressionUNet"
+        } 

@@ -40,13 +40,8 @@ def test_all_models():
         print(f"[{i}/{len(all_models)}] Test: {model_name:30s} ... ", end='', flush=True)
 
         try:
-            # Paramètres selon type
-            if 'regression' in model_name:
-                params = {'in_channels': 1, 'out_channels': 1}
-            elif 'threshold' in model_name:
-                params = {'in_channels': 1, 'out_channels': 1, 'threshold_value': 5.0}
-            else:
-                params = {'in_channels': 1, 'out_channels': 1}
+            # Paramètres selon type (threshold va dans forward, pas __init__)
+            params = {'in_channels': 1, 'out_channels': 1}
 
             # Créer modèle
             model = model_registry.create(model_name, **params)
@@ -54,8 +49,15 @@ def test_all_models():
             model.eval()
 
             # Test forward pass
+            # Les modèles threshold-conditioned ont besoin du threshold dans forward()
+            needs_threshold = 'threshold' in model_name or 'film' in model_name or 'all_features' in model_name
+
             with torch.no_grad():
-                output = model(dummy_input)
+                if needs_threshold:
+                    threshold = torch.tensor([5.0] * dummy_input.size(0), device=device)
+                    output = model(dummy_input, threshold)
+                else:
+                    output = model(dummy_input)
 
             # Vérifications
             assert output.shape == (2, 1, 256, 256), f"Wrong output shape: {output.shape}"

@@ -244,38 +244,41 @@ class DeepLabV3Plus(ForestGapModel):
     def forward(self, x, threshold=None):
         """
         Passe avant du modèle DeepLabV3+.
-        
+
         Args:
             x: Tenseur d'entrée.
             threshold: Seuil de hauteur (non utilisé dans cette version de base).
-            
+
         Returns:
             Tenseur de sortie.
         """
+        # Stocker la taille d'entrée pour l'upsampling final
+        input_size = x.shape[2:]
+
         # Stocker les features intermédiaires pour les skip connections
         features = []
-        
+
         # Encodeur
         for i, block in enumerate(self.encoder_blocks):
             x = block(x)
             if i < len(self.encoder_blocks) - 1:
                 features.append(x)
-        
+
         # Module ASPP
         x = self.aspp(x)
-        
+
         # Décodeur
         x = self.decoder(features[0], x)
-        
+
         # Upsampling final pour atteindre la taille d'entrée
-        x = F.interpolate(x, scale_factor=4, mode='bilinear', align_corners=True)
-        
+        x = F.interpolate(x, size=input_size, mode='bilinear', align_corners=True)
+
         # Couche de sortie
         x = self.output_conv(x)
-        
+
         # Sigmoid pour obtenir une sortie entre 0 et 1
         x = torch.sigmoid(x)
-        
+
         return x
         
     def get_input_names(self):

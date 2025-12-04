@@ -5,6 +5,8 @@ Ce module fournit une implémentation PyTorch de l'architecture DeepLabV3+
 qui intègre le seuil de hauteur comme condition pour la détection des trouées.
 """
 
+from typing import Dict, Any
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -224,53 +226,56 @@ class ThresholdConditionedDeepLabV3Plus(ForestGapModel):
     def forward(self, x, threshold):
         """
         Passe avant du modèle DeepLabV3+ conditionné par seuil.
-        
+
         Args:
             x: Tenseur d'entrée [batch_size, in_channels, height, width].
             threshold: Seuil de hauteur [batch_size, 1].
-            
+
         Returns:
             Tenseur de sortie [batch_size, out_channels, height, width].
         """
+        # Stocker la taille d'entrée pour l'upsampling final
+        input_size = x.shape[2:]
+
         # Encodage de position
         if self.use_pos_encoding:
             x = self.pos_encoding(x)
-        
+
         # Stocker les features intermédiaires pour les skip connections
         features = []
-        
+
         # Encodeur
         for i, block in enumerate(self.encoder_blocks):
             x = block(x)
             if i < len(self.encoder_blocks) - 1:
                 features.append(x)
-        
+
         # Module ASPP
         x = self.aspp(x)
-        
+
         # Conditionnement par seuil
         threshold_encoding = self.threshold_conditioning(threshold)
-        
+
         # Redimensionner l'encodage du seuil pour correspondre aux dimensions spatiales des features
         batch_size, _, h, w = x.size()
         threshold_encoding = threshold_encoding.view(batch_size, -1, 1, 1).expand(-1, -1, h, w)
-        
+
         # Intégrer le seuil aux features
         x = torch.cat([x, threshold_encoding], dim=1)
         x = self.threshold_integration(x)
-        
+
         # Décodeur
         x = self.decoder(features[0], x)
-        
+
         # Upsampling final pour atteindre la taille d'entrée
-        x = F.interpolate(x, scale_factor=4, mode='bilinear', align_corners=True)
-        
+        x = F.interpolate(x, size=input_size, mode='bilinear', align_corners=True)
+
         # Couche de sortie
         x = self.output_conv(x)
-        
+
         # Sigmoid pour obtenir une sortie entre 0 et 1
         x = torch.sigmoid(x)
-        
+
         return x
     
     def get_input_names(self):
@@ -285,8 +290,27 @@ class ThresholdConditionedDeepLabV3Plus(ForestGapModel):
     def get_output_names(self):
         """
         Retourne les noms des sorties du modèle.
-        
+
         Returns:
             Liste des noms des sorties.
         """
-        return ["mask"] 
+        return ["mask"]
+
+    def get_complexity(self) -> Dict[str, Any]:
+        """
+        Retourne des informations sur la complexité du modèle.
+
+        Returns:
+            Dictionnaire contenant des informations sur la complexité.
+        """
+        return {
+            "parameters": self.get_num_parameters(),
+            "encoder_channels": self.encoder_channels,
+            "encoder_depth": len(self.encoder_channels),
+            "aspp_channels": self.encoder_channels[-1] if self.encoder_channels else 0,
+            "threshold_encoding_dim": self.threshold_conditioning.output_dim,
+            "in_channels": self.in_channels,
+            "out_channels": self.out_channels,
+            "use_pos_encoding": self.use_pos_encoding,
+            "model_type": "ThresholdConditionedDeepLabV3Plus"
+        } 

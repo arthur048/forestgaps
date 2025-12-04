@@ -244,6 +244,10 @@ class UNetWithAllFeatures(ThresholdConditionedUNet):
         Returns:
             Tensor de sortie [B, out_channels, H, W]
         """
+        # Reshape du seuil si nécessaire
+        if threshold.dim() == 1:
+            threshold = threshold.unsqueeze(1)
+
         # Générer les paramètres FiLM à partir du seuil
         film_params = self.film_generator(threshold)
         

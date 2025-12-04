@@ -316,7 +316,7 @@ class FiLMUNet(ThresholdConditionedUNet):
             # Bloc de convolution après sur-échantillonnage et concaténation
             self.decoder_blocks.append(
                 FiLMDoubleConvBlock(
-                    in_channels=out_features * 2,  # Concaténation avec skip
+                    in_channels=out_features,  # Concaténation avec skip
                     out_channels=out_features,
                     condition_size=condition_size,
                     norm_layer=norm_layer,
@@ -348,7 +348,9 @@ class FiLMUNet(ThresholdConditionedUNet):
         Returns:
             Tenseur de sortie [B, out_channels, H, W]
         """
-        # Encoder le seuil
+        # Encoder le seuil - reshape si nécessaire
+        if threshold.dim() == 1:
+            threshold = threshold.unsqueeze(1)
         condition = self.threshold_embedding(threshold)
         
         # Stocker les caractéristiques d'encodeur pour les connexions de saut

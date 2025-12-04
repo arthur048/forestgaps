@@ -139,10 +139,11 @@ class UNet(UNetBaseModel):
                 )
             )
             
-            # Bloc de convolution après sur-échantillonnage et concaténation
+            # Bloc de convolution après sur-échantillonnage
+            # Note: upsample_blocks gère déjà la concaténation avec skip
             self.decoder_blocks.append(
                 DoubleConvBlock(
-                    in_channels=out_features * 2,  # Concaténation avec skip
+                    in_channels=out_features,  # Déjà traité par upsample_blocks
                     out_channels=out_features,
                     norm_layer=norm_layer,
                     activation=activation,

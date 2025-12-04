@@ -154,7 +154,7 @@ class AttentionUNet(UNetBaseModel):
             # Bloc de convolution après sur-échantillonnage et concaténation
             self.decoder_blocks.append(
                 DoubleConvBlock(
-                    in_channels=out_features * 2,  # Concaténation avec skip
+                    in_channels=out_features,  # Concaténation avec skip
                     out_channels=out_features,
                     norm_layer=norm_layer,
                     activation=activation,
