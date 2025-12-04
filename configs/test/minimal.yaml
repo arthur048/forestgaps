@@ -1,0 +1,77 @@
+# Minimal test configuration for CI/CD
+# Ultra-fast smoke test: 2 epochs, 10 tiles max
+# Use: Quick validation that everything runs without errors
+
+# Basic training parameters - MINIMAL
+epochs: 2
+batch_size: 4
+val_batch_size: 4
+
+# Device configuration
+device: auto
+num_workers: 0  # Disable multiprocessing for faster startup
+pin_memory: false
+
+# Reproducibility
+seed: 42
+
+# Optimizer configuration - simplified
+optimizer:
+  type: adam  # Faster than adamw for quick tests
+  lr: 0.001
+  weight_decay: 0.0
+  betas: [0.9, 0.999]
+  eps: 1.0e-8
+
+# Learning rate scheduler - none for minimal test
+scheduler:
+  type: none  # No scheduler for minimal test
+
+# Loss function configuration
+loss:
+  type: bce  # Simple BCE for speed
+
+# Callbacks configuration - minimal
+callbacks:
+  # Early stopping disabled for minimal test
+  early_stopping: false
+
+  # Model checkpoint - save only best
+  checkpoint_save_best_only: true
+  checkpoint_monitor: val_loss
+  checkpoint_mode: min
+  checkpoint_save_frequency: 1
+
+  # TensorBoard disabled for speed
+  tensorboard_enabled: false
+
+  # Progress bar enabled
+  progress_bar: true
+
+# Training optimizations - disabled for speed
+optimization:
+  # AMP disabled for compatibility
+  use_amp: false
+
+  # Gradient clipping disabled
+  gradient_clip_value: null
+  gradient_clip_norm: null
+
+  # No gradient accumulation
+  accumulate_grad_batches: 1
+
+  # No gradient checkpointing
+  use_gradient_checkpointing: false
+
+  # No torch.compile
+  use_torch_compile: false
+
+# Output directories
+save_dir: outputs/test/minimal
+checkpoint_dir: checkpoints/test/minimal
+log_dir: logs/test/minimal
+
+# Data configuration overrides (referenced separately in data config)
+max_train_tiles: 10
+max_val_tiles: 5
+max_test_tiles: 5

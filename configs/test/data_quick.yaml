@@ -1,0 +1,50 @@
+# Quick data configuration for testing
+# Fast with augmentation enabled
+
+# Data paths
+data_dir: data
+processed_dir: data/processed
+tiles_dir: data/tiles
+
+# Input configuration
+in_channels: 1
+input_type: dsm
+
+# Preprocessing configuration
+preprocessing:
+  tile_size: 256
+  overlap: 0.0
+  normalize_method: per_tile
+  normalize_range: [0.0, 1.0]
+  min_valid_pixels: null
+  min_gap_pixels: null
+
+# Data augmentation - enabled for testing
+augmentation:
+  enabled: true
+  random_flip_prob: 0.5
+  random_rotation: true
+  random_rotation_degrees: 15.0
+  brightness_jitter: 0.2
+  contrast_jitter: 0.2
+  gaussian_noise_prob: 0.2
+  gaussian_noise_std: 0.01
+  gaussian_blur_prob: 0.2
+  gaussian_blur_sigma: [0.1, 2.0]
+  use_kornia: false
+
+# Dataset configuration
+dataset:
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  thresholds: [5.0]  # Single threshold for speed
+  cache_in_memory: false
+  shuffle_train: true
+  shuffle_val: false
+
+# DataLoader parameters
+num_workers: 2
+pin_memory: true
+prefetch_factor: 2
+persistent_workers: true
