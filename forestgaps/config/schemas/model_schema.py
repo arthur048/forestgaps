@@ -18,6 +18,7 @@ class ModelConfig(BaseModel):
     model_type: Literal[
         "unet",
         "unet_film",
+        "film_unet",  # Alias for unet_film
         "deeplabv3_plus",
         "attention_unet",
         "res_unet",

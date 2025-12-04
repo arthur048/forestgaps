@@ -125,17 +125,22 @@ def test_workflow(config_name: str):
         "out_channels": model_config.out_channels,
     }
 
+    # Map config model_type to registry model_type if needed
+    model_type = model_config.model_type
+    if model_type == "unet_film":
+        model_type = "film_unet"  # Registry uses film_unet
+
     # Add model-specific params
     if model_config.model_type == "unet":
         model_kwargs["init_features"] = model_config.base_channels
-    elif model_config.model_type == "unet_film":
+    elif model_config.model_type in ["film_unet", "unet_film"]:
         model_kwargs["init_features"] = model_config.base_channels
-        model_kwargs["num_conditions"] = model_config.num_conditions
+        model_kwargs["condition_size"] = model_config.num_conditions
     else:
         # Other models might use base_channels
         model_kwargs["base_channels"] = model_config.base_channels
 
-    model = create_model(model_config.model_type, **model_kwargs)
+    model = create_model(model_type, **model_kwargs)
     device = torch.device(
         training_config.device if training_config.device != "auto"
         else ("cuda" if torch.cuda.is_available() else "cpu")

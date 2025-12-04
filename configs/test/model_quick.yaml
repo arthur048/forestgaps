@@ -1,7 +1,7 @@
 # Quick model configuration
 # UNet-FiLM for feature testing
 
-model_type: unet_film
+model_type: film_unet
 task: segmentation
 
 # Architecture
