@@ -10,8 +10,8 @@ from pydantic import BaseModel, Field, validator
 class ModelConfig(BaseModel):
     """Model architecture configuration.
 
-    Supports all ForestGaps models: UNet, UNetFiLM, DeepLabV3+, AttentionUNet,
-    ResUNet, etc.
+    Supports all ForestGaps models: UNet, UNetFiLM, DeepLabV3+, ResUNet, etc.
+    Note: AttentionUNet deprecated (see docs/ARCHITECTURE_DECISIONS.md).
     """
 
     # Model type
@@ -20,7 +20,7 @@ class ModelConfig(BaseModel):
         "unet_film",
         "film_unet",  # Alias for unet_film
         "deeplabv3_plus",
-        "attention_unet",
+        # "attention_unet",  # DEPRECATED: See docs/ARCHITECTURE_DECISIONS.md
         "res_unet",
         "res_unet_film",
         "regression_unet"
@@ -41,11 +41,11 @@ class ModelConfig(BaseModel):
     # FiLM conditioning (for unet_film, res_unet_film)
     num_conditions: int = Field(1, description="Number of FiLM conditions", ge=1)
 
-    # Attention mechanisms
-    use_attention: bool = Field(False, description="Use attention gates (for attention_unet)")
-    attention_type: Optional[Literal["cbam", "se", "attention_gate"]] = Field(
+    # Attention mechanisms (CBAM/SE only, attention_unet is deprecated)
+    use_attention: bool = Field(False, description="Use attention modules (CBAM/SE)")
+    attention_type: Optional[Literal["cbam", "se"]] = Field(
         None,
-        description="Attention mechanism type"
+        description="Attention mechanism type (CBAM or Squeeze-Excitation)"
     )
 
     # Regularization
