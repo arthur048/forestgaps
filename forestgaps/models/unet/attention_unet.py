@@ -19,8 +19,7 @@ from ..blocks.upsampling import BilinearUpsampling
 from ..blocks.attention import AttentionGate
 
 
-# DEPRECATED: See docs/ARCHITECTURE_DECISIONS.md
-# @model_registry.register("attention_unet")
+@model_registry.register("attention_unet")
 class AttentionUNet(UNetBaseModel):
     """
     Implémentation de l'architecture Attention U-Net.
@@ -132,9 +131,10 @@ class AttentionUNet(UNetBaseModel):
             out_features = encoder_features_channels[-(i+1)]
             
             # Porte d'attention
+            # Note: g sera le signal après upsampling (donc out_features channels)
             self.attention_gates.append(
                 AttentionGate(
-                    g_channels=in_features,  # Signal de guidage du niveau supérieur
+                    g_channels=out_features,  # Signal après upsampling
                     x_channels=out_features,  # Caractéristiques de l'encodeur
                     inter_channels=out_features // 2,  # Canaux intermédiaires
                     activation=activation
@@ -153,9 +153,10 @@ class AttentionUNet(UNetBaseModel):
             )
             
             # Bloc de convolution après sur-échantillonnage et concaténation
+            # Après concat: out_features (upsampled) + out_features (skip) = 2 * out_features
             self.decoder_blocks.append(
                 DoubleConvBlock(
-                    in_channels=out_features,  # Concaténation avec skip
+                    in_channels=out_features * 2,  # Concaténation avec skip
                     out_channels=out_features,
                     norm_layer=norm_layer,
                     activation=activation,
@@ -202,15 +203,26 @@ class AttentionUNet(UNetBaseModel):
         for i in range(len(self.decoder_blocks)):
             # Récupérer les caractéristiques de l'encodeur
             skip = encoder_features[-(i+1)]
-            
+
+            # Sur-échantillonnage (sauf pour la dernière itération)
+            # Car le premier encoder block n'a pas de downsampling avant lui
+            if i < len(self.decoder_blocks) - 1:
+                x = self.upsample_blocks[i](x)
+
             # Appliquer l'attention sur les caractéristiques de l'encodeur
             # en utilisant les caractéristiques du décodeur comme signal de guidage
             skip_attention = self.attention_gates[i](g=x, x=skip)
-            
-            # Sur-échantillonnage et concaténation
-            x = self.upsample_blocks[i](x)
+
+            # Aligner les dimensions spatiales de skip_attention avec x
+            if skip_attention.shape[2:] != x.shape[2:]:
+                skip_attention = F.interpolate(
+                    skip_attention, size=x.shape[2:],
+                    mode='bilinear', align_corners=False
+                )
+
+            # Concaténation
             x = torch.cat([x, skip_attention], dim=1)
-            
+
             # Convolution du décodeur
             x = self.decoder_blocks[i](x)
         

@@ -6,14 +6,14 @@ Ce module fournit différentes variantes de l'architecture U-Net adaptées
 """
 
 from .basic import UNet
-# from .attention_unet import AttentionUNet  # DEPRECATED: See docs/ARCHITECTURE_DECISIONS.md
+from .attention_unet import AttentionUNet  # Fixed: dimension mismatch in decoder resolved
 from .residual_unet import ResUNet
 from .film_unet import FiLMUNet
 from .all_features import UNetWithAllFeatures
 
 __all__ = [
     "UNet",
-    # "AttentionUNet",  # DEPRECATED
+    "AttentionUNet",
     "ResUNet",
     "FiLMUNet",
     "UNetWithAllFeatures"

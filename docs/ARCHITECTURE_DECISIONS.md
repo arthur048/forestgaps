@@ -1,10 +1,10 @@
 # Architecture Decision Records (ADR)
 
-## ADR-001: Suppression du modèle AttentionUNet
+## ADR-001: Réparation du modèle AttentionUNet
 
 **Date**: 2025-12-04
-**Statut**: ✅ DÉCIDÉ
-**Décideurs**: Analyse technique approfondie
+**Statut**: ✅ RÉPARÉ (initialement DEPRECATED, puis fixed)
+**Décideurs**: Suite à feedback utilisateur prioritaire
 
 ---
 
