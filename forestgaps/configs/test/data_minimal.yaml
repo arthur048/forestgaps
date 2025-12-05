@@ -1,0 +1,40 @@
+# Minimal data configuration for CI/CD
+# Ultra-fast: minimal tiles, no augmentation
+
+# Data paths (relative to project root)
+data_dir: data
+processed_dir: data/processed
+tiles_dir: data/tiles
+
+# Input configuration
+in_channels: 1
+input_type: dsm
+
+# Preprocessing configuration
+preprocessing:
+  tile_size: 256
+  overlap: 0.0
+  normalize_method: per_tile
+  normalize_range: [0.0, 1.0]
+  min_valid_pixels: null
+  min_gap_pixels: null
+
+# Data augmentation - DISABLED for speed
+augmentation:
+  enabled: false
+
+# Dataset configuration
+dataset:
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+  thresholds: [5.0]  # Single threshold for speed
+  cache_in_memory: false
+  shuffle_train: true
+  shuffle_val: false
+
+# DataLoader parameters - minimal
+num_workers: 0
+pin_memory: false
+prefetch_factor: 2
+persistent_workers: false

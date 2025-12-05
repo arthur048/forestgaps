@@ -1,0 +1,90 @@
+# Quick test configuration
+# Fast validation: 5 epochs, 50 tiles max
+# Use: Quick workflow testing with new features enabled
+
+# Basic training parameters
+epochs: 5
+batch_size: 8
+val_batch_size: 8
+
+# Device configuration
+device: auto
+num_workers: 2
+pin_memory: true
+
+# Reproducibility
+seed: 42
+
+# Optimizer configuration
+optimizer:
+  type: adamw
+  lr: 0.001
+  weight_decay: 0.01
+  betas: [0.9, 0.999]
+  eps: 1.0e-8
+
+# Learning rate scheduler - OneCycleLR with short cycle
+scheduler:
+  type: onecycle
+  max_lr: 0.005
+  pct_start: 0.3
+  div_factor: 25.0
+  final_div_factor: 1000.0
+
+# Loss function configuration - Combo Loss
+loss:
+  type: combo
+  bce_weight: 0.5
+  dice_weight: 0.3
+  focal_weight: 0.2
+  focal_alpha: 0.25
+  focal_gamma: 2.0
+
+# Callbacks configuration
+callbacks:
+  # Early stopping with very short patience
+  early_stopping: true
+  early_stopping_monitor: val_loss
+  early_stopping_patience: 3
+  early_stopping_mode: min
+
+  # Model checkpoint
+  checkpoint_save_best_only: true
+  checkpoint_monitor: val_loss
+  checkpoint_mode: min
+
+  # TensorBoard enabled
+  tensorboard_enabled: true
+  tensorboard_log_dir: runs/test/quick
+  tensorboard_comment: quick_test
+
+  # Progress bar
+  progress_bar: true
+
+# Training optimizations - all enabled for testing
+optimization:
+  # AMP enabled
+  use_amp: true
+
+  # Gradient clipping enabled
+  gradient_clip_value: null
+  gradient_clip_norm: 1.0
+
+  # Gradient accumulation for testing
+  accumulate_grad_batches: 2
+
+  # No gradient checkpointing (not needed for small models)
+  use_gradient_checkpointing: false
+
+  # torch.compile disabled for compatibility
+  use_torch_compile: false
+
+# Output directories
+save_dir: outputs/test/quick
+checkpoint_dir: checkpoints/test/quick
+log_dir: logs/test/quick
+
+# Data configuration overrides
+max_train_tiles: 50
+max_val_tiles: 20
+max_test_tiles: 10

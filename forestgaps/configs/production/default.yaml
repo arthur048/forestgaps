@@ -1,0 +1,92 @@
+# Production configuration
+# Full training with all best practices
+# Use: Production training runs
+
+# Basic training parameters
+epochs: 50
+batch_size: 16
+val_batch_size: 32  # Larger for validation (no gradients)
+
+# Device configuration
+device: auto
+num_workers: 4
+pin_memory: true
+
+# Reproducibility
+seed: 42
+
+# Optimizer configuration - AdamW with weight decay
+optimizer:
+  type: adamw
+  lr: 0.001
+  weight_decay: 0.01
+  betas: [0.9, 0.999]
+  eps: 1.0e-8
+
+# Learning rate scheduler - OneCycleLR (best practice)
+scheduler:
+  type: onecycle
+  max_lr: 0.01
+  pct_start: 0.3
+  div_factor: 25.0
+  final_div_factor: 10000.0
+  # Warmup
+  warmup_epochs: 0
+  warmup_start_lr: 1.0e-6
+
+# Loss function configuration - Combo Loss (PRIORITÉ MAX)
+loss:
+  type: combo
+  bce_weight: 0.5
+  dice_weight: 0.3
+  focal_weight: 0.2
+  focal_alpha: 0.25
+  focal_gamma: 2.0
+  smooth: 1.0
+
+# Callbacks configuration - all best practices
+callbacks:
+  # Early stopping (Document 3: patience=10)
+  early_stopping: true
+  early_stopping_monitor: val_loss
+  early_stopping_patience: 10
+  early_stopping_mode: min
+  early_stopping_min_delta: 0.0
+
+  # Model checkpoint - save best + regular
+  checkpoint_save_best_only: false  # Save regular checkpoints too
+  checkpoint_monitor: val_loss
+  checkpoint_mode: min
+  checkpoint_save_frequency: 5  # Every 5 epochs
+
+  # TensorBoard logging
+  tensorboard_enabled: true
+  tensorboard_log_dir: runs/production
+  tensorboard_comment: ""
+
+  # Progress bar
+  progress_bar: true
+
+# Training optimizations - all enabled
+optimization:
+  # Automatic Mixed Precision (Document 2 recommendation)
+  use_amp: true
+
+  # Gradient clipping (Document 2)
+  gradient_clip_value: null
+  gradient_clip_norm: 1.0
+
+  # Gradient accumulation (simulate larger batch if needed)
+  accumulate_grad_batches: 1
+
+  # Gradient checkpointing for memory
+  use_gradient_checkpointing: false
+
+  # torch.compile for speed (PyTorch 2.0+)
+  use_torch_compile: false  # Enable if PyTorch 2.0+
+  compile_mode: default
+
+# Output directories
+save_dir: outputs/production
+checkpoint_dir: checkpoints/production
+log_dir: logs/production

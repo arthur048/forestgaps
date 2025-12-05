@@ -1,0 +1,70 @@
+# Default data configuration
+# Conforme Document 3 "Matériel et Méthode"
+
+# Data paths
+data_dir: data
+processed_dir: data/processed
+tiles_dir: data/tiles
+
+# Input configuration
+in_channels: 1
+input_type: dsm  # dsm, chm, or both
+
+# Preprocessing configuration
+preprocessing:
+  # Tile generation
+  tile_size: 256
+  overlap: 0.0
+
+  # Normalization (Document 3: normalization [0,1] per tile)
+  normalize_method: per_tile  # minmax, standard, per_tile
+  normalize_range: [0.0, 1.0]
+
+  # Filtering
+  min_valid_pixels: null  # Minimum non-NaN pixels (null = no filtering)
+  min_gap_pixels: null    # Minimum gap pixels (null = no filtering)
+
+# Data augmentation
+augmentation:
+  enabled: true
+
+  # Geometric transformations
+  random_flip_prob: 0.5
+  random_rotation: true
+  random_rotation_degrees: 15.0
+
+  # Intensity transformations
+  brightness_jitter: 0.2
+  contrast_jitter: 0.2
+
+  # Gaussian noise
+  gaussian_noise_prob: 0.2
+  gaussian_noise_std: 0.01
+
+  # Gaussian blur
+  gaussian_blur_prob: 0.2
+  gaussian_blur_sigma: [0.1, 2.0]
+
+  # Advanced augmentations (Kornia for GPU)
+  use_kornia: false
+
+# Dataset configuration
+dataset:
+  # Data splits (Document 3: 70/15/15)
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+
+  # Gap detection thresholds (meters)
+  thresholds: [2.0, 5.0, 10.0]
+
+  # Dataset behavior
+  cache_in_memory: false
+  shuffle_train: true
+  shuffle_val: false
+
+# DataLoader parameters
+num_workers: 4
+pin_memory: true
+prefetch_factor: 2
+persistent_workers: true

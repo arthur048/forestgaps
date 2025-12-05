@@ -1,0 +1,39 @@
+# Minimal model configuration
+# Fastest model: basic UNet with minimal channels
+
+model_type: unet
+task: segmentation
+
+# Architecture - minimal for speed
+in_channels: 1
+out_channels: 1
+base_channels: 32  # Reduced from 64
+depth: 3  # Reduced from 4
+
+# No FiLM conditioning for speed
+num_conditions: 1
+
+# No attention
+use_attention: false
+attention_type: null
+
+# Minimal regularization
+dropout_rate: 0.0
+droppath_rate: 0.0
+
+# Normalization
+norm_type: batch
+num_groups: 8
+
+# Activation
+activation: relu
+
+# Output
+output_activation: sigmoid
+
+# Initialization
+init_method: kaiming
+
+# No pretrained
+pretrained: false
+pretrained_path: null

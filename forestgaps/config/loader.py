@@ -14,7 +14,7 @@ def load_yaml(path: Union[str, Path]) -> Dict[str, Any]:
     """Load YAML configuration file.
 
     Args:
-        path: Path to YAML file
+        path: Path to YAML file (can be relative or absolute)
 
     Returns:
         Dictionary with configuration
@@ -22,10 +22,30 @@ def load_yaml(path: Union[str, Path]) -> Dict[str, Any]:
     Raises:
         FileNotFoundError: If file doesn't exist
         yaml.YAMLError: If file is not valid YAML
+
+    Note:
+        If path is relative (e.g., "configs/test/quick.yaml"), this function will search:
+        1. Current working directory
+        2. Package installation directory (forestgaps/configs/)
     """
     path = Path(path)
-    if not path.exists():
-        raise FileNotFoundError(f"Configuration file not found: {path}")
+
+    # If path is absolute or exists as-is, use it directly
+    if path.is_absolute() or path.exists():
+        if not path.exists():
+            raise FileNotFoundError(f"Configuration file not found: {path}")
+    else:
+        # Try to find config in package installation directory
+        # This handles cases where configs are installed via pip
+        package_path = Path(__file__).parent.parent / path
+
+        if package_path.exists():
+            path = package_path
+        elif not path.exists():
+            raise FileNotFoundError(
+                f"Configuration file not found: {path}\n"
+                f"Also tried: {package_path}"
+            )
 
     with open(path, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
@@ -65,7 +85,8 @@ def load_training_config(
         >>> config = load_training_config(overrides={"epochs": 100, "batch_size": 32})
     """
     # Load default config
-    default_path = Path(__file__).parent.parent.parent / "configs" / "defaults" / "training.yaml"
+    # Use path relative to this module (works both in dev and installed package)
+    default_path = Path(__file__).parent / "defaults" / "training.yaml"
     config = load_yaml(default_path)
 
     # Load custom config if provided
@@ -99,7 +120,8 @@ def load_data_config(
         >>> config = load_data_config(overrides={"preprocessing": {"tile_size": 512}})
     """
     # Load default config
-    default_path = Path(__file__).parent.parent.parent / "configs" / "defaults" / "data.yaml"
+    # Use path relative to this module (works both in dev and installed package)
+    default_path = Path(__file__).parent / "defaults" / "data.yaml"
     config = load_yaml(default_path)
 
     # Load custom config if provided
@@ -133,7 +155,8 @@ def load_model_config(
         >>> config = load_model_config(overrides={"model_type": "deeplabv3_plus"})
     """
     # Load default config
-    default_path = Path(__file__).parent.parent.parent / "configs" / "defaults" / "model.yaml"
+    # Use path relative to this module (works both in dev and installed package)
+    default_path = Path(__file__).parent / "defaults" / "model.yaml"
     config = load_yaml(default_path)
 
     # Load custom config if provided

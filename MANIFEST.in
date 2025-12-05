@@ -1,13 +1,21 @@
-include LICENSE
+# Include configuration files
+recursive-include forestgaps/config *.yaml *.yml *.json
+recursive-include configs *.yaml *.yml *.json
+
+# Include additional data files
 include README.md
-include COLAB_README.md
-include __version__.py
-include colab_install.py
+include LICENSE
+include setup.py
+include requirements.txt
 
-recursive-include forestgaps *.py
-recursive-include config *.yaml *.yml *.json
-recursive-include examples *.py *.ipynb
+# Include notebooks
+recursive-include notebooks *.ipynb
 
-# Exclure les fichiers de développement
-global-exclude *.py[cod] __pycache__ *.so
-global-exclude .git* .DS_Store .vscode/* .idea/* 
+# Include documentation
+recursive-include docs *.md
+
+# Exclude unwanted files
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude *.so
