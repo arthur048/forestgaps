@@ -1,0 +1,143 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  test:
+    name: Run Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gdal-bin libgdal-dev
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+        pip install -e .
+
+    - name: Run tests
+      run: |
+        pytest tests/ -v --tb=short
+
+    - name: Test model creation (smoke test)
+      run: |
+        python -c "
+        from forestgaps.models import create_model
+        # Test all models
+        models = ['unet', 'film_unet', 'attention_unet', 'deeplabv3_plus', 'res_unet', 'regression_unet']
+        for m in models:
+            try:
+                if m == 'film_unet':
+                    model = create_model(m, in_channels=1, out_channels=1, init_features=32, condition_size=1)
+                elif m == 'deeplabv3_plus':
+                    model = create_model(m, in_channels=1, out_channels=1, encoder_name='resnet18', encoder_weights=None)
+                else:
+                    model = create_model(m, in_channels=1, out_channels=1, init_features=32)
+                print(f'✓ {m}: {sum(p.numel() for p in model.parameters()):,} params')
+            except Exception as e:
+                print(f'✗ {m}: {e}')
+                raise
+        print('✅ All models created successfully!')
+        "
+
+    - name: Test AttentionUNet forward pass
+      run: |
+        python -c "
+        import torch
+        from forestgaps.models import create_model
+
+        model = create_model('attention_unet', in_channels=1, out_channels=1, init_features=32, depth=4)
+        model.eval()
+
+        inputs = torch.randn(2, 1, 256, 256)
+        with torch.no_grad():
+            outputs = model(inputs)
+
+        assert outputs.shape == inputs.shape, f'Shape mismatch: {outputs.shape} != {inputs.shape}'
+        print(f'✅ AttentionUNet: {inputs.shape} → {outputs.shape}')
+        "
+
+    - name: Test training step
+      run: |
+        python -c "
+        import torch
+        from forestgaps.models import create_model
+        from forestgaps.training.losses import ComboLoss
+
+        model = create_model('unet', in_channels=1, out_channels=1, init_features=16)
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        criterion = ComboLoss(bce_weight=1.0, dice_weight=1.0, focal_weight=1.0)
+
+        inputs = torch.randn(2, 1, 64, 64)
+        targets = torch.randint(0, 2, (2, 1, 64, 64)).float()
+
+        model.train()
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss, breakdown = criterion(outputs, targets)
+        loss.backward()
+        optimizer.step()
+
+        assert loss.item() >= 0
+        print(f'✅ Training step: loss={loss.item():.4f}')
+        "
+
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install linting tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort
+
+    - name: Check code formatting with Black
+      run: |
+        black --check --diff forestgaps/ tests/
+      continue-on-error: true
+
+    - name: Check import sorting with isort
+      run: |
+        isort --check-only --diff forestgaps/ tests/
+      continue-on-error: true
+
+    - name: Lint with flake8
+      run: |
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 forestgaps/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 forestgaps/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
+      continue-on-error: true
